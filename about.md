@@ -1,8 +1,9 @@
 ---
 layout: page
-title: About
+title: Acerca de mi
 permalink: /about/
 ---
+Doctor en Robótica cognitiva, maker, profesor, apasionado por los sistemas embebidos, especialmente la BeagleBone. Coordinados del FabLab en el Colegio Marymount Cuernavaca, Mexico.
 
 This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
 
