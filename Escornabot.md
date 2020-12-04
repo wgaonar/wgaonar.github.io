@@ -6,7 +6,7 @@ permalink: /escornabot/
 
 <figure style="text-align: center">
   <p style="text-align: center"> 
-    <img width="50%" src="/assets/Escornabot/images/EscornabotPortada.jpeg"/>
+    <img width="50%" src="assets/Escornabot/images/EscornabotPortada.jpeg"/>
   </p>
   <figcaption>
     Figura 1: Robot Escornabot Brivoi Compactus
@@ -15,7 +15,7 @@ permalink: /escornabot/
 
 En esta página encontrarás toda la información para construir el robot educativo Escornabot en su versión Brivoi Compactus. Está basado en el proyecto: [Escornabot](https://escornabot.com/es/index) desarrollado en España. 
 
-También puedes visitar la página de Pablo de Cierzo [pablorubma.cc](https://pablorubma.cc/) quien ha llevado a estos robots "chiquitines" a muchos niños también en España con su lema: "Pon un Escornabot en tu vida".
+También puedes visitar la página de Pablo de Cierzo [pablorubma.cc](https://pablorubma.cc/) quien ha llevado a estos robots "chiquitines" a muchos niños también en España con su lba: "Pon un Escornabot en tu vida".
 
 <h1>Introducción</h1>
 
@@ -51,13 +51,13 @@ El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se mues
 </figure>
 
 <ol>
-  <li><em>Motor-Bracket:</em> Parte central del robot a la que se fijan los motores y algunas de las otras piezas impresas en 3D.</li>
-  <li><em>EscornaCPU_V1.2-Bracket:</em> Parte a la que se fija la tarjeta de control.</li>
-  <li><em>E-KeypadV2.2-Bracket:</em> Parte a la que se fija la tarjeta de la botonera.</li>
-  <li><em>Battery-Bracket:</em> Parte en donde van alojadas las 4 baterías AA que alimentan el Escornabot.</li>
-  <li><em>Wheel-Right:</em> Rueda derecha del Escornabot.</li>
-  <li><em>Wheel-Left:</em> Rueda izquierda del Escornabot.</li>
-  <li><em>Ball-Caster:</em> Parte que aloja la esfera que sirve de pivote para que el Escornabot pueda desplazarse y girar.</li>
+  <li><b>Motor-Bracket:</b> Parte central del robot a la que se fijan los motores y algunas de las otras piezas impresas en 3D.</li>
+  <li><b>EscornaCPU_V1.2-Bracket:</b> Parte a la que se fija la tarjeta de control.</li>
+  <li><b>E-KeypadV2.2-Bracket:</b> Parte a la que se fija la tarjeta de la botonera.</li>
+  <li><b>Battery-Bracket:</b> Parte en donde van alojadas las 4 baterías AA que alimentan el Escornabot.</li>
+  <li><b>Wheel-Right:</b> Rueda derecha del Escornabot.</li>
+  <li><b>Wheel-Left:</b> Rueda izquierda del Escornabot.</li>
+  <li><b>Ball-Caster:</b> Parte que aloja la esfera que sirve de pivote para que el Escornabot pueda desplazarse y girar.</li>
 </ol>
 
 <h1>Componentes Electrónicos</h1>
@@ -181,14 +181,14 @@ La siguiente tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
   </tr>
   <tr>
     <td style="text-align:center">2</td>
-    <td>Tira de 15 pines hembra para colorar el Arduino Nano</td>
+    <td>Tira de 15 pines hbbra para colorar el Arduino Nano</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">2</td>
     <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
-    <td>Tira de 4 pines hembra para colocar un adaptador Bluetooth</td>
+    <td>Tira de 4 pines hbbra para colocar un adaptador Bluetooth</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
     <td style="text-align:center">-</td>
@@ -237,7 +237,7 @@ La siguiente tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
   </tr>
   <tr>
     <td style="text-align:center">6</td>
-    <td>Cables Dupont hembra - hembra de 10cm</td>
+    <td>Cables Dupont hbbra - hbbra de 10cm</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">6</td>
     <td style="text-align:center">-</td>
