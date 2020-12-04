@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Escornabot
-permalink: /escornabot/
+permalink: /Escornabot/
 ---
 
 <figure style="text-align: center">
