@@ -42,7 +42,7 @@ El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se mues
 
 <figure style="text-align: center">
   <p style="text-align: center"> 
-    <img src="/assets/Escornabot/Images/3DParts/Exploded_view_1.png"
+    <img src="/assets/Escornabot/3DParts/Exploded_view_1.png"
     alt="Vista Explosionada de las partes impresas en 3D" width="360"/>
   </p>
   <figcaption>
