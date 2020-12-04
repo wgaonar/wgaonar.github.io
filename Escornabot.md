@@ -392,7 +392,7 @@ Los componentes requeridos para ensamblar la botonera y su correspondiente funci
 <h3>Soldadura de las Resistencias</h3>
 Las resistencias no tienen polaridad, así que no importa la orientación en que sean colocadas. Para proceder a soldarlas, colocar las resistencias teniendo presente que los valores correspondan con las etiquetas en la tarjeta. 
 
-La figura 3 muestra los pasos para soldar las resistencias. Tener cuidado con la ubicación de R5 para evitar confundirla con las demás ya que solo se utiliza una.
+En las siguientes figuras se muestran los pasos para soldar las resistencias. Se tiene que prestar atención a la ubicación de R5 para evitar confundirla con las demás, ya que solo se utiliza una.
 
 <table>
     <colgroup>
@@ -415,6 +415,8 @@ La figura 3 muestra los pasos para soldar las resistencias. Tener cuidado con la
         <figcaption>Soldadura R1 y R7 de 10 KΩ</figcaption>
       </figure>
     </td>
+  </tr>
+  <tr>
     <td>
       <figure>
         <img src="/assets/Escornabot/Botonera/botonera3.jpg"
@@ -422,6 +424,37 @@ La figura 3 muestra los pasos para soldar las resistencias. Tener cuidado con la
         <figcaption>Soldadura de R6, R8, R9, R10 de 1KΩ</figcaption>
       </figure>
     </td>
+    <td>
+      <figure>
+        <img src="/assets/Escornabot/Botonera/botonera4.jpg"
+          alt="botonera1">
+        <figcaption>Soldadura de R3 y R4 de 10KΩ</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <figure>
+        <img src="/assets/Escornabot/Botonera/botonera5.jpg"
+          alt="botonera2">
+        <figcaption>Soldadura R5 de 22KΩ</figcaption>
+      </figure>
+    </td>
+    <td>
+      <figure>
+        <img src="/assets/Escornabot/Botonera/botonera6.jpg"
+          alt="botonera3">
+        <figcaption>Soldadura de R2 de 10KΩ</figcaption>
+      </figure>
+    </td>
   </tr>
 </table>
 
+<h3>Soldadura de los Leds</h3>
+Los Leds recomendados son de 3mm ya que el espacio donde irán colocados es muy pequeño. Antes de soldarlos en la tarjeta se tiene que poner especial antención en la polaridad, ya que a diferencia de las resistencias, <span style="color:red;"> los Leds si tienes poladirad </span>. Para ello, se ubica la patita o terminal más corta del Led que corresponde al cátodo o la terminal negativa. Esta misma terminal está ubicada donde se puede observar corte plano en el cuerpo de cristal tal como se aprecia en el siguiente esquema:
+
+      <figure>
+        <img src="/assets/Escornabot/Botonera/botonera2.jpg"
+          alt="botonera2">
+        <figcaption>Soldadura R1 y R7 de 10 KΩ</figcaption>
+      </figure>
