@@ -6,7 +6,7 @@ permalink: /escornabot/
 
 <figure style="text-align: center">
   <p style="text-align: center"> 
-    <img width="50%" src="/assets/Escornabot/images/EscornabotPortada.jpeg"/>
+    <img width="50%" src="/assets/Escornabot/Images/EscornabotPortada.jpeg"/>
   </p>
   <figcaption>
     Figura 1: Robot Escornabot Brivoi Compactus
@@ -23,7 +23,7 @@ Escornabot es un robot móvil de software y hardware abierto diseñado para la e
 
 <figure style="text-align: center">
   <p style="text-align: center"> 
-    <img src="/assets/Escornabot/images/3DParts/portadaOnshape_1.png"
+    <img src="/assets/Escornabot/Images/3DParts/portadaOnshape_1.png"
     alt="Modelo 3D del Escornabot Brivoi Compactus" width="360"/>
   </p>
   <figcaption>
@@ -42,7 +42,7 @@ El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se mues
 
 <figure style="text-align: center">
   <p style="text-align: center"> 
-    <img src="/assets/Escornabot/images/3DParts/Exploded_view_1.png"
+    <img src="/assets/Escornabot/Images/3DParts/Exploded_view_1.png"
     alt="Vista Explosionada de las partes impresas en 3D" width="360"/>
   </p>
   <figcaption>
