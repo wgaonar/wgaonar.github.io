@@ -427,7 +427,7 @@ En las siguientes figuras se muestran los pasos para soldar las resistencias. Se
     <td>
       <figure>
         <img src="/assets/Escornabot/Botonera/botonera4.jpg"
-          alt="botonera1">
+          alt="botonera4">
         <figcaption>Soldadura de R3 y R4 de 10KΩ</figcaption>
       </figure>
     </td>
@@ -436,14 +436,14 @@ En las siguientes figuras se muestran los pasos para soldar las resistencias. Se
     <td>
       <figure>
         <img src="/assets/Escornabot/Botonera/botonera5.jpg"
-          alt="botonera2">
+          alt="botonera5">
         <figcaption>Soldadura R5 de 22KΩ</figcaption>
       </figure>
     </td>
     <td>
       <figure>
         <img src="/assets/Escornabot/Botonera/botonera6.jpg"
-          alt="botonera3">
+          alt="botonera6">
         <figcaption>Soldadura de R2 de 10KΩ</figcaption>
       </figure>
     </td>
@@ -453,8 +453,10 @@ En las siguientes figuras se muestran los pasos para soldar las resistencias. Se
 <h3>Soldadura de los Leds</h3>
 Los Leds recomendados son de 3mm ya que el espacio donde irán colocados es muy pequeño. Antes de soldarlos en la tarjeta se tiene que poner especial antención en la polaridad, ya que a diferencia de las resistencias, <span style="color:red;"> los Leds si tienes poladirad </span>. Para ello, se ubica la patita o terminal más corta del Led que corresponde al cátodo o la terminal negativa. Esta misma terminal está ubicada donde se puede observar corte plano en el cuerpo de cristal tal como se aprecia en el siguiente esquema:
 
-      <figure>
-        <img src="/assets/Escornabot/Botonera/botonera2.jpg"
-          alt="botonera2">
-        <figcaption>Soldadura R1 y R7 de 10 KΩ</figcaption>
-      </figure>
+<figure style="text-align: center">
+  <p style="text-align: center">
+    <img src="/assets/Escornabot/Botonera/led0.png"
+    alt="Led0.png" width="60%">
+  </p>
+<figcaption>Esquema para indicar la polaridad de un Led</figcaption>
+</figure>
