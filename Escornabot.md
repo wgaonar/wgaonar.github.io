@@ -63,15 +63,15 @@ El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se mues
 <h1>Componentes Electrónicos</h1>
 
 <h2>Lista de Componentes Electrónicos</h2>
-La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la CPU) en la que irán colocados cada uno de los componentes del Escornabot. 
+La siguiente tabla detalla la cantidad, descripción y la tarjeta (Botonera o la CPU) en la que irán colocados cada uno de los componentes del Escornabot. 
 
 <table>
     <colgroup>
-       <col span="1" style="width: 10%;">
-       <col span="1" style="width: 60%;">
-       <col span="1" style="width: 10%;">
-       <col span="1" style="width: 10%;">
-       <col span="1" style="width: 10;">
+       <col span="1" style="width: 1%;">
+       <col span="1" style="width: 50%;">
+       <col span="1" style="width: 1%;">
+       <col span="1" style="width: 1%;">
+       <col span="1" style="width: 1%;">
     </colgroup>
   <caption>Lista de Componentes para el Escornabot</caption>
   <tr>
@@ -80,20 +80,6 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <th style="text-align:center">CANTIDAD BOTONERA</th>
     <th style="text-align:center">CANTIDAD CPU</th>
     <th style="text-align:center">CANTIDAD ESTRUCTURA ROBOT</th>
-  </tr>
-  <tr>
-    <td style="text-align:center">1</td>
-    <td>Tarjeta EscornaCPU versión 1.2</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">1</td>
-    <td style="text-align:center">-</td>
-  </tr>
-  <tr>
-    <td style="text-align:center">1</td>
-    <td>Tarjeta E_KeyPad versión 2.2</td>
-    <td style="text-align:center">1</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
@@ -117,13 +103,6 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <td style="text-align:center">-</td>
   </tr>
   <tr>
-    <td style="text-align:center">1</td>
-    <td>Portapilas para 4 pilas AA</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">2</td>
-  </tr>
-  <tr>
     <td style="text-align:center">4</td>
     <td>Resistencia 1 KΩ</td>
     <td style="text-align:center">-</td>
@@ -135,6 +114,7 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <td>Resistencia 10 KΩ</td>
     <td style="text-align:center">5</td>
     <td style="text-align:center">4</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
@@ -152,7 +132,7 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
   </tr>
   <tr>
     <td style="text-align:center">1</td>
-    <td>Led de 3mm Azul/td>
+    <td>Led de 3mm Azul</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
     <td style="text-align:center">-</td>
@@ -190,6 +170,7 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <td>Pines/headers macho rectos</td>
     <td style="text-align:center">7</td>
     <td style="text-align:center">8</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
@@ -200,14 +181,14 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
   </tr>
   <tr>
     <td style="text-align:center">2</td>
-    <td>Tira de 15 pines hembra que serán la base so- 2-2 bre la cual se colocará el Arduino Nano</td>
+    <td>Tira de 15 pines hembra para colorar el Arduino Nano</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">2</td>
     <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
-    <td>Tira de 4 pines hembra si posteriormente se desea colocar un adaptador Bluetooth para co- nectar el Escornabot con una aplicación para teléfono móvil.</td>
+    <td>Tira de 4 pines hembra para colocar un adaptador Bluetooth</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
     <td style="text-align:center">-</td>
@@ -228,13 +209,6 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
   </tr>
   <tr>
     <td style="text-align:center">2</td>
-    <td>Conector macho para motor paso a paso JST-XHP-5</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">2</td>
-    <td style="text-align:center">-</td>
-  </tr>
-  <tr>
-    <td style="text-align:center">2</td>
     <td>Buzzer pasivo CFG12 para Arduino</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">2</td>
@@ -245,20 +219,6 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <td>Conector macho JST-XHP-5 para motor paso a paso 28BYJ-48</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">2</td>
-    <td style="text-align:center">-</td>
-  </tr>
-  <tr>
-    <td style="text-align:center">1</td>
-    <td>Conector macho JST-XHP-2 para alimentación de la CPU</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">1</td>
-    <td style="text-align:center">-</td>
-  </tr>
-  <tr>
-    <td style="text-align:center">1</td>
-    <td>Fusible rearmable XF050</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">1</td>
     <td style="text-align:center">-</td>
   </tr>
   <tr>
@@ -282,4 +242,47 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <td style="text-align:center">6</td>
     <td style="text-align:center">-</td>
   </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Fusible rearmable XF050</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Conector macho para motor paso a paso JST-XHP-5</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">2</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Conector macho JST-XHP-2 para alimentación de la CPU</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Portapilas cuadrado para 4 pilas AA</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+  </tr>
+    <tr>
+    <td style="text-align:center">1</td>
+    <td>Tarjeta EscornaCPU versión 1.2</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+  </tr> 
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Tarjeta E_KeyPad versión 2.2</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+  </tr>
 </table>
+
