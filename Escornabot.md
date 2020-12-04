@@ -6,7 +6,7 @@ permalink: /escornabot/
 
 <figure style="text-align: center">
   <p style="text-align: center"> 
-    <img width="50%" src="/assets/Escornabot/Images/EscornabotPortada.jpeg"/>
+    <img width="50%" src="/assets/Escornabot/EscornabotPortada.jpeg"/>
   </p>
   <figcaption>
     Figura 1: Robot Escornabot Brivoi Compactus
