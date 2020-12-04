@@ -67,10 +67,11 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
 
 <table>
     <colgroup>
-       <col span="1" style="width: 20%;">
-       <col span="1" style="width: 40%;">
-       <col span="1" style="width: 20%;">
-       <col span="1" style="width: 20%;">
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 60%;">
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 10;">
     </colgroup>
   <caption>Lista de Componentes para el Escornabot</caption>
   <tr>
@@ -78,17 +79,20 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <th style="text-align:center" >DESCRIPCIÓN</th>
     <th style="text-align:center">CANTIDAD BOTONERA</th>
     <th style="text-align:center">CANTIDAD CPU</th>
+    <th style="text-align:center">CANTIDAD ESTRUCTURA ROBOT</th>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Tarjeta EscornaCPU versión 1.2</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Tarjeta E_KeyPad versión 2.2</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
     <td style="text-align:center">-</td>
   </tr>
   <tr>
@@ -96,149 +100,186 @@ La siguiente Tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <td>Arduino Nano</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
-  </tr>
-  <tr>
-    <td style="text-align:center">1</td>
-    <td>2 Motor paso a paso 28BYJ-48</td>
     <td style="text-align:center">-</td>
-    <td style="text-align:center">1</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Driver ULN2803</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Zócalo de 18 pines para el driver ULN2803</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Portapilas para 4 pilas AA</td>
     <td style="text-align:center">-</td>
-    <td style="text-align:center">1</td>
-  </tr>
-  <tr>
-    <td style="text-align:center">1</td>
-    <td>Terminal T-block de 5mm para alimentación</td>
     <td style="text-align:center">-</td>
-    <td style="text-align:center">1</td>
+    <td style="text-align:center">2</td>
   </tr>
   <tr>
     <td style="text-align:center">4</td>
     <td>Resistencia 1 KΩ</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">9</td>
     <td>Resistencia 10 KΩ</td>
-    <td style="text-align:center">-</td>
-    <td style="text-align:center">1</td>
+    <td style="text-align:center">5</td>
+    <td style="text-align:center">4</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Resistencia 18 KΩ o de 20KΩ</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Resistencia 22 KΩ o de 20KΩ</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm Azul/td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm Rojo</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm Amarillo</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm Verde</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">5</td>
+    <td>Pulsadores de 12mm</td>
+    <td style="text-align:center">5</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">15</td>
+    <td>Pines/headers macho rectos</td>
+    <td style="text-align:center">7</td>
+    <td style="text-align:center">8</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
-    <td>Resistencia 18 KΩ o de 20KΩ</td>
+    <td>Puente o Jumper para pines rectos</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Tira de 15 pines hembra que serán la base so- 2-2 bre la cual se colocará el Arduino Nano</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">2</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
-    <td>Resistencia 18 KΩ o de 20KΩ</td>
+    <td>Tira de 4 pines hembra si posteriormente se desea colocar un adaptador Bluetooth para co- nectar el Escornabot con una aplicación para teléfono móvil.</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
-    <td>Resistencia 18 KΩ o de 20KΩ</td>
+    <td>Interruptor ON/OFF SK12F14 o SK12D07</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
   </tr>
-
-1 
-1 
-1 
-1 
-1 Led de 3mm Amarillo
-1 Led de 3mm Verde
-5 Pulsadores de 12mm
-7 Pines/headers macho a 90◦
-8 Pines/headers macho rectos
-1 Puente o Jumper para pines rectos
-- 2
-- 1
-- 1
-- -
-- 1
-4 -
-5 4
-- 1
-1 -
-1 -
-1 -
-1 -
-1 -
-5 -
-7 -
-- 8
-- 1
-                 Tira de 15 pines hembra que serán la base so- 2-2
-bre la cual se colocará el Arduino Nano
-Interruptor de alimentación SK12F14 o 1-1
-Conector macho para motor paso a paso JST- 2-1
-1
-Tira de 4 pines hembra si posteriormente se desea colocar un adaptador Bluetooth para co- nectar el Escornabot con una aplicación para teléfono móvil.
--
-1
-SK12D07
- XHP-5
-1 Buzzer pasivo CFG12 para Arduino
-1 Fusible rearmable XF050
-1 Diodo Schottky 1N5817
-2 Condensadores cerámicos 104 de 100nF
-6 Cables Dupont hembra - hembra de 10cm
-- 1
-- 1
-- 1
-- 2
-6 -
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>2 Motor paso a paso 28BYJ-48</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">2</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Conector macho para motor paso a paso JST-XHP-5</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">2</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Buzzer pasivo CFG12 para Arduino</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">2</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Conector macho JST-XHP-5 para motor paso a paso 28BYJ-48</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">2</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Conector macho JST-XHP-2 para alimentación de la CPU</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Fusible rearmable XF050</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Condensadores cerámicos 104 de 100nF</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">2</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Diodo Schottky 1N5817</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">1</td>
+    <td style="text-align:center">-</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">6</td>
+    <td>Cables Dupont hembra - hembra de 10cm</td>
+    <td style="text-align:center">-</td>
+    <td style="text-align:center">6</td>
+    <td style="text-align:center">-</td>
+  </tr>
 </table>
