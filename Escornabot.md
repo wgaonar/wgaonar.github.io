@@ -63,7 +63,7 @@ El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se mues
 <h1>Componentes Electrónicos</h1>
 
 <h2>Lista de Componentes Electrónicos</h2>
-La siguiente tabla detalla la cantidad, descripción y la tarjeta (Botonera o la CPU) en la que irán colocados cada uno de los componentes del Escornabot. 
+La siguiente tabla detalla la cantidad y descripción de todos lo componentes electrónicos utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que irán colocados. 
 
 <table>
     <colgroup>
@@ -73,7 +73,7 @@ La siguiente tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
        <col span="1" style="width: 1%;">
        <col span="1" style="width: 1%;">
     </colgroup>
-  <caption>Lista de Componentes para el Escornabot</caption>
+  <caption>Tabla 1: Lista de Componentes para el Escornabot</caption>
   <tr>
     <th style="text-align:center">CANTIDAD TOTAL</th>
     <th style="text-align:center" >DESCRIPCIÓN</th>
@@ -283,6 +283,145 @@ La siguiente tabla detalla la cantidad, descripción y la tarjeta (Botonera o la
     <td style="text-align:center">-</td>
     <td style="text-align:center">-</td>
     <td style="text-align:center">1</td>
+  </tr>
+</table>
+
+<h2>Ensamble de la botonera E_KeyPad V2.2</h2>
+<h3>Lista de componentes para la botonera</h3>
+Los componentes requeridos para ensamblar la botonera y su correspondiente función se enlistan a continuación:
+
+<table>
+    <colgroup>
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 20%;">
+       <col span="1" style="width: 40%;">
+    </colgroup>
+  <caption>Tabla 2: Descripción y funcionamiento de los componentes requeridos para la botonera</caption>
+  <tr>
+    <th style="text-align:center">CANT.</th>
+    <th style="text-align:center">DESCRIPCIÓN</th>
+    <th style="text-align:center">ETIQUETA</th>
+    <th style="text-align:center">FUNCIÓN</th>
+  </tr>
+  <tr>
+    <td style="text-align:center">4</td>
+    <td>Resistencia 1 KΩ</td>
+    <td style="text-align:center">R6, R8, R9, R10</td>
+    <td style="text-align:center">Resistencias para la activación de los Leds de la botonera</td>
+  </tr>
+  <tr>
+    <td style="text-align:center;" rowspan="2">5</td>
+    <td rowspan="2">Resistencia 10 KΩ</td>
+    <td>R1, R2, R3, R4</td>
+    <td>En conjunto con los botones, conforman el divisor de voltaje que permiten elegir el movimiento que el esconarbot realizará:
+      <ul>
+        <li>R1 conectada con el botón S1 selecciona un movimiento hacia 
+        <span style="color:white; background-color: blue;"> ADELANTE </span> </li>
+        <li>R2 conectada con el botón S2 selecciona un movimiento hacia la
+        <span style="color:white; background-color: red;"> IZQUIERDA </span> </li>
+        <li>R3 conectada con el botón S3 selecciona un movimiento hacia
+        <span style="color:black; background-color: yellow;"> ATRÁS </span> </li>
+        <li>R4 conectada con el botón S5 realiza la secuencia de movimentos 
+        <span style="color:white; background-color: black;"> GO </span></li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">R7</td>
+    <td><span style="color:red;">Opcional: </span> Está presente en la botonera en caso de que se use una tarjeta de control diferente a la EscornaCPU V1.2 y en la que no se utilice la resistencia interna de PULL-UP del Arduino Nano. En el firmware del robot se tendría que definir la palabra clave: KEYBOARD_WIRES con el valor de 3. 
+    Por precaución, esta resistencia se puede soldar</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Resistencia 22 KΩ o de 20KΩ</td>
+    <td style="text-align:center">R5</td>
+    <td>La última resistencia del divisor de voltaje que conectada con el botón S4 selecciona un movimiento hacia la
+    <span style="color:white; background-color: green;"> DERECHA </span> </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Led de 3mm azul</td>
+    <td style="text-align:center">R5</td>
+    <td>Led indicador de un movimiento hacia
+    <span style="color:white; background-color: blue;"> ADELANTE </span></td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Led de 3mm rojo</td>
+    <td style="text-align:center">R5</td>
+    <td>Led indicador de un movimiento hacia la
+    <span style="color:white; background-color: red;"> IZQUIERDA </span></td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Led de 3mm amarillo</td>
+    <td style="text-align:center">R5</td>
+    <td>Led indicador de un movimiento hacia
+    <span style="color:black; background-color: yellow;"> ATRÁS </span> </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Led de 3mm verde</td>
+    <td style="text-align:center">R5</td>
+    <td>Led indicador de un movimiento hacia la
+    <span style="color:white; background-color: green;"> DERECHA </span> </td>
+  </tr>
+  <tr>
+    <td style="text-align:center;" rowspan="2">5</td>
+    <td rowspan="2">Pulsadores de 12mm</td>
+    <td>S1, S2, S3, S4</td>
+    <td>Botones para elegir los movimientos:
+      <ul>
+        <li>S1 selecciona un movimiento hacia 
+        <span style="color:white; background-color: blue;"> ADELANTE </span> </li>
+        <li>S2 selecciona un movimiento hacia la
+        <span style="color:white; background-color: red;"> IZQUIERDA </span> </li>
+        <li>S3 selecciona un movimiento hacia
+        <span style="color:black; background-color: yellow;"> ATRÁS </span> </li>
+        <li>S4 selecciona un movimiento hacia 
+        <span style="color:white; background-color: green;"> DERECHA </span></li>
+      </ul>
+    </td>
+  </tr>
+  <td>S5</td>
+  <td>Botón <span style="color:white; background-color: black;"> GO </span> para realizar la secuencia de movimientos 
+  </td>
+</table>
+
+<h3>Soldadura de las Resistencias</h3>
+Las resistencias no tienen polaridad, así que no importa la orientación en que sean colocadas. Para proceder a soldarlas, colocar las resistencias teniendo presente que los valores correspondan con las etiquetas en la tarjeta. 
+
+La figura 3 muestra los pasos para soldar las resistencias. Tener cuidado con la ubicación de R5 para evitar confundirla con las demás ya que solo se utiliza una.
+
+<table>
+    <colgroup>
+       <col span="1" style="width: 30%;">
+       <col span="1" style="width: 30%;">
+       <col span="1" style="width: 30%;">
+    </colgroup>
+  <tr style="vertical-align:top">
+    <td>
+      <figure>
+        <img src="/assets/Escornabot/Botonera/botonera1.jpg"
+          alt="botonera1">
+        <figcaption>PCB de la botonera vista por debajo con resistencias colocadas para soldar</figcaption>
+      </figure>
+    </td>
+    <td>
+      <figure>
+        <img src="/assets/Escornabot/Botonera/botonera2.jpg"
+          alt="botonera2">
+        <figcaption>Soldadura R1 y R7 de 10 KΩ</figcaption>
+      </figure>
+    </td>
+    <td>
+      <figure>
+        <img src="/assets/Escornabot/Botonera/botonera3.jpg"
+          alt="botonera3">
+        <figcaption>Soldadura de R6, R8, R9, R10 de 1KΩ</figcaption>
+      </figure>
+    </td>
   </tr>
 </table>
 
