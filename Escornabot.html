@@ -4,6 +4,22 @@ title: Escornabot
 permalink: /Escornabot/
 ---
 
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 48%;
+  padding: 1%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>
+
 <figure style="text-align: center">
   <p style="text-align: center"> 
     <img src="/assets/Escornabot/EscornabotPortada.jpeg"
@@ -403,69 +419,63 @@ Las resistencias no tienen polaridad, así que no importa la orientación en que
 
 En las siguientes figuras se muestran los pasos para soldar las resistencias. Se tiene que prestar atención a la ubicación de R5 para evitar confundirla con las demás, ya que solo se utiliza una.
 
-<table>
-    <colgroup>
-       <col span="1" style="width: 30%;">
-       <col span="1" style="width: 30%;">
-       <col span="1" style="width: 30%;">
-    </colgroup>
-  <tr style="vertical-align:top">
-    <td>
-      <figure>
-        <img src="/assets/Escornabot/Botonera/botonera1.jpg"
-          alt="botonera1">
-        <figcaption>PCB de la botonera vista por debajo con resistencias colocadas para soldar</figcaption>
-      </figure>
-    </td>
-    <td>
-      <figure>
-        <img src="/assets/Escornabot/Botonera/botonera2.jpg"
-          alt="botonera2">
-        <figcaption>Soldadura R1 y R7 de 10 KΩ</figcaption>
-      </figure>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <figure>
-        <img src="/assets/Escornabot/Botonera/botonera3.jpg"
-          alt="botonera3">
-        <figcaption>Soldadura de R6, R8, R9, R10 de 1KΩ</figcaption>
-      </figure>
-    </td>
-    <td>
-      <figure>
-        <img src="/assets/Escornabot/Botonera/botonera4.jpg"
-          alt="botonera4">
-        <figcaption>Soldadura de R3 y R4 de 10KΩ</figcaption>
-      </figure>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <figure>
-        <img src="/assets/Escornabot/Botonera/botonera5.jpg"
-          alt="botonera5">
-        <figcaption>Soldadura R5 de 22KΩ</figcaption>
-      </figure>
-    </td>
-    <td>
-      <figure>
-        <img src="/assets/Escornabot/Botonera/botonera6.jpg"
-          alt="botonera6">
-        <figcaption>Soldadura de R2 de 10KΩ</figcaption>
-      </figure>
-    </td>
-  </tr>
-</table>
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera1.jpg"
+        alt="botonera1" style="width:100%">
+      <figcaption>PCB de la botonera vista por debajo con resistencias colocadas para soldar</figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera2.jpg"
+        alt="botonera2" style="width:100%">
+      <figcaption>Soldadura R1 y R7 de 10 KΩ</figcaption>
+    </figure>
+  </div>
+</div>
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera3.jpg"
+        alt="botonera3" style="width:100%">
+      <figcaption>Soldadura de R6, R8, R9, R10 de 1KΩ</figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera4.jpg"
+        alt="botonera4" style="width:100%">
+      <figcaption>Soldadura de R3 y R4 de 10KΩ</figcaption>
+    </figure>
+  </div>
+</div>
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera5.jpg"
+        alt="botonera5" style="width:100%">
+      <figcaption>Soldadura R5 de 22KΩ</figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera6.jpg"
+        alt="botonera6" style="width:100%">
+      <figcaption>Soldadura de R2 de 10KΩ</figcaption>
+    </figure>
+  </div>
+</div>
 
 <h3>Soldadura de los Leds</h3>
 Los Leds recomendados son de 3mm ya que el espacio donde irán colocados es muy pequeño. 
 Antes de soldarlos en la tarjeta se tiene que poner especial antención en la polaridad, 
 ya que a diferencia de las resistencias, <span style="color:red;"> los Leds si tienes 
-  poladirad </span>. Para ello, se ubica la patita o terminal más corta del Led que 
-  corresponde al cátodo o la terminal negativa. Esta misma terminal está ubicada donde 
-  se puede observar corte plano en el cuerpo de cristal tal como se aprecia en el siguiente esquema:
+poladirad </span>. Para ello, se ubica la patita o terminal más corta del Led que 
+corresponde al cátodo o la terminal negativa. Esta misma terminal está ubicada donde 
+se puede observar corte plano en el cuerpo de cristal tal como se aprecia en el 
+siguiente esquema:
 
 <figure style="text-align: center">
   <p style="text-align: center">
@@ -474,3 +484,9 @@ ya que a diferencia de las resistencias, <span style="color:red;"> los Leds si t
   </p>
 <figcaption>Esquema para indicar la polaridad de un Led</figcaption>
 </figure>
+
+Si se observa la tarjeta de frente, el cátado o terminal negativa de cada uno de los leds 
+se orienta a la izquierda indicado por el dibujo de esta parte plana. Este dibujo guía 
+permite que la soldadura de los Leds sea más fácil fijándose que la polaridad y el color 
+coincida con la etiqueta en la tarjeta. Al finalizar de soldar todos los Leds, 
+recortar los sobrantes. Los pasos en la soldadura de los Leds se puede observar en la figura 5.
