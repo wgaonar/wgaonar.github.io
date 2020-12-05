@@ -71,7 +71,7 @@ Figura 3:
 <figure style="text-align: center">
   <p style="text-align: center"> 
     <img src="/assets/Escornabot/3DParts/Exploded_view_1.png"
-    alt="Vista Explosionada de las partes impresas en 3D" width="360"/>
+    alt="Vista Explosionada de las partes impresas en 3D" width="90%"/>
   </p>
   <figcaption>
     Figura 3: Vista Explosionada de las partes impresas en 3D
@@ -372,28 +372,28 @@ función se enlistan en la Tabla 2:
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm azul</td>
-    <td style="text-align:center">R5</td>
+    <td style="text-align:center">Led1</td>
     <td>Led indicador de un movimiento hacia
     <span style="color:white; background-color: blue;"> ADELANTE </span></td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm rojo</td>
-    <td style="text-align:center">R5</td>
+    <td style="text-align:center">Led2</td>
     <td>Led indicador de un movimiento hacia la
     <span style="color:white; background-color: red;"> IZQUIERDA </span></td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm amarillo</td>
-    <td style="text-align:center">R5</td>
+    <td style="text-align:center">Led3</td>
     <td>Led indicador de un movimiento hacia
     <span style="color:black; background-color: yellow;"> ATRÁS </span> </td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td>Led de 3mm verde</td>
-    <td style="text-align:center">R5</td>
+    <td style="text-align:center">Led4</td>
     <td>Led indicador de un movimiento hacia la
     <span style="color:white; background-color: green;"> DERECHA </span> </td>
   </tr>
@@ -419,7 +419,7 @@ función se enlistan en la Tabla 2:
   </td>
 </table>
 
-<h3>Soldadura de las Resistencias</h3>
+<h3>Soldadura de las resistencias</h3>
 Las resistencias no tienen polaridad, así que no importa la orientación en que sean colocadas. Para proceder a soldarlas, colocar las resistencias teniendo presente que los valores correspondan con las etiquetas en la tarjeta. 
 
 En la Figuras 4a hasta 4f se muestran los pasos para soldar las resistencias. Se tiene que prestar atención a la ubicación de R5 para evitar confundirla con las demás, ya que solo se utiliza una.
@@ -540,7 +540,7 @@ Figuras 6a hasta 6d.
   </div>
 </div>
 
-<h3>Soldadura de los Botones</h3>
+<h3>Soldadura de los botones</h3>
 La soldadura de los botones es simple de realizar ya que tienen las terminales dobladas 
 formando un resorte para que se queden fijas en la tarjeta, es suficiente insertarlos con 
 cierta fuerza hasta que se escuche el sonido de un “click” el cual indica que están 
@@ -568,7 +568,7 @@ fijos en su posición. Las Figuras 7a y 7b:
   </div>
 </div>
 
-<h3>Soldadura de los Pines de Conexión</h3>
+<h3>Soldadura de los pines de conexión</h3>
 La soldadura de los pines tipo macho se pueden ver en las Figuras 8a y 8b cuidando 
 que el lado más largo debe quedar en el reverso de la tarjeta. 
 
@@ -663,3 +663,49 @@ La función de cada uno de estos pines de conexión se puede ver en la Tabla 3:
     </td>
   </tr>
 </table>
+
+<h3>Prueba de los Leds</h3>
+<p>
+  El objetivo es verificar que todos los Leds se encienden al energizarlos. Para ello se puede
+  utilizar el Arduino Nano alimentado con las baterías dentro del portapilas y el cable de tierra
+  o de color negro conectado al pin GND del Arduino Nano y el positivo o cable rojo al 
+  pin Vin también del Arduino Nano.
+  Posteriormente, mediante un cable tipo "jumper" conectado al otro pin GND del Arduino Nano 
+  y al pin GND de la botonera y otro cable al pin +5V del Arduino Nano y a cualquier pin 
+  de la botonera con la etiqueta: L1, L2, L3 o L4, dependiendo de que Led se 
+  quiera probar.
+</p>
+
+<p>
+  En caso de que no encendieran se debe verificar la orientación (polaridad) 
+  de los Leds en la botonera y el valor de las resistencias R6, R8, R9 y R10 que 
+  debe ser de 1 KΩ.
+</p>
+
+<p>
+  Como ejemplo, se puede observar en la Figura 9a que al conectar un cable al pin GND y el otro 
+  cable a al pin L1 se enciende el Led de color azul. De igual forma, en la Figura 9b 
+  se puede ver que al conectar un cable al pin GND y el otro cable al pin L3 se enciende 
+  el Led de color amarillo.
+</p> 
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera_ensambleLed_1.png"
+        alt="botonera_ensambleLed_1.jpg" style="width:100%">
+      <figcaption>
+        Figura 9a: Prueba del Led 1 de color azul conectado al pin L1.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Botonera/botonera_ensambleLed_3.png"
+        alt="botonera_ensambleLed_3.jpg" style="width:100%">
+      <figcaption>
+        Figura 9a: Prueba del Led 3 de color amarillo conectado al pin L3.
+      </figcaption>
+    </figure>
+  </div>
+</div>
