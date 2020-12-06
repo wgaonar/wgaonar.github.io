@@ -22,6 +22,14 @@ permalink: /Escornabot/
 img {
   border-radius: 5%;
 }
+
+h2 {
+  font-weight: bold;
+}
+
+p {
+  text-align: justify;
+}
 </style>
 
 <figure style="text-align: center">
@@ -40,7 +48,7 @@ img {
   <a href="https://escornabot.com/es/index">Escornabot</a> desarrollado en España. 
 </p>
 <p>
-  También puedes visitar la página de Pablo de Cierzo 
+  También puedes visitar la página de Pablo de Cierzo: 
   <a href="https://pablorubma.cc/">pablorubma.cc</a>
   quien ha llevado a estos robots "chiquitines" a muchos niños también en España con su lema: 
   "Pon un Escornabot en tu vida".
@@ -48,7 +56,7 @@ img {
 
 
 
-<h1>Introducción</h1>
+<h2>Introducción</h2>
 <p>
   Escornabot es un robot móvil de software y hardware abierto diseñado para la enseñanza de 
   electrónica y programación en niños, adolescentes y no tan niños. Basado en la 
@@ -79,7 +87,7 @@ Esta versión utiliza dos tarjetas de circuitos impresos (PCB):
   <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/EscornaCPU/1.x/1.20">EscornaCPU V1.2 diseñada por XDeSIG</a></li>
 </ul>
 
-<h2>Partes Impresas en 3D</h2>
+<h3>Partes Impresas en 3D</h3>
 El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se muestran en la 
 Figura 3:
 
@@ -105,16 +113,14 @@ Figura 3:
       pueda desplazarse y girar.</li>
 </ol>
 
-<h1>Componentes Electrónicos</h1>
-
-<h2>Lista de Componentes Electrónicos</h2>
+<h3>Lista de Componentes Electrónicos</h3>
 La Tabla 1 detalla la cantidad y descripción de todos lo componentes electrónicos 
 utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que irán colocados. 
 
 <table>
     <colgroup>
        <col span="1" style="width: 10%;">
-       <col span="1" style="width: 90%;">
+       <col span="1" style="width: 80%;">
     </colgroup>
   <caption>Tabla 1: Lista de Componentes para el Escornabot</caption>
   <tr>
@@ -199,10 +205,6 @@ utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que i
   </tr>
   <tr>
     <td style="text-align:center">2</td>
-    <td>Conector macho JST-XHP-5 para motor paso a paso 28BYJ-48</td>
-  </tr>
-  <tr>
-    <td style="text-align:center">2</td>
     <td>Condensadores cerámicos 104 de 100nF</td>
   </tr>
   <tr>
@@ -219,11 +221,11 @@ utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que i
   </tr>
   <tr>
     <td style="text-align:center">2</td>
-    <td>Conector macho para motor paso a paso JST-XHP-5</td>
+    <td>Conector macho JST-XHP-5 para motor paso a paso 28BYJ-48</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
-    <td>Conector macho JST-XHP-2 para alimentación de la CPU</td>
+    <td>Conector macho JST-XHP-2 para alimentación de la tarjeta de control</td>
   </tr>
   <tr>
     <td style="text-align:center">1</td>
@@ -231,7 +233,7 @@ utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que i
   </tr>
     <tr>
     <td style="text-align:center">1</td>
-    <td><a href="https://www.pcbway.com/project/shareproject/W50475ASN23_Escorna_CPU_1_20.html">Tarjeta EscornaCPU V1.2</a></td>
+    <td><a href="https://www.pcbway.com/project/shareproject/W50475ASN23_Escorna_CPU_1_20.html">Tarjeta de control EscornaCPU V1.2</a></td>
   </tr> 
   <tr>
     <td style="text-align:center">1</td>
@@ -239,10 +241,9 @@ utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que i
   </tr>
 </table>
 
-<h2>Ensamble de la botonera E_KeyPad V2.2</h2>
-<h3>Componentes para la botonera</h3>
-Los componentes requeridos para ensamblar la botonera y su correspondiente 
-función se enlistan en la Tabla 2:
+<h2>Ensamble de la botonera</h2>
+<h3>Componentes</h3>
+Los componentes requeridos y su correspondiente función se enlistan en la Tabla 2:
 
 <table>
     <colgroup>
@@ -636,3 +637,150 @@ La función de cada uno de estos pines de conexión se puede ver en la Tabla 3:
     </figure>
   </div>
 </div>
+
+
+Por otro lado, para probar el funcionamiento de los botones se necesita de un 
+multímetro con el objetivo de medir el valor de la resistencia al accionar cualquiera 
+de los botones. El siguiente procedimiento es una guía para realizar la prueba:
+<p>
+  <ol>
+    <li>Colocar el multímetro en la escala de 200 KΩ</li>
+    <li>Conectar la punta de prueba negra en el pin de la botonera con la etiqueta: <b>GND</b></li>
+    <li>Conectar la punta de prueba roja en el pin de la botonera con la etiqueta: <b>Sig</b></li>
+    <li>Pulsar cada uno de los botones y comparar el valor de la resistencia indicada por el 
+      multímetro con los siguientes valores:</li>
+      <ul>
+        <li>
+            Al pulsar el botón del movimiento hacia 
+            <span style="background-color: blue; color: white;">ADELANTE</span> 
+            ubicado encima del Led 1 de color azul, el multímetro indicará 
+            <span style="background-color: blue; color: white;">10KΩ</span> aproximadamente.
+        </li>
+        <li>
+          Al pulsar el botón del giro hacia la 
+          <span style="background-color: red; color: white;">IZQUIERDA</span> 
+          ubicado a la izquierda del Led 2 de color rojo, el multímetro indicará 
+          <span style="background-color: red; color: white;">20KΩ </span> aproximadamente.
+        </li>
+        <li>
+          Al pulsar el botón del movimiento hacia 
+          <span style="background-color:yellow; color: black;">ATRÁS</span> 
+          ubicado encima del Led 3 de color amarillo, el multímetro indicará 
+          <span style="background-color:yellow; color: black;">30KΩ</span> aproximadamente.
+        </li>
+        <li>
+          Al pulsar el botón del giro hacia la 
+          <span style="background-color: green; color: white;">DERECHA</span> 
+          ubicado a la derehca del Led 4 de color verde, el multímetro indicará 
+          <span style="background-color: green; color: white;">62KΩ </span> aproximadamente.
+        </li>
+        <li>
+          Al pulsar el botón del centro
+          <span style="background-color:black; color: white;">GO</span> 
+          el multímetro indicará 
+          <span style="background-color:black; color: white;">40KΩ </span> aproximadamente.
+        </li>
+      </ul>
+  </ol>
+</p>
+
+El funcionamiento de la botonera se basa en un divisor de voltaje, el cual, al pulsar cada uno de 
+los botones varía el voltaje en un rango de 0-5V. Esta señal de voltaje es la que va conectada 
+al pin con la etiqueta <b>Sig</b> de la botonera. El esquema eléctrico de la botonera, así como un esquema 
+simplificado y las ecuaciones del funcionamiento del circuito divisor de voltaje se muestran en la Figura 10:
+
+<figure style="text-align: center">
+  <p style="text-align: center"> 
+    <img src="/assets/Escornabot/Botonera/divisorVoltaje.png"
+    alt="divisorVoltaje.png" width="90%"/>
+  </p>
+  <figcaption>
+    Figura 10: Esquemas y ecuaciones del circuito divisor de voltaje que conforma la botonera
+  </figcaption>
+</figure>
+
+<h2>Ensamble de la tarjeta de control</h2>
+<h3>Componentes</h3>
+Los componentes requeridos y su correspondiente función se enlistan en la Tabla 4:
+<table>
+    <colgroup>
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 30%;">
+       <col span="1" style="width: 20%;">
+       <col span="1" style="width: 40%;">
+    </colgroup>
+  <caption>Tabla 4: Descripción y funcionamiento de los componentes requeridos para la botonera</caption>
+  <tr>
+    <th style="text-align:center">CANT</th>
+    <th style="text-align:center">DESCRIPCIÓN</th>
+    <th style="text-align:center">ETIQUETA</th>
+    <th style="text-align:center">FUNCIÓN</th>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Arduino Nano</td>
+    <td style="text-align:center">Arduino Nano</td>
+    <td>Tarjeta de desarrollo y programación basada en el micro- controlador ATmega328</td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">1</td>
+    <td>Driver ULN2803</td>
+    <td style="text-align:center">IC1 ULN2803</td>
+    <td>Circuito integrado que es el enlace o interfaz entre las señales de control provenientes 
+      del Arduino Nano y los motores paso a paso 28BYJ-48.
+      <p>
+        Nota: <span style="color: red;">este circuito no se solda,</span>
+        se coloca sobre un zócalo o base que sií irá soldada a la tarjeta.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Zócalo de 18 pines</td>
+    <td style="text-align:center">IC1 ULN2803</td>
+    <td>Base que soldada a la tarjeta sobre la que se coloca el driver ULN2803.</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Conector macho JST-XHP-5 para motor paso a paso 28BYJ-48</td>
+    <td style="text-align:center">Motor Left / Motor Right</td>
+    <td>Conectar los motores a la tarjeta.</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Conector macho JST-XHP-2 para alimentación de la tarjeta de control</td>
+    <td style="text-align:center">GND +</td>
+    <td>Recibir la alimentación del portapilas con las 4 baterías AA</td>
+  </tr>
+  <tr>
+    <td style="text-align:center;" rowspan="3">4</td>
+    <td rowspan="3">Resistencia 10 KΩ</td>
+    <td style="text-align:center">R1</td>
+    <td> 
+      <span style="color:red;"> Es opcional: </span>
+      Está presente en la tarjeta de control en caso de que se utilice una botonera 
+      diferente a la E_KeyPad V2.2 que no cuente con esta resistencia y que no se 
+      utilice la resistencia interna de PULL_UP del Arduino Nano. 
+      <p>
+        En el firmware del robot se tendría que definir la palabra clave: 
+        KEYBOARD_WIRES con el valor de 3. Por precaución, esta resistencia se
+        puede soldar.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">R4,R5</td>
+    <td>
+      La primera resistencia del divisor de voltaje que reduce el voltaje de 5.0V 
+      a 3.3V que va desde el pin 1 del Arduino hacia el pin de transmisión 
+      del adaptador Bluetooth, en caso de que se desea conectar y utilizar.
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">R4,R5</td>
+    <td><span style="color:red;">Son Opcionales: </span> 
+      Están presentes en la tarjeta de control en caso de que se desea 
+      conectar el Escornabot a una red WiFi a través de un módulo un ESP-01.
+    </td>
+  </tr>
+</table>
