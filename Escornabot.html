@@ -707,7 +707,7 @@ que se puede ver en la Figura 11:
 <figure style="text-align: center">
   <p style="text-align: center"> 
     <img src="/assets/Escornabot/CPU/cpu_inicial.jpg"
-    alt="cpu_inicial.jpg" width="90%"/>
+    alt="cpu_inicial.jpg" width="80%"/>
   </p>
   <figcaption>
     Figura 11: Tarjeta de control EscornaCPU_V1.2
@@ -881,15 +881,17 @@ Los componentes requeridos y su correspondiente función se enlistan en la Tabla
 </table>
 
 <h3>Soldadura de las resistencias</h3>
-Soldar las resistencias de forma similar a la Botonera. Teniendo cuidado de no 
-confundir los valores. Las Figuras 12a y 12b muestran el soldado de cada una de 
-las resistencias:
+<p>
+  Soldar las resistencias de forma similar a la Botonera. Teniendo cuidado de no 
+  confundir los valores. Las Figuras 12a y 12b muestran el soldado de cada una de 
+  las resistencias:
+</p>
 
 <div class="row">
   <div class="column">
     <figure>
       <img src="/assets/Escornabot/CPU/cpu_resistencias_1.jpg"
-        alt="botonera_ensambleLed_1.jpg" style="width:100%">
+        alt="cpu_resistencias_1.jpg" style="width:100%">
       <figcaption>
         Figura 12a: Soldadura de R1 y R2 de 10KΩ.
       </figcaption>
@@ -898,10 +900,122 @@ las resistencias:
   <div class="column">
     <figure>
       <img src="/assets/Escornabot/CPU/cpu_resistencias_2.jpg"
-        alt="botonera_ensambleLed_3.jpg" style="width:100%">
+        alt="cpu_resistencias_2.jpg" style="width:100%">
       <figcaption>
         Figura 12b: Soldadura de R3 de 18KΩ.
       </figcaption>
     </figure>
   </div>
 </div>
+
+<h3>Soldadura del diodo</h3>
+<p>Antes de soldar el diodo se debe observar su polaridad, 
+ya que este elemento permite el paso de la corriente en una 
+única dirección, por lo que es importante que quede soldado de 
+la manera correcta.</p> 
+
+<p>El esquema con el que se representa a este componente consiste en 
+un triángulo con una barra horizontal en uno de sus vértices. 
+La dirección del triángulo indica la dirección de la corriente, 
+mientras que la barra horizontal indica el no paso de la corriente.</p>
+
+<p>Este esquema se encuentra dibujado en la tarjeta para orientar al 
+diodo de forma correcta. Por otro lado, en el componente únicamente
+se señala la barra horizontal de color gris, suficiente para orientarlo en la 
+tarjeta tal como se muestra en la Figura 13.</p>
+
+<figure style="text-align: center">
+  <p style="text-align: center"> 
+    <img src="/assets/Escornabot/CPU/cpu_diodo_1.png"
+    alt="cpu_diodo_1.png" width="50%"/>
+  </p>
+  <figcaption>
+    Figura 13: Soldadura del diodo Schotttky 1N5817
+  </figcaption>
+</figure>
+
+<h3>Soldadura de los condensadores</h3>
+<p>
+  Los condensadores cerámicos son elementos que <b>no</b> tienen polaridad, 
+  a diferencia de los electrolíticos que sí la tienen.
+  En este caso los condensadores 104 se pueden soldar sin importar la orientación 
+  en que se coloquen. Las Figuras 14a y 14b muestran la soldadura de estos dos 
+  condensadores y el aspecto de la tarjeta de control.
+</p>
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_condensadores_1.png"
+        alt="cpu_condensadores_1.png" style="width:100%">
+      <figcaption>
+        Figura 14a: Soldadura de los condensadores cerámicos 104
+        de 100nF.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_condensadores_2.png"
+        alt="cpu_condensadores_2.png" style="width:100%">
+      <figcaption>
+        Figura 14b: Vista inclinada de la tarjeta de control con los
+        condensadores y el diodo soldados.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<h3>Soldadura del zócalo de 18 pines</h3>
+<p>
+  El zócalo de 18 pines se utiliza para colocar el driver ULN2803, 
+  ya que no es recomendable soldar este último de forma directa a la placa debido 
+  a que se puede quemar por el calor aplicado y además, en caso de que se necesite 
+  reemplazar a futuro, pueda realizarse sin tener que desoldarlo de la tarjeta.
+</p> 
+<p>
+  Antes de soldarlo hay que ubicarlo de forma correcta. Hay que tener presente 
+  que tiene una <b>orientación específica</b> 
+  con la muesca que tiene en uno de sus extremos orientada hacia la izquierda, 
+  tal como se muestra en la Figura 15a teniendo cuidado de acomodarlo de forma 
+  correcta para que asiente de forma plana sobre la tarjeta y la resistencia 
+  R3 de 18 KΩ no le estorbe y quede debajo y oculta.
+</p>
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_zocalo_1.png"
+        alt="cpu_zocalo_1.png" style="width:100%">
+      <figcaption>
+        Figura 15a: Ubicación del zócalo de 18 pines con la muesca hacia 
+        la izquierda.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_zocalo_3.png"
+        alt="cpu_zocalo_3" style="width:100%">
+      <figcaption>
+        Figura 15b: Posición correcta del zócalo colocado de forma plana
+        sobre la tarjeta.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<p>
+  Para soldarlo, se puede comenzar con las dos primeras terminales como
+  se puede ver en la Figura 16 y antes de soldar las terminales restantes, 
+  verificar que no quede levantado.
+</p>
+
+<figure style="text-align: center">
+  <p style="text-align: center"> 
+    <img src="/assets/Escornabot/CPU/cpu_zocalo_2.png"
+    alt="cpu_zocalo_2.png" width="50%"/>
+  </p>
+  <figcaption>
+    Figura 16: Soldadura de las dos primeras terminales del zócalo.
+  </figcaption>
+</figure>
