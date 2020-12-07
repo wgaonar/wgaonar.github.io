@@ -632,7 +632,7 @@ La función de cada uno de estos pines de conexión se puede ver en la Tabla 3:
       <img src="/assets/Escornabot/Botonera/botonera_ensambleLed_3.png"
         alt="botonera_ensambleLed_3.jpg" style="width:100%">
       <figcaption>
-        Figura 9a: Prueba del Led 3 de color amarillo conectado al pin L3.
+        Figura 9b: Prueba del Led 3 de color amarillo conectado al pin L3.
       </figcaption>
     </figure>
   </div>
@@ -700,6 +700,20 @@ simplificado y las ecuaciones del funcionamiento del circuito divisor de voltaje
 </figure>
 
 <h2>Ensamble de la tarjeta de control</h2>
+La tarjeta de control utilizada es la
+<a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/EscornaCPU/1.x/1.20">EscornaCPU V1.2 diseñada por XDeSIG</a>
+que se puede ver en la Figura 11:
+
+<figure style="text-align: center">
+  <p style="text-align: center"> 
+    <img src="/assets/Escornabot/CPU/cpu_inicial.jpg"
+    alt="cpu_inicial.jpg" width="90%"/>
+  </p>
+  <figcaption>
+    Figura 11: Tarjeta de control EscornaCPU_V1.2
+  </figcaption>
+</figure>
+
 <h3>Componentes</h3>
 Los componentes requeridos y su correspondiente función se enlistan en la Tabla 4:
 <table>
@@ -757,21 +771,20 @@ Los componentes requeridos y su correspondiente función se enlistan en la Tabla
     <td rowspan="3">Resistencia 10 KΩ</td>
     <td style="text-align:center">R1</td>
     <td> 
-      <span style="color:red;"> Es opcional: </span>
       Está presente en la tarjeta de control en caso de que se utilice una botonera 
       diferente a la E_KeyPad V2.2 que no cuente con esta resistencia y que no se 
       utilice la resistencia interna de PULL_UP del Arduino Nano. 
       <p>
-        En el firmware del robot se tendría que definir la palabra clave: 
-        KEYBOARD_WIRES con el valor de 3. Por precaución, esta resistencia se
-        puede soldar.
+        <span style="color:red;"> Por precaución </span>
+        esta resistencia se puede soldar y en el firmware del robot se tendría 
+        que definir la palabra clave: KEYBOARD_WIRES con el valor de 3.
       </p>
     </td>
   </tr>
   <tr>
     <td style="text-align:center">R4,R5</td>
     <td>
-      La primera resistencia del divisor de voltaje que reduce el voltaje de 5.0V 
+      Es una de las dos resistencias del divisor de voltaje que reduce el voltaje de 5.0V 
       a 3.3V que va desde el pin 1 del Arduino hacia el pin de transmisión 
       del adaptador Bluetooth, en caso de que se desea conectar y utilizar.
     </td>
@@ -783,4 +796,112 @@ Los componentes requeridos y su correspondiente función se enlistan en la Tabla
       conectar el Escornabot a una red WiFi a través de un módulo un ESP-01.
     </td>
   </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Resistencia de 18KΩ o de 20KΩ</td>
+    <td style="text-align:center">R3</td>
+    <td><span style="color:red;">Son Opcionales: </span> 
+      La segunda resistencia del divisor de voltaje que reduce el voltaje de 
+      5.0V a 3.3V que va desde el pin 1 del Arduino hacia el pin de transmisión 
+      del adaptador Bluetooth, en caso de que se desee conectar y utilizar.
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center;" rowspan="2">8</td>
+    <td rowspan="2">Pines o Headers macho</td>
+    <td style="text-align:center">A0, A1, A2, A3, A7, GND</td>
+    <td> 6 Pines de conexión con la tarjeta de la botonera. </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">BUZZ ON</td>
+    <td>
+      2 Pines que permitirán activar / desactivar de forma manual el 
+      buzzer del Escornabot a través de la colocación de un puente o 
+      Jumper para pines rectos.
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Tira de 15 pines hembra</td>
+    <td style="text-align:center">D12 / D13</td>
+    <td>Base soldada sobre la cual se colocará el Arduino Nano</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Tira de 4 pines hembra</td>
+    <td style="text-align:center">BlueT</td>
+    <td><span style="color:red;">Opcional: </span>
+      En caso de que se desee colocar un adaptador Bluetooth para 
+      conectar el Escornabot con una aplicación para teléfono móvil.
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Interruptor de alimentación SK12F14 o SK12D07</td>
+    <td style="text-align:center">S7</td>
+    <td>Interruptor general que enciende o apaga el Escornabot.</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Buzzer pasivo CFG12 para Arduino</td>
+    <td style="text-align:center">Z1</td>
+    <td>Emitir un sonido frente a cada movimiento o instrucción 
+      ejecutada por el Escornabot.
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Fusible Rearmable XF050</td>
+    <td style="text-align:center">F1</td>
+    <td>Interruptor de seguridad que se abre frente al paso de una 
+      cantidad de corriente que podría quemar el Arduino Nano u 
+      otro componente de la tarjeta de control.
+      <p></p><b>Nota:</b>En caso de no contar con este componente, se puede soldar un trozo 
+        de alambre de cobre</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td>Diodo Schottky 1N5817</td>
+    <td style="text-align:center">D1</td>
+    <td>
+      Diodo utilizado para la protección del circuito frente a 
+      polaridad invertida.
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center">2</td>
+    <td>Condensador cerámico 104 de 100nF</td>
+    <td style="text-align:center">C1,C3</td>
+    <td>
+      Eliminación de ruido eléctrico en la señal de alimentación de la 
+      tarjeta y en el driver ULN2803.
+    </td>
+  </tr>
 </table>
+
+<h3>Soldadura de las resistencias</h3>
+Soldar las resistencias de forma similar a la Botonera. Teniendo cuidado de no 
+confundir los valores. Las Figuras 12a y 12b muestran el soldado de cada una de 
+las resistencias:
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_resistencias_1.jpg"
+        alt="botonera_ensambleLed_1.jpg" style="width:100%">
+      <figcaption>
+        Figura 12a: Soldadura de R1 y R2 de 10KΩ.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_resistencias_2.jpg"
+        alt="botonera_ensambleLed_3.jpg" style="width:100%">
+      <figcaption>
+        Figura 12b: Soldadura de R3 de 18KΩ.
+      </figcaption>
+    </figure>
+  </div>
+</div>
