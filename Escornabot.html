@@ -8,8 +8,8 @@ permalink: /Escornabot/
 /* Three image containers (use 25% for four, and 50% for two, etc) */
 .column {
   float: left;
-  width: 48%;
-  padding: 1%;
+  width: 46%;
+  padding: 2%;
 }
 
 /* Clear floats after image containers */
@@ -21,6 +21,10 @@ permalink: /Escornabot/
 
 img {
   border-radius: 5%;
+}
+
+h1 {
+  text-align: center;
 }
 
 h2 {
@@ -242,6 +246,22 @@ utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que i
 </table>
 
 <h2>Ensamble de la botonera</h2>
+<p>  
+  La botonera utilizada es la
+  <a href="https://www.pcbway.com/project/shareproject/E_KEYPAD_2_2.html">Tarjeta E-KeyPad V2.2</a>
+  que se puede ver en la Figura 4:
+</p>
+
+<figure style="text-align: center">
+  <p style="text-align: center"> 
+    <img src="/assets/Escornabot/Botonera/botonera_inicial.jpg"
+    alt="botonera_inicial.jpg" width="80%"/>
+  </p>
+  <figcaption>
+    Figura 4: Botonera E-KeyPad V2.2
+  </figcaption>
+</figure>
+
 <h3>Componentes</h3>
 Los componentes requeridos y su correspondiente función se enlistan en la Tabla 2:
 
@@ -1011,10 +1031,12 @@ tarjeta tal como se muestra en la Figura 13.</p>
   verificar que no quede levantado.
 </p>
 
-<figure style="text-align: center">
+<figure style="text-align: justify; width:50%; 
+              margin-left: auto; 
+              margin-right: auto;">
   <p style="text-align: center"> 
     <img src="/assets/Escornabot/CPU/cpu_zocalo_2.png"
-    alt="cpu_zocalo_2.png" width="50%"/>
+    alt="cpu_zocalo_2.png" width="100%"/>
   </p>
   <figcaption>
     Figura 16: Soldadura de las dos primeras terminales del zócalo.
@@ -1115,3 +1137,256 @@ tarjeta tal como se muestra en la Figura 13.</p>
     </figure>
   </div>
 </div>
+
+<h2>Ensamble del Escornabot</h2>
+Las partes impresas y los tornillos necesarios para ensamblar el Escornabot
+se muestran en la Figura 21:
+
+<figure style="text-align: center">
+  <p style="text-align: center"> 
+    <img src="/assets/Escornabot/Ensamble/lista_de_partes.jpg"
+    alt="lista_de_partes" width="90%"/>
+  </p>
+  <figcaption>
+    Figura 21: Partes impresas y tornillos para ensamblar el robot.
+  </figcaption>
+</figure>
+
+<p>
+  La secuencia de ensamble es la siguiente:
+</p>
+
+<h3>Paso 1</h3>
+Partes requeridas para iniciar el ensamble:
+<ul>
+  <li><span style="color: green;">Pieza impresa en 3D:</span> Motor-Bracket</li>
+  <li><span style="color: green;">Pieza impresa en 3D:</span> Battery-Bracket</li>
+  <li>1 Tornillo M3 x 12mm</li>
+</ul>
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso1a.jpg"
+        alt="paso1a" style="width:100%">
+      <figcaption>
+        Paso 1a: Colocar el Motor-Bracket y el Battery-Bracket 
+        como se muestra en la imagen y sujertarlos con un tornillo M3 x 12mm.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso1b.jpg"
+        alt="paso1b" style="width:100%">
+      <figcaption>
+        Paso 1b:  Terminar de atornillar y verificar la sujeción.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<h3>Paso 2</h3>
+Partes requeridas para ensamble del cuerpo:
+<ul>
+  <li>Ensamble del paso 1</li>
+  <li><span style="color: green;">Pieza impresa en 3D:</span> E-KeypadV2.2-Bracket</li>
+  <li><span style="color: green;">Pieza impresa en 3D:</span> EscornaCPU_V1.2-Bracket</li>
+  <li>2 Tornillos M3 x 6mm</li>
+  <li>1 Tornillo M3 x 12mm</li>
+</ul>
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso2a.jpg"
+        alt="paso2a" style="width:100%">
+      <figcaption>
+        Paso 2a: Colocar el E-KeypadV2.2-Bracket encima del ensamble anterior 
+        sujertarlos con un tornillo M3 x 6mm en la parte de posterior.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso2b.jpg"
+        alt="paso2b" style="width:100%">
+      <figcaption>
+        Paso 2b:  Colocar el EscornaCPU_V1.2-Bracket encima del ensamble anterior 
+        sujertarlos con un tornillo M3 x 12mm en la parte frontal.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso2c.jpg"
+        alt="paso2c" style="width:100%">
+      <figcaption>
+        Paso 2c: Terminar de atornillar el tornillo M3 x 12mm de la parte 
+        frontal y verificar la sujeción.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso2d.jpg"
+        alt="paso2d" style="width:100%">
+      <figcaption>
+        Paso 2d:  Terminar de atornillar el tornillo M3 x 6mm de la parte 
+        posterior y verificar la sujeción.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<figure style="text-align: justify; width:50%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <p style="text-align: center"> 
+    <img src="/assets/Escornabot/Ensamble/paso2e.jpg"
+    alt="paso2e.jpg" width="100%"/>
+  </p>
+  <figcaption>
+    Paso 2e: <span style="color: red;">Girar</span> el ensamble para colocar y
+    atornillar un tornillo M3 x 6mm en la parte inferior.
+  </figcaption>
+</figure>
+
+<h3>Paso 3</h3>
+Partes requeridas para ensamble de los motores:
+<ul>
+  <li>Ensamble del paso 2</li>
+  <li>Motores paso a paso 28BYJ-48</li>
+  <li>4 Tornillos M3 x 6mm</li>
+</ul>
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso3a.jpg"
+        alt="paso3a" style="width:100%">
+      <figcaption>
+        Paso 3a: Colocar uno de los motores en el lado derecho del 
+        robot con la orientación mostrada y con los cables apuntando 
+        hacia adelante. Sujetárlo con 2 tornillos M3 x 6mm.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso3b.jpg"
+        alt="paso3b" style="width:100%">
+      <figcaption>
+        Paso 3b:  Igual que el lado derecho, colocar y sujetar el motor
+        del lado izquierdo con 2 tornillo M3 x 6mm.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<h3>Paso 4</h3>
+Preparación de las ruedas:
+<ul>
+  <li><span style="color: green;">Pieza impresa en 3D:</span> Wheel-Right</li>
+  <li><span style="color: green;">Pieza impresa en 3D:</span> Wheel-Left</li>
+  <li>2 Tornillos M3 x 6mm</li>
+  <li>2 Tuercas M3</li>
+</ul>
+
+<div class="row">
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso4a.jpg"
+        alt="paso4a" style="width:100%">
+      <figcaption>
+        Paso 4a: Colocar una de las tuercas M3 en la ranura.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/Ensamble/paso4b.jpg"
+        alt="paso4b" style="width:100%">
+      <figcaption>
+        Paso 4b:  Con ayuda de unas pinzas insertar la tuerca hasta el fondo
+        de la ranura.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<figure style="text-align: justify; width:50%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Escornabot/Ensamble/paso4c.jpg"
+    alt="paso4c.jpg" width="100%"/>
+  <figcaption>
+    Paso 4c: Colocar uno de los tornillos M3 x 6mm y verificar que pueda 
+    atornillarse a la tuerca insertada en el paso anterior.
+  </figcaption>
+</figure>
+
+<h3>Paso 5</h3>
+Ensamble de las ruedas al cuerpo:
+<ul>
+  <li>Ensamble del paso 3</li>
+  <li>Wheel-Right con la tuerca M3 y el tornillo M3 x 6mm colocados</li>
+  <li>Wheel-Left con la tuerca M3 y el tornillo M3 x 6mm colocados</li>
+</ul>
+
+<div class="row">
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/Ensamble/paso5a.jpg"
+        alt="paso5a" style="width:100%">
+      <figcaption>
+        Paso 5a: Tomar la rueda de la derecha (Wheel-Right) e insertarla
+        en el eje del motor del lado derecho del cuerpo del robot. 
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/Ensamble/paso5b.jpg"
+        alt="paso5b" style="width:100%">
+      <figcaption>
+        Paso 5b:  Verificar que esté insertada completamente hasta el 
+        fondo y asegurar el tornillo para sujetar la rueda al eje del motor.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<figure style="text-align: justify; width:50%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <img src="/assets/Escornabot/Ensamble/paso5c.jpg"
+    alt="paso5e.jpg" width="100%"/>
+  <figcaption>
+    Paso 5c: Repetir el procedimiento para el lado izquierdo del robot.
+  </figcaption>
+</figure>
+
+<h3>Paso 6</h3>
+Ensamble del soporte de la rueda loca:
+<ul>
+  <li>Ensamble del paso 5</li>
+  <li><span style="color: green;">Pieza impresa en 3D:</span> Ball-Caster</li>
+  <li>2 Tornillos M3 x 6mm </li>
+</ul>
+<figure style="text-align: justify; width:50%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <img src="/assets/Escornabot/Ensamble/paso6.jpg"
+    alt="paso6.jpg" width="100%"/>
+  <figcaption>
+    Paso 6: Sujetar el soporte de la rueda loca con los 2 tornillos 
+    M3 x 6mm al Battery-Bracket
+  </figcaption>
+</figure>
+
+
+
