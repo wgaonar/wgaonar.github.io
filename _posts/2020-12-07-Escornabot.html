@@ -2,7 +2,7 @@
 layout: post
 title: "Robot Educativo Escornabot"
 date:   2020-12-07 08:00:00 -0600
-categories: jekyll update
+categories: robots
 ---
 
 <style>
@@ -21,6 +21,10 @@ categories: jekyll update
 }
 
 img {
+  border-radius: 5%;
+}
+
+video {
   border-radius: 5%;
 }
 
@@ -1157,8 +1161,8 @@ se muestran en la Figura 21:
   La secuencia de ensamble es la siguiente:
 </p>
 
-<h3>Paso 1</h3>
-Partes requeridas para iniciar el ensamble:
+<h3>Paso 1: Inicio del ensamble</h3>
+Partes requeridas:
 <ul>
   <li><span style="color: green;">Pieza impresa en 3D:</span> Motor-Bracket</li>
   <li><span style="color: green;">Pieza impresa en 3D:</span> Battery-Bracket</li>
@@ -1187,8 +1191,8 @@ Partes requeridas para iniciar el ensamble:
   </div>
 </div>
 
-<h3>Paso 2</h3>
-Partes requeridas para ensamble del cuerpo:
+<h3>Paso 2: Ensamble del cuerpo</h3>
+Partes requeridas:
 <ul>
   <li>Ensamble del paso 1</li>
   <li><span style="color: green;">Pieza impresa en 3D:</span> E-KeypadV2.2-Bracket</li>
@@ -1256,8 +1260,8 @@ Partes requeridas para ensamble del cuerpo:
   </figcaption>
 </figure>
 
-<h3>Paso 3</h3>
-Partes requeridas para ensamble de los motores:
+<h3>Paso 3: Ensamble de los motores</h3>
+Partes requeridas:
 <ul>
   <li>Ensamble del paso 2</li>
   <li>Motores paso a paso 28BYJ-48</li>
@@ -1288,8 +1292,8 @@ Partes requeridas para ensamble de los motores:
   </div>
 </div>
 
-<h3>Paso 4</h3>
-Preparación de las ruedas:
+<h3>Paso 4: Preparación de las ruedas</h3>
+Componentes necesarios:
 <ul>
   <li><span style="color: green;">Pieza impresa en 3D:</span> Wheel-Right</li>
   <li><span style="color: green;">Pieza impresa en 3D:</span> Wheel-Left</li>
@@ -1330,8 +1334,8 @@ Preparación de las ruedas:
   </figcaption>
 </figure>
 
-<h3>Paso 5</h3>
-Ensamble de las ruedas al cuerpo:
+<h3>Paso 5: Ensamble de las ruedas al cuerpo</h3>
+Componentes necesarios:
 <ul>
   <li>Ensamble del paso 3</li>
   <li>Wheel-Right con la tuerca M3 y el tornillo M3 x 6mm colocados</li>
@@ -1371,8 +1375,8 @@ Ensamble de las ruedas al cuerpo:
   </figcaption>
 </figure>
 
-<h3>Paso 6</h3>
-Ensamble del soporte de la rueda loca:
+<h3>Paso 6: soporte de la rueda de pivote</h3>
+Ensamble del :
 <ul>
   <li>Ensamble del paso 5</li>
   <li><span style="color: green;">Pieza impresa en 3D:</span> Ball-Caster</li>
@@ -1412,6 +1416,112 @@ Ensamble del soporte de la rueda loca:
     Paso 6c: Vista en 360º del ensamble del cuerpo del robot.
   </figcaption>
 </figure>
+
+<h3>Paso 7: Conexión de la botonera y la tarjeta de control</h3>
+
+<div class="row">
+  <div class="column">
+    <figure style="text-align: left;">
+      <img src="/assets/Escornabot/Ensamble/paso7a.jpg"
+        alt="paso7a" style="width:100%">
+      <figcaption>
+        Paso 7a: Ensamble realizado anteriormente, botonera y tarjeta 
+        de control.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure style="text-align: left;">
+      <img src="/assets/Escornabot/Ensamble/paso7b.jpg"
+        alt="paso7b" style="width:100%">
+      <figcaption>
+        Paso 7b: Conectar con 6 cables tipo Jumper los pines de 
+        conexión de la botonera. <span style="color: red;">Atención: </span>
+        Para este modelo <span style="color: red;"><b>no</b></span> conectar el pin 
+        con la etiqueta 5V.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<p>
+  Antes de seguir, se debe tener presente la conexión de los 
+  cables con la tarjeta de control, para ello, la Tabla 5: detalla esa 
+  correspondencia:
+</p>
+
+<table style="width: 40%; margin-left: auto; margin-right: auto;">
+  <colgroup>
+     <col span="1" style="width: 10%;">
+     <col span="1" style="width: 10%;">
+  </colgroup>
+  <caption>
+    Tabla 5: Correspondencia de los cables entre la botonera y la 
+    tarjeta de control
+  </caption>
+  <tr>
+    <th style="text-align:center">PIN BOTONERA</th>
+    <th style="text-align:center">PIN TARJETA DE CONTROL</th>
+  </tr>
+  <tr>
+    <td style="text-align:center">L4</td>
+    <td style="text-align:center">A0</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">L3</td>
+    <td style="text-align:center">A1</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">L2</td>
+    <td style="text-align:center">A2</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">L1</td>
+    <td style="text-align:center">A3</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">5V</td>
+    <td style="text-align:center">No conectado</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">Sig</td>
+    <td style="text-align:center">A7</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">GND</td>
+    <td style="text-align:center">GND</td>
+  </tr>
+</table>
+
+<p>
+  Proceder a conectar los cables en la tarjeta de control como se muestra en la
+  imagen del Paso 7c fijándose muy bien en el orden de los cables, tal como se especificó 
+  en la Tabla 5. El resultado debe ser como se muestra en la imagen del Paso 7d.
+</p>
+
+<div class="row">
+  <div class="column">
+    <figure style="text-align: left;">
+      <img src="/assets/Escornabot/Ensamble/paso7c.jpg"
+        alt="paso7c" style="width:100%">
+      <figcaption>
+        Paso 7c: Conectar el otro extremo de los 6 cables tipo Jumper a la 
+        tarjeta de control. Fijándose en el orden de las conexiones. Como guía,
+        el cable con la etiqueta L4 procedente de la botonera debe
+        corresponder con la etiqueta A0 en la tarjeta de control.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure style="text-align: left;">
+      <img src="/assets/Escornabot/Ensamble/paso7d.jpg"
+        alt="paso7d" style="width:100%">
+      <figcaption>
+        Paso 7d: Cables conectados desde la botonera hasta la tarjeta de control.
+      </figcaption>
+    </figure>
+  </div>
+</div>
 
 
 
