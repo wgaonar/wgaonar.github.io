@@ -91,16 +91,23 @@ p {
     Figura 2: Modelo 3D del Escornabot Brivoi Compactus
   </figcaption>
 </figure>
+<p>
+  Esta versión utiliza las dos siguientes tarjetas de circuitos impresos (PCB) 
+  desarrolladas por <a href="https://github.com/xdesig">XDeSIG</a> y cuya documentación
+  se encuentra aquí:
+</p>
 
-Esta versión utiliza dos tarjetas de circuitos impresos (PCB):
 <ul>
-  <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/E_KEYPAD/E_KEYPAD_2.20">E-KeyPad V2.2 diseñada por XDeSIG</a></li>
-  <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/EscornaCPU/1.x/1.20">EscornaCPU V1.2 diseñada por XDeSIG</a></li>
+  <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/E_KEYPAD/E_KEYPAD_2.20">E-KeyPad V2.2</a></li>
+  <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/EscornaCPU/1.x/1.20">EscornaCPU V1.2</a></li>
 </ul>
 
 <h3>Partes Impresas en 3D</h3>
-El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se muestran en la 
-Figura 3:
+<p>
+  El cuerpo del Escornabot está compuesto por 7 partes impresas en 3D que se muestran en la 
+  Figura 3 y que se pueden descargar en formato STL a partir de los vínculos de la siguiente lista
+  donde se describen.
+</p>
 
 <figure style="text-align: center">
   <p style="text-align: center"> 
@@ -113,20 +120,30 @@ Figura 3:
 </figure>
 
 <ol>
-  <li><b>Motor-Bracket:</b> Parte central del robot a la que se fijan los motores y algunas de las 
+  <li><a href="https://github.com/wgaonar/Escornabot-Brivoi_Compactus/blob/801b0207904528a2303c471870367c1062eae421/STL/Motor-Bracket.stl">
+  Motor-Bracket: </a> Parte central del robot a la que se fijan los motores y algunas de las 
       otras piezas impresas en 3D.</li>
-  <li><b>EscornaCPU_V1.2-Bracket:</b> Parte a la que se fija la tarjeta de control.</li>
-  <li><b>E-KeypadV2.2-Bracket:</b> Parte a la que se fija la tarjeta de la botonera.</li>
-  <li><b>Battery-Bracket:</b> Parte en donde van alojadas las 4 baterías AA que alimentan el Escornabot.</li>
-  <li><b>Wheel-Right:</b> Rueda derecha del Escornabot.</li>
-  <li><b>Wheel-Left:</b> Rueda izquierda del Escornabot.</li>
-  <li><b>Ball-Caster:</b> Parte que aloja la esfera que sirve de pivote para que el Escornabot 
+  <li><a href="https://github.com/wgaonar/Escornabot-Brivoi_Compactus/blob/801b0207904528a2303c471870367c1062eae421/STL/EscornaCPU_1.2-Bracket.stl">
+    EscornaCPU_V1.2-Bracket:</a> Parte a la que se fija la tarjeta de control.</li>
+  <li><a href="https://github.com/wgaonar/Escornabot-Brivoi_Compactus/blob/801b0207904528a2303c471870367c1062eae421/STL/E-Keypad_2.2-Bracket.stl">E-KeypadV2.2-Bracket:</a> Parte a la que se fija la tarjeta de la botonera.</li>
+  <li><a href="https://github.com/wgaonar/Escornabot-Brivoi_Compactus/blob/801b0207904528a2303c471870367c1062eae421/STL/Battery-Bracket.stl">
+    Battery-Bracket:</a> 
+    Parte en donde van alojadas las 4 baterías AA que alimentan el Escornabot.</li>
+  <li><a href="https://github.com/wgaonar/Escornabot-Brivoi_Compactus/blob/801b0207904528a2303c471870367c1062eae421/STL/Wheel-Right.stl">
+    Wheel-Right:</a> Rueda derecha del Escornabot.</li>
+  <li><a href="https://github.com/wgaonar/Escornabot-Brivoi_Compactus/blob/801b0207904528a2303c471870367c1062eae421/STL/Wheel-Left.stl">
+    Wheel-Left:</a> Rueda izquierda del Escornabot.</li>
+  <li><a href="https://github.com/wgaonar/Escornabot-Brivoi_Compactus/blob/801b0207904528a2303c471870367c1062eae421/STL/Ball-Caster.stl">
+    Ball-Caster:</a> Parte que aloja la esfera que sirve de pivote para que el Escornabot 
       pueda desplazarse y girar.</li>
 </ol>
 
-<h3>Lista de Componentes Electrónicos</h3>
-La Tabla 1 detalla la cantidad y descripción de todos lo componentes electrónicos 
-utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que irán colocados. 
+<h3>Lista de componentes</h3>
+<p>
+  La Tabla 1 detalla la cantidad y descripción de todos lo componentes electrónicos y mecánicos
+  utilizados para el Escornabot y también la botonera y la tarjeta de control, en las que irán 
+  colocados. 
+</p>
 
 <table>
     <colgroup>
@@ -242,14 +259,26 @@ utilizados para el Escornabot y también la tarjeta, Botonera o CPU, en la que i
     <td style="text-align:center">1</td>
     <td>Portapilas cuadrado para 4 pilas AA</td>
   </tr>
-    <tr>
+  <tr>
     <td style="text-align:center">1</td>
-    <td><a href="https://www.pcbway.com/project/shareproject/W50475ASN23_Escorna_CPU_1_20.html">Tarjeta de control EscornaCPU V1.2</a></td>
-  </tr> 
+    <td>Canica de 17 mm</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">3</td>
+    <td>Tornillo Allen con cabeza de botón o cilíndrica M3 x 12mm</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">12</td>
+    <td>Tornillo Allen con cabeza de botón o cilíndrica M3 x 6mm</td>
+  </tr>
   <tr>
     <td style="text-align:center">1</td>
     <td><a href="https://www.pcbway.com/project/shareproject/E_KEYPAD_2_2.html">Tarjeta E-KeyPad V2.2</a></td>
   </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td><a href="https://www.pcbway.com/project/shareproject/W50475ASN23_Escorna_CPU_1_20.html">Tarjeta de control EscornaCPU V1.2</a></td>
+  </tr> 
 </table>
 
 <h2>Ensamble de la botonera</h2>
