@@ -1232,6 +1232,168 @@ tarjeta tal como se muestra en la Figura 13.</p>
   </div>
 </div>
 
+<h3>
+  Soldadura del interruptor de encendido
+</h3>
+<p>
+  La tarjeta de control tiene dos juegos de 5 agueros
+  para el interruptor de alimentación tal como se puede ver en la Figura 21a. 
+  La diferencia es el tamaño, siendo uno más grande que el otro. 
+  Ambos están interconectados, así que no importa cual juego se elija, 
+  esto depende del tamaño del interruptor disponible.
+</p>
+
+<p>
+  Colocar el interruptor Sk12D07 o similar en la tarjeta de control 
+  insertandolo en cualquiera de los dos juegos de agujeros, tal como
+  se aprecia en la ubicación mostrada en la Figura 21b. Es importante
+  mencionar que no importa la orientación, ya que conmuta entre 
+  dos posiciones (ON/OFF).
+</p>
+
+<div class="row">
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/CPU/cpu_inicial_interruptor.jpg"
+        alt="cpu_inicial_interruptor.jpg" style="width:100%">
+      <figcaption>
+        Figura 21a: Se señalan los dos juegos de agujeros disponibles
+        para soldar el interruptor de alimentación. Se puede utilizar
+        cualquiera de los dos, el escoger entre uno u otro
+        depende del tamaño del interrruptor disponible. 
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/CPU/cpu_SwitchSK12F14_b.jpg"
+        alt="cpu_SwitchSK12F14_b.jpg" style="width:100%">
+      <figcaption>
+        Figura 21b: Interruptor de alimentación listo para soldar en la 
+        tarjeta de control.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<h3>
+  Soldadura del fusible rearmable
+</h3>
+<p>
+  El fusible rearmable XF050 protege la tarjeta de control de una
+  sobrecarga de corriente. Para soldarlo simplemente hay que colocarlo
+  en los agujeros identificados con la etiqueta F1 y soldarlo sin 
+  importar la orientación. 
+</p>
+
+<p>
+  Sin embargo, si no es posible conseguirlo, 
+  como ha sido mi caso, se puede soldar un trozo de alambre en lo que
+  está disponible. Para ello ubicar el trozo de alambre como se muestra
+  en la Figura 22a y soldarlo con poca soldadura, para poder retirlo
+  después, como se aprecia en la Figura 22b.
+</p>
+
+<div class="row">
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/CPU/cpu_Fusible_a.jpg"
+        alt="cpu_Fusible_a.jpg" style="width:100%">
+      <figcaption>
+        Figura 22a: Trozo de alambre en lugar del Fusible XF050, mientras
+        es factible de conseguirse. 
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_Fusible_b.jpg"
+        alt="cpu_Fusible_b.jpg" style="width:100%">
+      <figcaption>
+        Figura 22b: Trozo de alambre soldado ligeramente por la parte 
+        superior de la tarjeta de control para posteriormente ser retirado
+        y reemplazarlo por el fusible rearmable XF050.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<h3>
+  Colocación del driver UNL2803 
+</h3>
+<p>
+  El driver UNL2803 junto a la tarjeta de control mostrados en la Figura 23a,
+  se debe insertar en el zócalo teniendo cuidado de orientarlo de forma 
+  correcta y de no doblar las patitas al hacerlo. 
+</p>
+
+<p>
+  La orientación se puede 
+  ver en la Figura 23b con la muesca apuntando hacia abajo, en la misma 
+  dirección en la que está el Arduino Nano. 
+</p>
+
+<p>
+  Al colocarlo acomodar las patitas
+  para que encajen en el zócalo acomodándolas ligeramente sí es necesario, 
+  teniendo cuidado de no doblarlas, tal como se aprecia en la Figura 23c. 
+</p>
+
+<p>  
+  En seguida, empujarlo hasta que asiente en el fondo del zócalo y revisar que 
+  ninguna patita se haya doblado, hasta que quede como se muestra en la Figura
+  23d. 
+</p>
+
+<div class="row">
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/CPU/cpu_UNL2803_a.jpg"
+        alt="cpu_UNL2803_a.jpg" style="width:100%">
+      <figcaption>
+        Figura 23a: Tarjeta de control y el driver UNL2803 de control 
+        de los motores paso a paso 28BYJ-48. 
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/CPU/cpu_UNL2803_b.jpg"
+        alt="cpu_UNL2803_b.jpg" style="width:100%">
+      <figcaption>
+        Figura 23b: Orientación del driver posicionado con 
+        la muesca hacia abajo. 
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<div class="row">
+  <div class="column">
+    <figure style="text-align: justify;">
+      <img src="/assets/Escornabot/CPU/cpu_UNL2803_c.jpg"
+        alt="cpu_UNL2803_c.jpg" style="width:100%">
+      <figcaption>
+        Figura 23c: Driver colocado en posición 
+        <span style="color: red;">antes</span> de ser insertado
+        en su zócalo, cuidando de que las patitas queden alineadas
+        y sin doblarse. 
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure>
+      <img src="/assets/Escornabot/CPU/cpu_UNL2803_d.jpg"
+        alt="cpu_UNL2803_d.jpg" style="width:100%">
+      <figcaption>
+        Figura 23d: Driver ya insertado cuidando de que no se doblen
+        las patitas de conexión.
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+
 <h2>Ensamble del Escornabot</h2>
 Las partes impresas y los tornillos necesarios para ensamblar el Escornabot
 se muestran en la Figura 21:
