@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Beaglebone and C++"
+title: "Turning a Led On with the BeagleBone"
 date:   2020-12-22 08:00:00 -0600
 categories: BeagleBone
 ---
@@ -62,35 +62,41 @@ code {
 }
 </style>
 
-<figure style="text-align: center; width:70%; 
-              margin-left: auto; 
-              margin-right: auto;">
-    <img src="/assets/Post09/Cover.png"
-    alt="Cover.jpeg" width="100%"/>
-  <figcaption>
-  </figcaption>
-</figure>
-
 <h1>Introduction</h1>
 
 <p>
-  This post will be the starting point about how to program the BeagleBone in C++.
-  Here, I show the code of a library to access and control the general purpose 
-  digital pins (GPIO) pins of the BeagleBone.
+  This post I will show you how to turn a led On and Off using the C++ library to 
+  access and control the general purpose digital pins (GPIO) pins of the BeagleBone.
 </p>
 
+<h1>Circuit and components</h1>
+
 <p>
-  So the time before, I searched for a C++ library but, I did not find one. I have read
-  the book:  <a href="http://exploringbeaglebone.com/">"Exploring BeagleBone"</a> 
-  by Derek Molloy and I can say that this is an excellent source of information for 
-  doing great things with the Beagles. It contains a C++ library to control the pins 
-  but it was so complex for my prior C++ level of knowledge. Then I decided to learn 
-  more about this programming language and adapt or make my own C++ Library based on 
-  the work by Professor Molloy. This post is the beginning of others, I hope.
+  The circuit can be seen in the Figure 1. Please keep in mind that the BeagleBone
+  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
+  as Arduino. It is so muy important to avoid damage the board. The components are:
+  <ul>
+    <li>1 3mm Led of color red</li>
+    <li>1 KΩ Resistor</li>
+    <li>Jumpers male-male< to make the connections/li>
+  </ul>
 </p>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post11/Circuit.png"
+    alt="Cicruit.jpeg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to turn a Led On
+  </figcaption>
+</figure>
 
 <h1>Coding</h1>
 <h2>Color text in the terminal</h2>
+
+
+<h2>Listing_1.1: ledOn.cpp</h2>
 <p>
   First of all, I ever liked to see the world in colors, and the programming does not
   have to be the exception. For this reason I coded a file with an overloaded function
@@ -98,155 +104,32 @@ code {
   to colorize text in the terminal. The header and the code file are shown here:
 </p>
 
-<h3>RainbowColors.h</h3>
 {% highlight cpp%}
-#ifndef RAINBOWCOLORS_H
-#define RAINBOWCOLORS_H
-#include <string>
-#include <map>
-
-/*
-General format to color the text in the terminal:
--> "\033[{format_attibute};{foreground_color};{background_color}m {TEXT} \033[{reset_format_attribute} m" 
-*/
-
-std::string rainbowText  (std::string, std::string);
-std::string rainbowText  (std::string, std::string, std::string);
-std::string rainbowText  (std::string, std::string, std::string, std::string);
-#endif  // RAINBOWCOLORS_H
-{% endhighlight %}
-
-<h3>RainbowColors.cpp</h3>
-{% highlight cpp%}
-#include <string>
-#include <map>
-#include "RainbowColors.h"
-
-std::map <std::string, std::string> mapForegroundColor= 
-{
-  { "Red", "38;5;160" },
-  { "Orange", "38;5;202" },
-  { "Yellow", "38;5;11" },
-  { "Green", "38;5;76" },
-  { "Blue", "38;5;20" },
-  { "Indigo", "38;5;18" },
-  { "Violet", "38;5;128" },
-  { "Pink", "38;5;161" },
-  { "Black", "38;5;0" },
-  { "Gray", "38;5;246" },
-  { "White", "38;5;15" },
-  { "Default", "39" }
-};
-
-std::map <std::string, std::string> mapBackgroundColor = 
-{
-  { "Red", "48;5;160" },
-  { "Orange", "48;5;202" },
-  { "Yellow", "48;5;11" },
-  { "Green", "48;5;76" },
-  { "Blue", "48;5;20" },
-  { "Indigo", "48;5;18" },
-  { "Violet", "48;5;128" },
-  { "Pink", "48;5;161" },
-  { "Black", "48;5;0" },
-  { "Gray", "48;5;246" },
-  { "White", "48;5;15" },
-  { "Default", "49" }
-};
-
-std::map <std::string, std::string> mapSetFormat =
-{
-  { "Default", "0" },
-  { "Bold", "1" },
-  { "Underlined", "4" },
-  { "Blink", "5" },
-  { "Reverse", "7" },
-  { "Hidden", "8" }
-};
-
-std::string rainbowText ( std::string src,
-                          std::string foregroundColor = "Default"
-                        )
-{
-  auto pairFound = mapForegroundColor.find(foregroundColor);
-  if (pairFound != mapForegroundColor.end())
-    foregroundColor = pairFound->first;
-  else
-    foregroundColor = "Default";
-  std::string backgroundColor = "Default";
-  std::string format = "Default";
-  std::string const escCode = "\033";
-  std::string formattedText = escCode  + "[" +
-              mapSetFormat.at(format) + ";" +
-              mapForegroundColor.at(foregroundColor) + ";" +
-              mapBackgroundColor.at(backgroundColor) + "m" +
-              src + escCode + "[0m";
-  return formattedText;
-}
-
-std::string rainbowText ( std::string src,
-                          std::string foregroundColor = "Default",
-                          std::string backgroundColor = "Default"
-                        )
-{
-  auto pairFound = mapForegroundColor.find(foregroundColor);
-  if (pairFound != mapForegroundColor.end())
-      foregroundColor = pairFound->first;
-  else
-      foregroundColor = "Default";
-
-  pairFound = mapBackgroundColor.find(backgroundColor);
-  if (pairFound != mapBackgroundColor.end())
-      backgroundColor = pairFound->first;
-  else
-      backgroundColor = "Default";
+#include <iostream>
+  #include "GPIO.h"
+  
+  using namespace std;
+  
+  int main()
+  {
+      string message = "Main program starting here...";
+      cout << rainbowText(message,"Blue", "Bold") << endl;
       
-  std::string format = "Default";
-
-  std::string const escCode = "\033";
+      GPIO ledPin(P8_12, OUTPUT);
   
-  std::string formattedText = escCode  + "[" +
-                mapSetFormat.at(format) + ";" +
-                mapForegroundColor.at(foregroundColor) + ";" +
-                mapBackgroundColor.at(backgroundColor) + "m" +
-                src + escCode + "[0m";
-  return formattedText;
-}
-
-std::string rainbowText (  std::string src,
-                          std::string foregroundColor = "Default",
-                          std::string backgroundColor = "Default",
-                          std::string format = "Default"
-                        )
-{
-  auto pairFound = mapForegroundColor.find(foregroundColor);
-  if (pairFound != mapForegroundColor.end())
-      foregroundColor = pairFound->first;
-  else
-      foregroundColor = "Default";
-
-  pairFound = mapBackgroundColor.find(backgroundColor);
-  if (pairFound != mapBackgroundColor.end())
-      backgroundColor = pairFound->first;
-  else
-      backgroundColor = "Default";
-
-  pairFound = mapSetFormat.find(format);
-  if (pairFound != mapSetFormat.end())
-      format = pairFound->first;
-  else
-      format = "Default";
-
-  std::string const escCode = "\033";
+      for (int i = 0; i < 10; i++)   
+      {
+          cout << "Blinking " << i+1 << " times out of " << 10 <<  endl;
+          ledPin.digitalWrite(HIGH);
+          ledPin.delayms(1000);
+          ledPin.digitalWrite(LOW);
+          ledPin.delayms(1000);
+      }
   
-  std::string formattedText = escCode  + "[" +
-                mapSetFormat.at(format) + ";" +
-                mapForegroundColor.at(foregroundColor) + ";" +
-                mapBackgroundColor.at(backgroundColor) + "m" +
-                src + escCode + "[0m";
-  return formattedText;
-}
-  
+      message = "Main program finishes here...";
+      cout << rainbowText(message,"Blue", "Bold") << endl;
+      return 0;
+  }
 {% endhighlight %}
 
 <h2>Write and Read to and from the digital pins</h2>
