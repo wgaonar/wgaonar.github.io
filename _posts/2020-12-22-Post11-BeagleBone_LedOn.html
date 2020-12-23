@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Turning a Led On with the BeagleBone"
-date:   2020-12-22 08:00:00 -0600
+date:   2020-12-22 10:00:00 -0600
 categories: BeagleBone
 ---
 
@@ -38,13 +38,13 @@ h1 {
 h2 {
   font-weight: bold;
   text-align: left;
-  font-size: 30px;
+  font-size: 25px;
 }
 
 h3 {
   font-weight: bold;
   text-align: left;
-  font-size: 25px;
+  font-size: 20px;
 }
 
 p {
@@ -62,10 +62,21 @@ code {
 }
 </style>
 
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post11/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
 <h1>Introduction</h1>
 
 <p>
-  This post I will show you how to turn a led On and Off using the C++ library to 
+  This post I will show you how to turn a led On and Off using the C++ library 
+  described in the post 
+  <a href="{% post_url 2020-12-22-Post10-BeagleBone_CPP %}"> Beaglebone and C++</a> to 
   access and control the general purpose digital pins (GPIO) pins of the BeagleBone.
 </p>
 
@@ -76,9 +87,9 @@ code {
   works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
   as Arduino. It is so muy important to avoid damage the board. The components are:
   <ul>
-    <li>1 3mm Led of color red</li>
-    <li>1 KΩ Resistor</li>
-    <li>Jumpers male-male< to make the connections/li>
+    <li>1 Red Led of 3mm</li>
+    <li>1 Resistor of 1 KΩ</li>
+    <li>Jumpers male-male to make the connections</li>
   </ul>
 </p>
 
@@ -93,322 +104,87 @@ code {
 </figure>
 
 <h1>Coding</h1>
-<h2>Color text in the terminal</h2>
 
-
-<h2>Listing_1.1: ledOn.cpp</h2>
 <p>
-  First of all, I ever liked to see the world in colors, and the programming does not
-  have to be the exception. For this reason I coded a file with an overloaded function
-  called: <span style="color:firebrick;font-weight: bold;">RainbowText()</span> 
-  to colorize text in the terminal. The header and the code file are shown here:
+  I coded some lines and have used functions available in the header file the GPIO.h 
+  showed in a last post. The functions are:
+  <ul>
+    <li><span style="color:firebrick;font-weight: bold;">digitalWrite()</span></li>
+    <li><span style="color:firebrick;font-weight: bold;">digitalRead()</span></li>
+    <li><span style="color:firebrick;font-weight: bold;">delayms()</span></li>
+  </ul>  
 </p>
-
+<p>  
+  In the first part of the code is defined the pin to be used as an output, 
+  in this case the P8_12: 
+</p>
 {% highlight cpp%}
-#include <iostream>
-  #include "GPIO.h"
-  
-  using namespace std;
-  
-  int main()
+GPIO ledPin(P8_12, OUTPUT);
+{% endhighlight %}
+
+<p>
+  In the second part of the code, a for loop is used to turn on and off the 
+  Led 10 times with an interval of 1000 ms between each on and off cycles.  
+</p>
+{% highlight cpp%}
+  for (int i = 0; i < 10; i++)   
   {
-      string message = "Main program starting here...";
-      cout << rainbowText(message,"Blue", "Bold") << endl;
-      
-      GPIO ledPin(P8_12, OUTPUT);
-  
-      for (int i = 0; i < 10; i++)   
-      {
-          cout << "Blinking " << i+1 << " times out of " << 10 <<  endl;
-          ledPin.digitalWrite(HIGH);
-          ledPin.delayms(1000);
-          ledPin.digitalWrite(LOW);
-          ledPin.delayms(1000);
-      }
-  
-      message = "Main program finishes here...";
-      cout << rainbowText(message,"Blue", "Bold") << endl;
-      return 0;
+    cout << "Blinking " << i+1 << " times out of " << 10 <<  endl;
+    ledPin.digitalWrite(HIGH);
+    ledPin.delayms(1000);
+    ledPin.digitalWrite(LOW);
+    ledPin.delayms(1000);
   }
 {% endhighlight %}
 
-<h2>Write and Read to and from the digital pins</h2>
-<p>
-  The next step is access to the digital pins to read and write. It can be done by 
-  reading and writing files in "/sys/class/gpio" path in the BeagleBone to set the 
-  mode and then read and write the digital pin's state.
-</p>
-
-<p>
-  I wrote some functions to set up the pin's state:
-  <ul>
-    <li>writeFile()</li>
-    <li>readFile()</li>
-    <li>exportGPIO()</li>
-    <li>unexportGPIO()</li>
-    <li>setMode()</li>
-  </ul>
-  Besides, I wrote other functions read and write the pin's state:
-  <ul>
-    <li>readFile()</li>
-    <li>writeFile()</li>
-    <li>delayms()</li>
-  </ul>
-</p>
-
-These functions are coded in the GPIO.h and GPIO.cpp files shown next:
-
-<h3>GPIO.h</h3>
+<h2>The complete code is show here:</h2>
 {% highlight cpp%}
-#ifndef GPIO_H
-#define GPIO_H
-#include <string>
-#include "RainbowColors.h"
-using namespace std;
-const string GPIO_PATH("/sys/class/gpio/");
-
-/* The gpio number of the pin*/
-enum ID {
-   P8_12 = 44,
-};
-
-/* The mode e.g. 0/1 for OUTPUT/INPUT */
-enum MODE {
-   OUTPUT = 0,
-   INPUT = 1,
-};
-
-/* The value e.g. 0/1 for LOW/HIGH */
-enum VALUE {
-   LOW = 0,
-   HIGH = 1,
-};
-
-/* The value e.g. 0/1 for LOW/HIGH */
-enum EDGE {
-   RISING,
-   FALLING,
-   BOTH,
-};
-
-class GPIO  {
-private:
-   int id;        /* The GPIO number of the object*/
-   int mode;      /* The GPIO mode e.g. 0/1 for OUTPUT/INPUT */
-   int value;     /* The GPIO value e.g. 0/1 for LOW/HIGH */
-   string name;   /* The name of the GPIO e.g. gpio44 */
-   string path;   /* The full path to the GPIO e.g. /sys/class/gpio/gpio44 */
-
-   // Helper methods
-   virtual int writeFile(string, string, string);
-   virtual string readFile(string, string);
-   virtual int exportGPIO();
-   virtual int unexportGPIO();
-   virtual int setMode(int);
-   
-public:
-    // Overload constructor
-    GPIO (int, int);
-    // Interface methods to set the GPIO pin state
-    virtual int digitalWrite(int);
-    // Interface methods to get the GPIO pin state
-    virtual int digitalRead();
-    // Delay method in milliseconds
-    virtual void delayms(int);
-    // Destructor
-    virtual ~GPIO ();
-};
-#endif // GPIO_H
-{% endhighlight %}
-
-<h2>GPIO.cpp</h2>
-
-{% highlight cpp %}
+/* Listing_1.1: ledOn.cpp */
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <chrono> // chrono::milliseconds()
-#include <thread> // this_thread::sleep_for()
-#include <exception>
-#include <mutex>
-
 #include "GPIO.h"
-#include "RainbowColors.h"
-    
 using namespace std;
-
-class CustomException : public exception 
+int main()
 {
-private:
-   string reason;
-public:
-   CustomException (const char* why) : reason (why) {};
-   virtual const char* what() const noexcept 
-   {
-      return reason.c_str();
-   }
-};
-    
-// Constructor
-GPIO::GPIO (int id, int mode) 
-{
-  this->id = id;
-  this->mode = mode;
-  this->name = "gpio" + to_string(id);
-  this->path = GPIO_PATH + name + "/";
-  cout  << rainbowText("Trying to set up the GPIO pin: ","Gray") 
-        << rainbowText(to_string(id), "Gray", "Default", "Bold") << endl;
-  unexportGPIO();
-  exportGPIO();
-  setMode(mode);
-  cout << rainbowText("Setting the GPIO pin was a success!", "Green") << endl;
-}
-    
-// Destructor
-GPIO::~GPIO() 
-{
-  if (this->mode == OUTPUT)
-    this->digitalWrite(LOW);
-  delayms(10);
-  this->unexportGPIO();
-  cout  << rainbowText("Destroying the GPIO_PIN with path: ","Gray")
-        << rainbowText(path, "Gray", "Default", "Bold") << endl;
-}
-
-/*
-    Private method that writes a string value to a file in the path provided
-    @param String path: The system path of the file to be modified
-    @param String feature: The name of file to be written
-    @param string value: The value to be written to in the file
-    @return int: 0 written has succeeded
-*/
-int GPIO::writeFile(string path, string feature, string value) 
-{
-  string fileName = path + feature;
-  ofstream file(fileName, ios_base::out);
-  if (!file.is_open()) 
+  string message = "Main program starting here...";
+  cout << rainbowText(message,"Blue", "Bold") << endl;
+  GPIO ledPin(P8_12, OUTPUT);
+  for (int i = 0; i < 10; i++)   
   {
-    perror(("Error while opening file: " + fileName).c_str());
-    throw CustomException("Error in 'writeFile' method");
-  } 
-  file << value;
-  file.close();
-  delayms(10); 
-  return 0;
-}
-
-/*
-  Private method that read a file in the path provided
-  @param String path: The sysfs path of the file to be modified
-  @param String feature: The file to be written to in that path
-  @param string value: The value to be written to in the file
-  @return int: 0 written has succeeded / -1 written has failed 
-*/
-string GPIO::readFile(string path, string feature) 
-{
-  string fileName;
-  fileName = path + feature;
-  ifstream file(fileName, ios_base::in);
-  if (!file.is_open()) 
-  {
-    perror(("Error while opening file: " + fileName).c_str());
-    throw CustomException("Error in 'readFile' method");
+    cout << "Blinking " << i+1 << " times out of " << 10 <<  endl;
+    ledPin.digitalWrite(HIGH);
+    ledPin.delayms(1000);
+    ledPin.digitalWrite(LOW);
+    ledPin.delayms(1000);
   }
-  string value;
-  getline(file,value);
-  if (file.bad())
-    perror(("Error while reading file: " + fileName).c_str());
-  file.close();
-  return value;
-}
-
-/*
-    Private method to export the GPIO pin
-    @return int: 0 export has succeeded / -1 export has failed 
-*/
-int GPIO::exportGPIO()
-{
-  if (writeFile(GPIO_PATH, "export", to_string(id)) != 0)
-    throw CustomException("Error to export the pin");
+  message = "Main program finishes here...";
+  cout << rainbowText(message,"Blue", "Bold") << endl;
   return 0;
-}
-
-/*
-  Private method to unexport the GPIO pin
-  @return int: 0 unexport has succeeded / -1 unexport has failed 
-*/
-int GPIO::unexportGPIO() 
-{
-  if (writeFile(GPIO_PATH, "unexport", to_string(id)) != 0) 
-    throw CustomException("Error to unexport the pin");
-  return 0;
-}
-
-/*
-  Private method that set the pin Mode
-  @param int: The desired mode 0/1 for OUTPUT/INPUT
-  @return int: 0 set Mode has succeeded / -1 set Mode has failed 
-*/
-int GPIO::setMode(int mode) 
-{
-  switch (mode) 
-  {
-    case OUTPUT:
-      if (writeFile(path, "direction", "out") != 0) 
-        throw "Error to set the pin direction as OUTPUT";
-      else
-        cout << rainbowText("Set the pin direction as DIGITAL OUTPUT", "Orange") << endl;
-      break;
-    case INPUT:
-      if (writeFile(path, "direction", "in") != 0) 
-        throw "Error to set the pin direction as INPUT";
-      else
-        cout << rainbowText("Set the pin direction as DIGITAL INPUT", "Yellow") << endl;
-      break;   
-  }
-  return 0;
-}
-  
-void GPIO::delayms(int millisecondsToSleep) 
-{
-    this_thread::sleep_for(chrono::milliseconds(millisecondsToSleep));
-}
-
-/*
-    Public method to set/clear the pin value
-    @param int: The desired value 1 for HIGH and 0 for low
-    @return int: 0 set value has succeeded / -1 set value has failed 
-*/
-int GPIO::digitalWrite(int newValue) 
-{
-  switch (newValue) 
-  {
-    case HIGH:
-      //cout << "Setting the pin value as: " << "HIGH" << endl;
-      if (writeFile(this->path, "value", "1") == 0)
-          return 0;
-      break;
-    case LOW:
-      //cout << "Setting the pin value as: " << "LOW" << endl;
-      if (writeFile(this->path, "value", "0") == 0)
-          return 0;
-      break;
-  }   
-  return -1;
-}
-  
-/*
-  Public method to get the pin value
-  @return GPIO::VALUE: The value of the pin LOW/HIGH
-*/
-int GPIO::digitalRead() 
-{
-  string value = readFile(path, "value");
-  if (value == "0")
-    return LOW;
-  else
-    return HIGH;
 }
 {% endhighlight %}
+
+<h2>Execution of the program</h2>
+
+<div class="row">
+  <div class="column">
+    <figure">
+      <video width="100%" controls poster="/assets/Post11/VideoConsoleCover.jpeg">
+        <source src="/assets/Post11/VideoConsole.mp4" type="video/mp4">
+      </video>
+      <figcaption>
+        Video: Console output of the program.
+      </figcaption>
+    </figure>
+  </div>
+  <div class="column">
+    <figure style="text-align: justify;">
+      <video width="100%" controls poster="/assets/Post11/VideoCircuitCover.jpeg">
+        <source src="/assets/Post11/VideoCircuit.mp4" type="video/mp4">
+      </video>
+      <figcaption>
+        Video: Program for turning On and Off a Led each 1000 milliseconds.
+      </figcaption>
+    </figure>
+  </div>
+</div>
 
 Se you in the next post.
