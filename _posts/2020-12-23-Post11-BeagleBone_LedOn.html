@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Turning a Led On with the BeagleBone"
-date:   2020-12-22 10:00:00 -0600
+date:   2020-12-23 08:00:00 -0600
 categories: BeagleBone
 ---
 
@@ -138,7 +138,7 @@ GPIO ledPin(P8_12, OUTPUT);
   }
 {% endhighlight %}
 
-<h2>The complete code is shown here:</h2>
+<h2 style="font-size: 25px;">The complete code is shown here:</h2>
 {% highlight cpp%}
 /* Listing_1.1: ledOn.cpp */
 #include <iostream>
@@ -163,29 +163,27 @@ int main()
 }
 {% endhighlight %}
 
-<h2>Execution of the program</h2>
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post11/VideoConsoleCover.jpeg">
+    <source src="/assets/Post11/VideoConsole.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Console output of the program.
+  </figcaption>
+</figure>
 
-<div class="row">
-  <div class="column">
-    <figure">
-      <video width="100%" controls poster="/assets/Post11/VideoConsoleCover.jpeg">
-        <source src="/assets/Post11/VideoConsole.mp4" type="video/mp4">
-      </video>
-      <figcaption>
-        Video: Console output of the program.
-      </figcaption>
-    </figure>
-  </div>
-  <div class="column">
-    <figure style="text-align: justify;">
-      <video width="100%" controls poster="/assets/Post11/VideoCircuitCover.jpeg">
-        <source src="/assets/Post11/VideoCircuit.mp4" type="video/mp4">
-      </video>
-      <figcaption>
-        Video: Program for turning On and Off a Led each 1000 milliseconds.
-      </figcaption>
-    </figure>
-  </div>
-</div>
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post11/VideoCircuitCover.jpeg">
+    <source src="/assets/Post11/VideoCircuit.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Turning On and Off a Led each 1000 milliseconds.
+  </figcaption>
+</figure>
 
 Se you in the next post.
