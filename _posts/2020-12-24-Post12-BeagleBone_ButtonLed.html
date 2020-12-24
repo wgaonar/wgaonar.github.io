@@ -1,0 +1,222 @@
+---
+layout: post
+title: "Reading a button with the BeagleBone"
+date:   2020-12-23 08:00:00 -0600
+categories: BeagleBone
+---
+
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 5%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post12/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I will show you how to read the input from a button and turn a led On 
+  each time it will be pressed. I will be using the C++ library described 
+  in the post 
+  <a href="{% post_url 2020-12-22-Post10-BeagleBone_CPP %}"> Beaglebone and C++</a> to 
+  access and control the general purpose digital pins (GPIO) pins of the BeagleBone.
+</p>
+
+<h1>Circuit and components</h1>
+
+<p>
+  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
+  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
+  as Arduino. It is so muy important to avoid damage to the board, specially
+  when your are working with buttons or digital inputs in general. 
+</p>
+
+The components are:
+<ul>
+  <li>1 Red Led of 3mm</li>
+  <li>1 Resistor of 1KΩ</li>
+  <li>1 Resistor of 10KΩ</li>
+  <li>1 Push button of 12mm</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post12/Circuit.png"
+    alt="Circuit.jpeg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to turn a Led On when a button is pressed
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+
+<p>
+  I coded some lines and have used functions available in the header file the GPIO.h 
+  The functions are:
+  <ul>
+    <li><span style="color:firebrick;font-weight: bold;">digitalWrite()</span></li>
+    <li><span style="color:firebrick;font-weight: bold;">digitalRead()</span></li>
+    <li><span style="color:firebrick;font-weight: bold;">delayms()</span></li>
+  </ul>  
+</p>
+<p>  
+  The first part of the code defines the pins to be used as input from a button
+  and output for the Led, P8_08 and P8_12, respectively: 
+</p>
+{% highlight cpp%}
+GPIO buttonPin(P8_08, INPUT);
+GPIO ledPin(P8_12, OUTPUT);
+{% endhighlight %}
+
+<p>
+  In the second part of the code, a counter is used to record each time the button
+  is pressed to a maximum of 10 times. In this case, the while loop finishes and then 
+  the main program.  
+</p>
+
+<p>
+  Inside this while loop, there are another two while loops. The first waits until the 
+  button is pressed, immediately the Led is turned On and the counter is incremented. After that, 
+  the second loop waits until the button is released to turn the Led Off.  
+</p>
+
+{% highlight cpp%}
+int count = 0;
+while (count < 10)
+{
+  while (buttonPin.digitalRead() == LOW);
+  count++;
+  cout << "The button was pressed, turning the led ON " 
+       << rainbowText(to_string(count), "Red") << " times" << endl;
+  ledPin.digitalWrite(HIGH);
+  while (buttonPin.digitalRead() == HIGH)
+    ledPin.delayms(10);
+  cout << "The button was released, turning the led OFF" << endl << endl;
+  ledPin.digitalWrite(LOW);
+  ledPin.delayms(10);
+}
+{% endhighlight %}
+
+
+<h2 style="font-size: 25px;">Complete code</h2>
+<p>
+  The code is shown in the next listing:
+</p>
+
+<h3 style="font-size: 20px;">Listing_1.2 ButtonLed.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+#include "GPIO.h"
+using namespace std;
+int main()
+{
+  string message = "Main program starting here...";
+  cout << rainbowText(message,"Blue", "White", "Bold") << endl;
+  GPIO buttonPin(P8_08, INPUT);
+  GPIO ledPin(P8_12, OUTPUT);
+  int count = 0;
+  while (count < 10)
+  {
+    while (buttonPin.digitalRead() == LOW);
+    count++;
+    cout << "The button was pressed, turning the led ON " 
+         << rainbowText(to_string(count), "Red") << " times" << endl;
+    ledPin.digitalWrite(HIGH);
+    while (buttonPin.digitalRead() == HIGH)
+      ledPin.delayms(10);
+    cout << "The button was released, turning the led OFF" << endl << endl;
+    ledPin.digitalWrite(LOW);
+    ledPin.delayms(10);
+  }
+  message = "Main program finishes here...";
+  cout << rainbowText(message,"Blue", "Bold") << endl;
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post11/VideoConsoleCover.jpeg">
+    <source src="/assets/Post11/VideoConsole.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Console output of the program.
+  </figcaption>
+</figure>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post11/VideoCircuitCover.jpeg">
+    <source src="/assets/Post11/VideoCircuit.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Turning a Led On each time a button is pressed until it happens 10 times.
+  </figcaption>
+</figure>
+
+Se you in the next post.
