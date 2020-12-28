@@ -167,7 +167,7 @@ while (this->stopThread == false)
 </p>
 
 {% highlight cpp%}
-stopThread = newStopThread;
+stopBlinkFlag = newStopBlinkFlag;
 {% endhighlight %}
 
 <p>
@@ -212,19 +212,19 @@ while (userInput != 'y')
 #include "GPIO.h"
 class LED: public GPIO 
 {
-    private:
-        bool stopThread = false;
-        std::thread blinkThread;
-        void makeBlink(int); 
-    public:
-        // Overload constructor
-        LED (int, int);
-        // Method for doing a blinking pattern
-        void blink(int);
-        // Method for stoping a blinking
-        void stopBlink(bool);
-        // Destructor
-        virtual ~LED();
+  private:
+    bool stopBlinkFlag = false;
+    std::thread blinkThread;
+    void makeBlink(int); 
+  public:
+    // Overload constructor
+    LED (int, int);
+    // Method for doing a blinking pattern
+    void blink(int);
+    // Method for stoping a blinking
+    void stopBlink(bool);
+    // Destructor
+    virtual ~LED();
 };
 #endif // LED_H
 {% endhighlight %}
@@ -250,7 +250,7 @@ void LED::blink(int duration)
 }
 void LED::makeBlink(int duration)
 {
-    while (this->stopThread == false)
+    while (this->stopBlinkFlag == false)
     {
         digitalWrite(HIGH);
         delayms(duration);
@@ -258,9 +258,9 @@ void LED::makeBlink(int duration)
         delayms(duration);
     }
 }
-void LED::stopBlink (bool newStopThread)
+void LED::stopBlink (bool newStopBlinkFlag)
 {
-    stopThread = newStopThread;
+    stopBlinkFlag = newStopBlinkFlag;
 }
 LED::~LED()
 {
