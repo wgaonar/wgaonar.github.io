@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Blinking a pair of Leds with the BeagleBone"
-date:   2020-12-28 06:00:00 -0600
+title: "Flashing a pair of Leds with the BeagleBone"
+date:   2020-12-29 08:00:00 -0600
 categories: BeagleBone
 ---
 
@@ -65,7 +65,7 @@ code {
 <figure style="text-align: center; width:70%; 
               margin-left: auto; 
               margin-right: auto;">
-    <img src="/assets/Post13/Cover.png"
+    <img src="/assets/Post14/Cover.png"
     alt="Cover.png" width="100%"/>
   <figcaption>
   </figcaption>
@@ -74,7 +74,8 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I will show you how to make a blinkg on a pair of Leds. 
+  In this post, I will show you how to make a flashing on a pair of Leds, i.e., turn
+  on and off a Led but with different duration between the state on and state off.  
   I will be using the C++ library described in the post 
   <a href="{% post_url 2020-12-22-Post10-BeagleBone_CPP %}"> Beaglebone and C++</a> to 
   access and control the general purpose digital pins (GPIO) pins of the BeagleBone.
@@ -91,9 +92,9 @@ code {
 
 The components are:
 <ul>
-  <li>1 Red Led of 3mm</li>
+  <li>1 Blue Led of 3mm</li>
   <li>1 Resistor of 1KΩ</li>
-  <li>1 Yellow Led of 3mm</li>
+  <li>1 White Led of 3mm</li>
   <li>1 Resistor of 1KΩ</li>
   <li>Jumpers male-male to make the connections</li>
 </ul>
@@ -102,38 +103,40 @@ The components are:
 <figure style="text-align: center; width:70%; 
               margin-left: auto; 
               margin-right: auto;">
-    <img src="/assets/Post13/Circuit_bb.jpg"
+    <img src="/assets/Post14/Circuit_bb.jpg"
     alt="Circuit_bb.jpg" width="100%"/>
   <figcaption>
-    Figure 1: Circuit to make a blinking on a pair of Leds.
+    Figure 1: Circuit to make a flashing on a pair of Leds.
   </figcaption>
 </figure>
 
 <h1>Coding</h1>
 
 <p>
-  I coded a new class called <b>LED</b> who is derived from GPIO class and adds some new
-  methods for blink a led. 
+  I added the corresponding methods to do the flashing to the class called <b>LED</b> 
+  and introduced in the post 
+  <a href="{% post_url 2020-12-28-Post13-BeagleBone_Blinking %}"> Blinking a pair of Leds with the 
+  BeagleBone</a> who is derived from GPIO class mencioned earlier in the Introduction. 
   The methods are:
   <ul>
     <li>Public methods: </li>
     <ul>
-      <li><span style="color:firebrick;font-weight: bold;">blink()</span></li>
-      <li><span style="color:firebrick;font-weight: bold;">stopBlink()</span></li>
+      <li><span style="color:firebrick;font-weight: bold;">flash()</span></li>
+      <li><span style="color:firebrick;font-weight: bold;">stopFlash()</span></li>
     </ul>
     <li>Private methods</li>
     <ul>
-      <li><span style="color:firebrick;font-weight: bold;">makeBlink()</span></li>
+      <li><span style="color:firebrick;font-weight: bold;">makeFlash()</span></li>
     </ul>
   </ul>  
 </p>
 <p>  
-  The blink() method receives the duration of blinking from the main program. While the makeBlink()
-  method contains the routine to do the blinking. The most important contribution is about the way
-  that blinking is performed. It uses a <b>thread</b> called by the makeBlink() method as a function
-  pointer to construct the thread of the blink pattern. The advantage is that one o more blinking 
-  patterns can be done at the <span style="color: red;font-weight: bold;">same time in a 
-  parallel way</span>.
+  The flash() method receives the duration for turning on and the duration for turning off
+  the Led from the main program. While the makeFlash()
+  method contains the routine to do the flashing. The most important contribution is about the way
+  that flashing is performed. It uses a <b>thread</b> called by the makeFlash() method as a function
+  pointer to construct the thread of the flashing pattern. The advantage is that one o more 
+  flashing patterns can be done at the <span style="color: red;font-weight: bold;">same time in a parallel way</span>.
 </p>
 
 <p>
