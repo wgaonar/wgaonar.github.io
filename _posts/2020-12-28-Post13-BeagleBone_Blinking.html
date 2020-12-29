@@ -153,10 +153,10 @@ blinkThread = std::thread(&LED::makeBlink, this, duration);
 {% highlight cpp%}
 while (this->stopThread == false)
 {
-    digitalWrite(HIGH);
-    delayms(duration);
-    digitalWrite(LOW);
-    delayms(duration);
+  digitalWrite(HIGH);
+  delayms(duration);
+  digitalWrite(LOW);
+  delayms(duration);
 }
 {% endhighlight %}
 
@@ -173,11 +173,12 @@ stopBlinkFlag = newStopBlinkFlag;
 <p>
   Finally, in the destructor of the LED class, the blinking thread is waited to join
   once the variable stopBlink has been set to true from the main program and the 
-  destructor of the base class: GPIO is called to unset the pin assigned to the Led. 
+  destructor of the base class GPIO is called to unset the pin assigned to the Led. 
 </p>
 
 {% highlight cpp%}
-blinkThread.join();
+if (blinkThread.joinable())
+  blinkThread.join();
 {% endhighlight %}
 
 <p>  
@@ -189,13 +190,13 @@ blinkThread.join();
 char userInput = '\0';
 while (userInput != 'y')
 {
-    message = "Do you want to stop blinking? Enter 'y' for yes: ";
-    cout << rainbowText(message, "Violet");
-    cin >> userInput;
-    if (userInput == 'y') {
-        ledPinRed.stopBlink(true);
-        ledPinYellow.stopBlink(true);
-    }
+  message = "Do you want to stop blinking? Enter 'y' for yes: ";
+  cout << rainbowText(message, "Violet");
+  cin >> userInput;
+  if (userInput == 'y') {
+    ledPinRed.stopBlink(true);
+    ledPinYellow.stopBlink(true);
+  }
 }
 {% endhighlight %}
 

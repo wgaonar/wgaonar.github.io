@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Flashing a pair of Leds with the BeagleBone"
-date:   2020-12-29 08:00:00 -0600
+date:   2020-12-29 05:00:00 -0600
 categories: BeagleBone
 ---
 
@@ -164,23 +164,24 @@ while (this->stopThread == false)
 {% endhighlight %}
 
 <p>
-  To stop the blinking pattern the user can access the public method stopBlink() and set
-  the boolean variable stopBlink to true. The next line shows how the method reads and 
+  To stop the flashing pattern the user can access the public method stopFlash() and set
+  the boolean variable stopFlash to true. The next line shows how the method reads and 
   assigns the new value to this variable.
 </p>
 
 {% highlight cpp%}
-stopBlinkFlag = newStopBlinkFlag;
+stopFlashFlag = newStopFlashFlag;
 {% endhighlight %}
 
 <p>
-  Finally, in the destructor of the LED class, the blinking thread is waited to join
-  once the variable stopBlink has been set to true from the main program and the 
-  destructor of the base class: GPIO is called to unset the pin assigned to the Led. 
+  Finally, in the destructor of the LED class, the flashing thread is waited to join
+  once the variable stopFlash has been set to true from the main program and the 
+  destructor of the base class GPIO is called to unset the pin assigned to the Led. 
 </p>
 
 {% highlight cpp%}
-blinkThread.join();
+if (flashThread.joinable())
+  flashThread.join();
 {% endhighlight %}
 
 <p>  
@@ -192,13 +193,13 @@ blinkThread.join();
 char userInput = '\0';
 while (userInput != 'y')
 {
-    message = "Do you want to stop blinking? Enter 'y' for yes: ";
-    cout << rainbowText(message, "Violet");
-    cin >> userInput;
-    if (userInput == 'y') {
-        ledPinRed.stopBlink(true);
-        ledPinYellow.stopBlink(true);
-    }
+  message = "Do you want to stop flashing? Enter 'y' for yes: ";
+  cout << rainbowText(message, "Violet");
+  cin >> userInput;
+  if (userInput == 'y') {
+    ledPinBlue.stopFlash(true);
+    ledPinWhite.stopFlash(true);
+  }
 }
 {% endhighlight %}
 
@@ -217,15 +218,28 @@ class LED: public GPIO
 {
   private:
     bool stopBlinkFlag = false;
+    bool stopFlashFlag = false;
     std::thread blinkThread;
+    std::thread flashThread;
     void makeBlink(int); 
+    void makeFlash(int, int);
+    
   public:
     // Overload constructor
     LED (int, int);
+
     // Method for doing a blinking pattern
     void blink(int);
+
+    // Method for doing a flashing pattern
+    void flash(int, int);
+
     // Method for stoping a blinking
     void stopBlink(bool);
+
+    // Method for stoping a flashing
+    void stopFlash(bool);
+
     // Destructor
     virtual ~LED();
 };
@@ -238,40 +252,102 @@ class LED: public GPIO
 #include <chrono>
 #include <thread>
 #include "LED.h"
-#include "RainbowColors.h"
+#include "../../Sources/RainbowColors.h"
+
 // Overload constructor
 LED::LED(int newId, int newMode) : GPIO(newId, newMode) {}
+
+/*
+  Public method to make a blink on the pin 
+  @param int: The desired duration in milliseconds
+*/
 void LED::blink(int duration)
 {
-    string message 
-    {
-        "Blinking has been activated with duration of: "
-        + to_string(duration) + "ms on pin: " + to_string(id)
-    };
-    std::cout << rainbowText(message, "Pink", "Dafault", "Bold") << endl; 
-    blinkThread = std::thread(&LED::makeBlink, this, duration);
+  string message 
+  {
+    "Blinking has been activated with duration of: "
+    + to_string(duration) + "ms on pin: " + to_string(id)
+  };
+  std::cout << rainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+  blinkThread = std::thread(&LED::makeBlink, this, duration);
 }
+
+/*
+  Private method that contains the routine to blink 
+  @param int: The desired duration in milliseconds
+*/
 void LED::makeBlink(int duration)
 {
-    while (this->stopBlinkFlag == false)
-    {
-        digitalWrite(HIGH);
-        delayms(duration);
-        digitalWrite(LOW);
-        delayms(duration);
-    }
+  while (this->stopBlinkFlag == false)
+  {
+    digitalWrite(HIGH);
+    delayms(duration);
+    digitalWrite(LOW);
+    delayms(duration);
+  }
 }
+
+/*
+  Public method to stop the blinking on the pin 
+  @param bool: Flag to stop the thread
+*/
 void LED::stopBlink (bool newStopBlinkFlag)
 {
-    stopBlinkFlag = newStopBlinkFlag;
+  stopBlinkFlag = newStopBlinkFlag;
 }
+
+/*
+    Public method to make a flash on the pin 
+    @param int: The desired time ON in milliseconds
+    @param int: The desired time OFF in milliseconds
+*/
+void LED::flash(int timeOn, int timeOff)
+{
+  string message 
+  {
+    "Flashing has been activated time on: "
+    + to_string(timeOn) + "ms and time off: " 
+    + to_string(timeOff) + "ms on pin: " + to_string(id)
+  };
+  std::cout << rainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+  flashThread = std::thread(&LED::makeFlash, this, timeOn, timeOff);
+}
+
+/*
+  Private method that contains the routine to flash
+  @param int: The desired time ON in milliseconds
+  @param int: The desired time OFF in milliseconds
+*/
+void LED::makeFlash(int timeOn, int timeOff)
+{
+  while (this->stopFlashFlag == false)
+  {
+    digitalWrite(HIGH);
+    delayms(timeOn);
+    digitalWrite(LOW);
+    delayms(timeOff);
+  }
+}
+
+/*
+  Public method to stop the blinking on the pin 
+  @param bool: Flag to stop the thread
+*/
+void LED::stopFlash (bool newStopFlashFlag)
+{
+  stopFlashFlag = newStopFlashFlag;
+}
+
 LED::~LED()
 {
+  if (blinkThread.joinable())
     blinkThread.join();
+  if (flashThread.joinable())
+    flashThread.join();
 }
 {% endhighlight %}
 
-<h3 style="font-size: 20px;">Listing2.1.cpp</h3>
+<h3 style="font-size: 20px;">Listing2.2.cpp</h3>
 {% highlight cpp%}
 #include <iostream>
 #include "GPIO.h"
@@ -283,25 +359,30 @@ int main()
 {
   string message = "Main program starting here...";
   cout << rainbowText(message,"Blue", "White", "Bold") << endl;
-  LED ledPinRed(P8_12,OUTPUT);
-  LED ledPinYellow(P8_14, OUTPUT);
-  message = "Start a blinking on a red led";
-  cout << rainbowText(message, "Red") << endl;
-  ledPinRed.blink(1000);
-  message = "Start a blinking on a yellow led";
-  cout << rainbowText(message, "Yellow") << endl;
-  ledPinYellow.blink(100);
+  
+  LED ledPinBlue(P8_18,OUTPUT);
+  LED ledPinWhite(P8_26, OUTPUT);
+
+  message = "Start a flashing on a blue led";
+  cout << rainbowText(message, "Blue") << endl;
+  ledPinBlue.flash(50,500);
+
+  message = "Start a flashing on a white led";
+  cout << rainbowText(message, "White") << endl;
+  ledPinWhite.flash(100, 1000);
+
   char userInput = '\0';
   while (userInput != 'y')
   {
-      message = "Do you want to stop blinking? Enter 'y' for yes: ";
-      cout << rainbowText(message, "Violet");
-      cin >> userInput;
-      if (userInput == 'y') {
-          ledPinRed.stopBlink(true);
-          ledPinYellow.stopBlink(true);
-      }
+    message = "Do you want to stop flashing? Enter 'y' for yes: ";
+    cout << rainbowText(message, "Violet");
+    cin >> userInput;
+    if (userInput == 'y') {
+        ledPinBlue.stopFlash(true);
+        ledPinWhite.stopFlash(true);
+    }
   }
+    
   message = "Main program finishes here...";
   cout << rainbowText(message,"Blue", "White","Bold") << endl;
   return 0;
