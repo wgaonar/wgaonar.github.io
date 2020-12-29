@@ -60,6 +60,20 @@ code {
   font-size: 80%;
   line-height: 0%;
 }
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
 </style>
 
 <figure style="text-align: center; width:70%; 
@@ -121,52 +135,60 @@ The components are:
   <ul>
     <li>Public methods: </li>
     <ul>
-      <li><span style="color:firebrick;font-weight: bold;">flash()</span></li>
-      <li><span style="color:firebrick;font-weight: bold;">stopFlash()</span></li>
+      <li><span class="label codinglist">flash()</span></li>
+      <li><span class="label codinglist">stopFlash()</span></li>
     </ul>
     <li>Private methods</li>
     <ul>
-      <li><span style="color:firebrick;font-weight: bold;">makeFlash()</span></li>
+      <li><span class="label codinglist">makeFlash()</span></li>
     </ul>
   </ul>  
 </p>
 <p>  
-  The flash() method receives the duration for turning on and the duration for turning off
-  the Led from the main program. While the makeFlash()
-  method contains the routine to do the flashing. The most important contribution is about the way
-  that flashing is performed. It uses a <b>thread</b> called by the makeFlash() method as a function
-  pointer to construct the thread of the flashing pattern. The advantage is that one o more 
-  flashing patterns can be done at the <span style="color: red;font-weight: bold;">same time in a parallel way</span>.
+  The <span class="label coding">flash()</span> method receives the duration for turning on 
+  and the duration for turning off the Led from the main program and it constructs the 
+  thread for the flashing pattern through a function pointer called  
+  <span class="label coding">makeFlash()</span>. This method contains the routine to do the 
+  flashing. The most important contribution is about the way that flashing is performed. 
+  through a <b>thread</b> execution. The advantage is that one o more flashing patterns can be 
+  done at the <span style="color: red;font-weight: bold;">same time in a parallel way</span>.
 </p>
 
 <p>
-  The thread construction is done by the next line, where the makeBlink() method is called
-  as a function pointer in the thread.
+  The thread construction is done by the next line, where the 
+  <span class="label coding">makeFlash()</span>  method is called
+  as a function pointer in the thread. It receieves 2 arguments: 
+  <span class="label coding">timeOn</span> and 
+  <span class="label coding">timeOff</span>, which corresponding to
+  the duration that the led will be On and Off, respectively.
 </p>
 
 {% highlight cpp%}
-blinkThread = std::thread(&LED::makeBlink, this, duration);
+flashThread = std::thread(&LED::makeFlash, this, timeOn, timeOff);
 {% endhighlight %}
 
 <p>
-  The code that makes the blinking uses the digitalWrite() and delayms() methods which 
+  The code that makes the flashing uses the 
+  <span class="label coding">digitalWrite()</span>  and 
+  <span class="label coding">delayms()</span> methods which 
   are inherited from the GPIO class.
 </p>
 
 {% highlight cpp%}
-while (this->stopThread == false)
+while (this->stopFlashFlag == false)
 {
-    digitalWrite(HIGH);
-    delayms(duration);
-    digitalWrite(LOW);
-    delayms(duration);
+  digitalWrite(HIGH);
+  delayms(timeOn);
+  digitalWrite(LOW);
+  delayms(timeOff);
 }
 {% endhighlight %}
 
 <p>
-  To stop the flashing pattern the user can access the public method stopFlash() and set
-  the boolean variable stopFlash to true. The next line shows how the method reads and 
-  assigns the new value to this variable.
+  To stop the flashing pattern the user can access the public method 
+  <span class="label coding">stopFlash()</span>  and set
+  the boolean variable <span class="label coding">stopFlashFlag</span> to true. 
+  The next line shows how the method reads and assigns the new value to this variable.
 </p>
 
 {% highlight cpp%}
@@ -185,8 +207,9 @@ if (flashThread.joinable())
 {% endhighlight %}
 
 <p>  
-  This occurs when the user enters the character 'y' from the keyboard due that the 
-  main thread of the program can be used to wait for this input without affecting the blinking.
+  This occurs when the user enters the character <span class="label coding">'y'</span> from 
+  the keyboard due that the  main thread of the program can be used to wait for this input 
+  without affecting the flashing.
 </p>
 
 {% highlight cpp%}
@@ -223,7 +246,7 @@ class LED: public GPIO
     std::thread flashThread;
     void makeBlink(int); 
     void makeFlash(int, int);
-    
+
   public:
     // Overload constructor
     LED (int, int);
@@ -393,8 +416,8 @@ int main()
 <figure style="text-align: center; width:90%; 
               margin-left: auto; 
               margin-right: auto;">
-  <video width="100%" controls poster="/assets/Post13/VideoConsoleCover.png">
-    <source src="/assets/Post13/Video.mp4" type="video/mp4">
+  <video width="100%" controls poster="/assets/Post14/VideoCover.png">
+    <source src="/assets/Post14/Video.mp4" type="video/mp4">
   </video>
   <figcaption>
     Video: Execution of the program.

@@ -60,6 +60,20 @@ code {
   font-size: 80%;
   line-height: 0%;
 }
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace;
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
 </style>
 
 <figure style="text-align: center; width:70%; 
@@ -118,27 +132,29 @@ The components are:
   <ul>
     <li>Public methods: </li>
     <ul>
-      <li><span style="color:firebrick;font-weight: bold;">blink()</span></li>
-      <li><span style="color:firebrick;font-weight: bold;">stopBlink()</span></li>
+      <li><span class="label codinglist">blink()</span></li>
+      <li><span class="label codinglist">stopBlink()</span></li>
     </ul>
     <li>Private methods</li>
     <ul>
-      <li><span style="color:firebrick;font-weight: bold;">makeBlink()</span></li>
+      <li><span class="label codinglist">makeBlink()</span></li>
     </ul>
   </ul>  
 </p>
 <p>  
-  The blink() method receives the duration of blinking from the main program. While the makeBlink()
-  method contains the routine to do the blinking. The most important contribution is about the way
-  that blinking is performed. It uses a <b>thread</b> called by the makeBlink() method as a function
-  pointer to construct the thread of the blink pattern. The advantage is that one o more blinking 
+  The <span class="label coding">blink()</span> method receives the duration of blinking 
+  from the main program. While the <span class="label coding">makeBlink()</span> method 
+  contains the routine to do the blinking. The most important contribution is about the way
+  that blinking is performed. It uses a <b>thread</b> called by the 
+  <span class="label coding">makeBlink()</span> method as a function pointer to construct 
+  the thread of the blink pattern. The advantage is that one o more blinking 
   patterns can be done at the <span style="color: red;font-weight: bold;">same time in a 
   parallel way</span>.
 </p>
 
 <p>
-  The thread construction is done by the next line, where the makeBlink() method is called
-  as a function pointer in the thread.
+  The thread construction is done by the next line, where the 
+  <span class="label coding">makeBlink()</span> method is called as a function pointer in the thread.
 </p>
 
 {% highlight cpp%}
@@ -146,7 +162,8 @@ blinkThread = std::thread(&LED::makeBlink, this, duration);
 {% endhighlight %}
 
 <p>
-  The code that makes the blinking uses the digitalWrite() and delayms() methods which 
+  The code that makes the blinking uses the <span class="label coding">digitalWrite()</span> 
+  and <span class="label coding">delayms()</span>   methods which 
   are inherited from the GPIO class.
 </p>
 
@@ -161,8 +178,10 @@ while (this->stopThread == false)
 {% endhighlight %}
 
 <p>
-  To stop the blinking pattern the user can access the public method stopBlink() and set
-  the boolean variable stopBlink to true. The next line shows how the method reads and 
+  To stop the blinking pattern the user can access the public method 
+  <span class="label coding">stopBlink()</span>   and set
+  the boolean variable <span class="label coding">stopBlinkFlag</span> to true. 
+  The next line shows how the method reads and 
   assigns the new value to this variable.
 </p>
 
@@ -182,8 +201,9 @@ if (blinkThread.joinable())
 {% endhighlight %}
 
 <p>  
-  This occurs when the user enters the character 'y' from the keyboard due that the 
-  main thread of the program can be used to wait for this input without affecting the blinking.
+  This occurs when the user enters the character <span class="label coding">'y'</span> 
+  from the keyboard due that the main thread of the program can be used to wait for 
+  this input without affecting the blinking.
 </p>
 
 {% highlight cpp%}
@@ -310,7 +330,7 @@ int main()
 <figure style="text-align: center; width:90%; 
               margin-left: auto; 
               margin-right: auto;">
-  <video width="100%" controls poster="/assets/Post13/VideoConsoleCover.png">
+  <video width="100%" controls poster="/assets/Post13/VideoCover.png">
     <source src="/assets/Post13/Video.mp4" type="video/mp4">
   </video>
   <figcaption>
