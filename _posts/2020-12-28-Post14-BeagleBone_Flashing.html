@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Flashing a pair of Leds with the BeagleBone"
-date:   2020-12-29 05:00:00 -0600
+date:   2020-12-29 08:00:00 -0600
 categories: BeagleBone
 ---
 
@@ -89,7 +89,7 @@ code {
 
 <p>
   In this post, I will show you how to make a flashing on a pair of Leds, i.e., turn
-  on and off a Led but with different duration between the state on and state off.  
+  on and off a Led but with a different duration between the state on and state off.  
   I will be using the C++ library described in the post 
   <a href="{% post_url 2020-12-22-Post10-BeagleBone_CPP %}"> Beaglebone and C++</a> to 
   access and control the general purpose digital pins (GPIO) pins of the BeagleBone.
@@ -100,8 +100,8 @@ code {
 <p>
   The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
   works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
-  as Arduino. It is so muy important to avoid damage to the board, specially
-  when your are working with buttons or digital inputs in general. 
+  as Arduino. It is so muy important to avoid damage to the board, especially
+  when you are working with buttons or digital inputs in general. 
 </p>
 
 The components are:
@@ -128,10 +128,9 @@ The components are:
 
 <p>
   I added the corresponding methods to do the flashing to the class called <b>LED</b> 
-  and introduced in the post 
-  <a href="{% post_url 2020-12-28-Post13-BeagleBone_Blinking %}"> Blinking a pair of Leds with the 
-  BeagleBone</a> who is derived from GPIO class mencioned earlier in the Introduction. 
-  The methods are:
+  and introduced in the post <a href="{% post_url 2020-12-28-Post13-BeagleBone_Blinking %}"> 
+  Blinking a pair of Leds with the BeagleBone</a> who is derived from GPIO class 
+  mentioned earlier in the introduction. The methods are:
   <ul>
     <li>Public methods: </li>
     <ul>
