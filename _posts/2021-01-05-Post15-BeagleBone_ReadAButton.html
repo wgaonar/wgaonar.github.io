@@ -1,0 +1,278 @@
+---
+layout: post
+title: "Reading a button with the BeagleBone using its own C++ class"
+date:   2021-01-05 08:00:00 -0600
+categories: BeagleBone
+---
+
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post15/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I will show you how to read a button with the BeagleBone Black.  
+  I have written a  
+  <a href="{% post_url 2020-12-24-Post12-BeagleBone_ButtonLed %}"> previous post</a> 
+  that shows the same behavior. The difference with this post is that here, I have
+  written a C++ class that contains specific methods to work with buttons. This class
+  is part of the C++ library to access and control the general purpose digital pins 
+  (GPIO) pins of the BeagleBone that I started to work in and described in the post 
+  <a href="{% post_url 2020-12-22-Post10-BeagleBone_CPP %}"> Beaglebone and C++</a>.
+</p>
+
+<h1>Circuit and components</h1>
+
+<p>
+  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
+  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
+  as Arduino. It is so muy important to avoid damage to the board, especially
+  when you are working with buttons or digital inputs in general. 
+</p>
+
+The components are:
+<ul>
+  <li>1 Resistor of 10KΩ</li>
+  <li>1 Push button of 12mm</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post15/Circuit_bb.jpg"
+    alt="Circuit_bb.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: ircuit to turn a Led On when a button is pressed
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+
+<p>
+  I added the corresponding methods to read a button to the class called <b>BUTTON</b> 
+  who is derived from GPIO class mentioned earlier in the introduction. The methods are:
+  <ul>
+    <li>Public methods: </li>
+    <ul>
+      <li><span class="label codinglist">ReadButton()</span></li>
+    </ul>
+  </ul>  
+</p>
+<p>  
+  The <span class="label coding">ReadButton()</span> method checks that the GPIO has been set up as INPUT
+  and returns the value of the pin that is attached to the button. This is done through a call to the 
+  <span class="label coding">DigitalRead()</span> method of the GPIO class.
+</p>
+
+{% highlight cpp%}
+int BUTTON::ReadButton()
+{
+  if (this->mode != INPUT)
+  {
+    perror("'ReadButton' method only works on INPUT mode");
+    return -1;
+  }
+  return this->DigitalRead();
+}
+{% endhighlight %}
+
+<p>
+  The button can be declared as a <span class="label coding">BUTTON</span> object
+  specifying the pin attached to it:
+</p>
+
+{% highlight cpp%}
+BUTTON redButtonPin(P8_08);
+{% endhighlight %}
+
+<p>
+  In the main program a while loop can wait for the press of the button:
+</p>
+
+{% highlight cpp%}
+while (redButtonPin.ReadButton() == 0)
+  {
+    if (redButtonPin.ReadButton() == 1)
+      cout << "The button was pressed" << endl;
+  }
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Complete code</h2>
+<p>
+  The code is shown in the next ålistings:
+</p>
+
+<h3 style="font-size: 20px;">BUTTON.h</h3>
+{% highlight cpp%}
+#ifndef BUTTON_H
+#define BUTTON_H
+
+#include "GPIO.h"
+
+class BUTTON : public GPIO
+{
+  public:
+    // Overload constructor
+    BUTTON(int);
+
+    // Interface method to get the GPIO pin state
+    virtual int ReadButton();
+
+    ~BUTTON();
+};
+
+#endif // BUTTON_H
+{% endhighlight %}
+
+<h3 style="font-size: 20px;">BUTTON.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+
+#include "BUTTON.h"
+#include "RAINBOWCOLORS.h"
+
+// Overload constructor
+BUTTON::BUTTON(int newId) : GPIO(newId, INPUT) {}
+
+/*
+  Public method for reading the input from a button
+  @return int:   The button state HIGH / LOW
+                -1 Error in the pin's mode
+*/
+int BUTTON::ReadButton()
+{
+  if (this->mode != INPUT)
+  {
+    perror("'ReadButton' method only works on INPUT mode");
+    return -1;
+  }
+  return this->DigitalRead();
+}
+
+// Destructor
+BUTTON::~BUTTON()
+{}
+{% endhighlight %}
+
+<h3 style="font-size: 20px;">Listing3.1.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+#include "../../Sources/GPIO.h"
+#include "../../Sources/BUTTON.h"
+
+using namespace std;
+
+int main()
+{
+
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  BUTTON redButtonPin(P8_08);
+  message = "Please, press the red button!";
+  cout << RainbowText(message, "Red") << endl;
+
+  while (redButtonPin.ReadButton() == 0)
+  {
+    if (redButtonPin.ReadButton() == 1)
+      cout << "The button was pressed" << endl;
+  }
+  
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post15/VideoCover.png">
+    <source src="/assets/Post15/Video.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post.
