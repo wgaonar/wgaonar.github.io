@@ -170,10 +170,13 @@ BUTTON redButtonPin(P8_08);
 
 {% highlight cpp%}
 while (redButtonPin.ReadButton() == 0)
+{
+  if (redButtonPin.ReadButton() == 1)
   {
-    if (redButtonPin.ReadButton() == 1)
-      cout << "The button was pressed" << endl;
+    message = "The red button was pressed!!!";
+    cout << RainbowText(message, "Red") << endl;
   }
+}
 {% endhighlight %}
 
 <h2 style="font-size: 25px;">Complete code</h2>
@@ -243,22 +246,24 @@ using namespace std;
 
 int main()
 {
-
   string message = "Main program starting here...";
   cout << RainbowText(message,"Blue", "White", "Bold") << endl;
   
   BUTTON redButtonPin(P8_08);
   message = "Please, press the red button!";
-  cout << RainbowText(message, "Red") << endl;
+  cout << endl << RainbowText(message, "Red") << endl;
 
   while (redButtonPin.ReadButton() == 0)
   {
     if (redButtonPin.ReadButton() == 1)
-      cout << "The button was pressed" << endl;
+    {
+      message = "The red button was pressed!!!";
+      cout << RainbowText(message, "Red") << endl;
+    }
   }
   
   message = "Main program finishes here...";
-  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+  cout << RainbowText(message,"Blue", "White","Bold") << endl << endl;
   return 0;
 }
 {% endhighlight %}
