@@ -95,8 +95,9 @@ code {
   checking continuously for the state of the button inside the main program. 
 </p>
 <p>
-  In this post, I show a new method named <coding>WaitForButton</coding> to the C++ 
-  class <coding>BUTTON</coding> that stop the main program until a button has been presed.
+  In this post, I show a new method named <span class="label coding">WaitForButton()</span> 
+  to the C++ class <span class="label coding">BUTTON</span> that stop the main program 
+  until a button has been pressed.
 </p>
 
 <h1>Circuit and components</h1>
@@ -142,8 +143,8 @@ The components are:
 <p>  
   The <span class="label coding">WaitForButton()</span> method, first checks if the GPIO 
   attached to a button has been set up as INPUT and then wait until the button has changed
-  from a <coding>LOW</coding> state to a <coding>HIGH</coding> state. This means the button 
-  has been pressed.
+  from a <span class="label coding">LOW</span> state to a 
+  <span class="label coding">HIGH</span> state. This means the button has been pressed.
 </p>
 {% highlight cpp%}
 int BUTTON::WaitForButton()
@@ -164,7 +165,8 @@ int BUTTON::WaitForButton()
 
 <p>  
   The second method <span class="label coding">WaitForButton(int)</span> is an overload of the first.
-  The difference consists that this method receives one of the next types of transition on the pin:
+  The difference consists that this method receives only <span style="color: red;">one</span> 
+  of the next types of transition on the pin:
   <ul>
     <li>RISING</li>
     <li>FALLING</li>
