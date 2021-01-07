@@ -79,7 +79,7 @@ code {
 <figure style="text-align: center; width:70%; 
               margin-left: auto; 
               margin-right: auto;">
-    <img src="/assets/Post15/Cover.png"
+    <img src="/assets/Post16/Cover.png"
     alt="Cover.png" width="100%"/>
   <figcaption>
   </figcaption>
@@ -88,14 +88,15 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I will show you how to read a button with the BeagleBone Black.  
-  I have written a  
-  <a href="{% post_url 2020-12-24-Post12-BeagleBone_ButtonLed %}"> previous post</a> 
-  that shows the same behavior. The difference with this post is that here, I have
-  written a C++ class that contains specific methods to work with buttons. This class
-  is part of the C++ library to access and control the general purpose digital pins 
-  (GPIO) pins of the BeagleBone that I started to work in and described in the post 
-  <a href="{% post_url 2020-12-22-Post10-BeagleBone_CPP %}"> Beaglebone and C++</a>.
+  In this post, I will continue to show you how to read a button with the BeagleBone Black.  
+  In the   
+  <a href="{% post_url 2021-01-05-Post15-BeagleBone_ReadAButton-Part-I %}"> first entry</a> 
+  I showed how to read an input from a button doing <i>POLLING</i> in the code, i.e., 
+  checking continuously for the state of the button inside the main program. 
+</p>
+<p>
+  In this post, I show a new method named <coding>WaitForButton</coding> to the C++ 
+  class <coding>BUTTON</coding> that stop the main program until a button has been presed.
 </p>
 
 <h1>Circuit and components</h1>
@@ -109,7 +110,7 @@ code {
 
 The components are:
 <ul>
-  <li>1 Resistor of 10KΩ</li>
+  <li>1 Resistor of 10KΩ as a pull-down resistor</li>
   <li>1 Push button of 12mm</li>
   <li>Jumpers male-male to make the connections</li>
 </ul>
@@ -118,7 +119,7 @@ The components are:
 <figure style="text-align: center; width:70%; 
               margin-left: auto; 
               margin-right: auto;">
-    <img src="/assets/Post15/Circuit_bb.jpg"
+    <img src="/assets/Post16/Circuit_bb.jpg"
     alt="Circuit_bb.jpg" width="100%"/>
   <figcaption>
     Figure 1: Circuit to read the input from a button.
@@ -126,32 +127,84 @@ The components are:
 </figure>
 
 <h1>Coding</h1>
-
 <p>
-  I added the corresponding methods to read a button to the class called <b>BUTTON</b> 
-  who is derived from GPIO class mentioned earlier in the introduction. The methods are:
+  I added the corresponding methods to read a button into the class <b>BUTTON</b> 
+  who is derived from GPIO class. The methods are:
   <ul>
     <li>Public methods: </li>
     <ul>
-      <li><span class="label codinglist">ReadButton()</span></li>
+      <li><span class="label codinglist">WaitForButton()</span></li>
+      <li><span class="label codinglist">WaitForButton(int)</span></li>
     </ul>
   </ul>  
 </p>
-<p>  
-  The <span class="label coding">ReadButton()</span> method checks that the GPIO has been set up as INPUT
-  and returns the value of the pin that is attached to the button. This is done through a call to the 
-  <span class="label coding">DigitalRead()</span> method of the GPIO class.
-</p>
 
+<p>  
+  The <span class="label coding">WaitForButton()</span> method, first checks if the GPIO 
+  attached to a button has been set up as INPUT and then wait until the button has changed
+  from a <coding>LOW</coding> state to a <coding>HIGH</coding> state. This means the button 
+  has been pressed.
+</p>
 {% highlight cpp%}
-int BUTTON::ReadButton()
+int BUTTON::WaitForButton()
 {
   if (this->mode != INPUT)
   {
-    perror("'ReadButton' method only works on INPUT mode");
+    perror("'waitForButton' method only works on INPUT mode");
     return -1;
   }
-  return this->DigitalRead();
+  string message;
+  while (this->DigitalRead() != LOW);
+  while (this->DigitalRead() != HIGH);
+  message = "A rising edge was detected!";
+  cout << RainbowText(message, "Yellow") << endl;
+  return 1;
+}
+{% endhighlight %}
+
+<p>  
+  The second method <span class="label coding">WaitForButton(int)</span> is an overload of the first.
+  The difference consists that this method receives one of the next types of transition on the pin:
+  <ul>
+    <li>RISING</li>
+    <li>FALLING</li>
+    <li>BOTH</li>
+  </ul>
+</p>
+{% highlight cpp%}
+int BUTTON::WaitForButton(int edge = RISING)
+{
+  if (this->mode != INPUT)
+  {
+    perror("'waitForButton' method only works on INPUT mode");
+    return -1;
+  }
+  string message;
+  switch (edge)
+  {
+  case RISING:
+    WriteFile(path, "edge", "rising");
+    while (this->DigitalRead() != LOW);
+    while (this->DigitalRead() != HIGH);
+    message = "A rising edge was detected!";
+    cout << RainbowText(message, "Yellow") << endl;
+    break;
+  case FALLING:
+    WriteFile(path, "edge", "falling");
+    while (this->DigitalRead() != HIGH);
+    while (this->DigitalRead() != LOW);
+    message = "A falling edge was detected!";
+    cout << RainbowText(message, "Yellow") << endl;
+    break;
+  case BOTH:
+    WriteFile(path, "edge", "both");
+    int previousValueOnPin = this->DigitalRead();
+    while (this->DigitalRead() == previousValueOnPin);
+    message = "A rising / falling edge was detected!";
+    cout << RainbowText(message, "Yellow") << endl;
+    break;
+  }
+  return 1;
 }
 {% endhighlight %}
 
@@ -165,78 +218,20 @@ BUTTON redButtonPin(P8_08);
 {% endhighlight %}
 
 <p>
-  In the main program a while loop can wait for the press of the button:
+  In the main program, only a single line makes to wait for the press of a button, 
+  before continue with the next line of code:
 </p>
 
 {% highlight cpp%}
-while (redButtonPin.ReadButton() == 0)
-{
-  if (redButtonPin.ReadButton() == 1)
-  {
-    message = "The red button was pressed!!!";
-    cout << RainbowText(message, "Red") << endl;
-  }
-}
+redButtonPin.WaitForButton();
 {% endhighlight %}
 
 <h2 style="font-size: 25px;">Complete code</h2>
 <p>
-  The code is shown in the next ålistings:
+  The code is shown in the next listing:
 </p>
 
-<h3 style="font-size: 20px;">BUTTON.h</h3>
-{% highlight cpp%}
-#ifndef BUTTON_H
-#define BUTTON_H
-
-#include "GPIO.h"
-
-class BUTTON : public GPIO
-{
-  public:
-    // Overload constructor
-    BUTTON(int);
-
-    // Interface method to get the GPIO pin state
-    virtual int ReadButton();
-
-    ~BUTTON();
-};
-
-#endif // BUTTON_H
-{% endhighlight %}
-
-<h3 style="font-size: 20px;">BUTTON.cpp</h3>
-{% highlight cpp%}
-#include <iostream>
-
-#include "BUTTON.h"
-#include "RAINBOWCOLORS.h"
-
-// Overload constructor
-BUTTON::BUTTON(int newId) : GPIO(newId, INPUT) {}
-
-/*
-  Public method for reading the input from a button
-  @return int:   The button state HIGH / LOW
-                -1 Error in the pin's mode
-*/
-int BUTTON::ReadButton()
-{
-  if (this->mode != INPUT)
-  {
-    perror("'ReadButton' method only works on INPUT mode");
-    return -1;
-  }
-  return this->DigitalRead();
-}
-
-// Destructor
-BUTTON::~BUTTON()
-{}
-{% endhighlight %}
-
-<h3 style="font-size: 20px;">Listing3.1.cpp</h3>
+<h3 style="font-size: 20px;">Listing3.2.cpp</h3>
 {% highlight cpp%}
 #include <iostream>
 #include "../../Sources/GPIO.h"
@@ -250,20 +245,15 @@ int main()
   cout << RainbowText(message,"Blue", "White", "Bold") << endl;
   
   BUTTON redButtonPin(P8_08);
-  message = "Please, press the red button!";
+  message = "The program is waiting for a press on a Button\nPlease, press the red button!";
   cout << endl << RainbowText(message, "Red") << endl;
 
-  while (redButtonPin.ReadButton() == 0)
-  {
-    if (redButtonPin.ReadButton() == 1)
-    {
-      message = "The red button was pressed!!!";
-      cout << RainbowText(message, "Red") << endl;
-    }
-  }
+  redButtonPin.WaitForButton();
+  message = "The red button was pressed!!!";
+  cout << RainbowText(message, "Red") << endl;
   
   message = "Main program finishes here...";
-  cout << RainbowText(message,"Blue", "White","Bold") << endl << endl;
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
   return 0;
 }
 {% endhighlight %}
@@ -272,7 +262,7 @@ int main()
 <figure style="text-align: center; width:100%; 
               margin-left: auto; 
               margin-right: auto;">
-  <video width="100%" controls poster="/assets/Post15/VideoCover.png">
+  <video width="100%" controls poster="/assets/Post16/VideoCover.png">
     <source src="/assets/Post15/Video.mp4" type="video/mp4">
   </video>
   <figcaption>

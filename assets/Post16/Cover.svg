@@ -15,11 +15,18 @@
    id="svg8"
    inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
    sodipodi:docname="Cover.svg"
-   inkscape:export-filename="/Users/wilmer/GitHubSite/wgaonar.github.io/assets/Post11/Cover.png"
+   inkscape:export-filename="/Users/wilmer/GitHubSite/wgaonar.github.io/assets/Post16/Cover.png"
    inkscape:export-xdpi="192"
    inkscape:export-ydpi="192">
   <defs
-     id="defs2" />
+     id="defs2">
+    <rect
+       x="-22.975833"
+       y="2.5528703"
+       width="260.10912"
+       height="224.65259"
+       id="rect932" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -148,5 +155,9 @@
          x="69.818817"
          y="32.052704"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:25.4px;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583">Part II</tspan></text>
+    <text
+       xml:space="preserve"
+       id="text930"
+       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:10.58333333000000032px;white-space:pre;shape-inside:url(#rect932);" />
   </g>
 </svg>

@@ -109,7 +109,7 @@ code {
 
 The components are:
 <ul>
-  <li>1 Resistor of 10KΩ</li>
+  <li>1 Resistor of 10KΩ as a pull-down resistor</li>
   <li>1 Push button of 12mm</li>
   <li>Jumpers male-male to make the connections</li>
 </ul>
@@ -128,7 +128,7 @@ The components are:
 <h1>Coding</h1>
 
 <p>
-  I added the corresponding methods to read a button to the class called <b>BUTTON</b> 
+  I added the corresponding methods to read a button into the class <b>BUTTON</b> 
   who is derived from GPIO class mentioned earlier in the introduction. The methods are:
   <ul>
     <li>Public methods: </li>
@@ -181,7 +181,7 @@ while (redButtonPin.ReadButton() == 0)
 
 <h2 style="font-size: 25px;">Complete code</h2>
 <p>
-  The code is shown in the next ålistings:
+  The code is shown in the next listings:
 </p>
 
 <h3 style="font-size: 20px;">BUTTON.h</h3>
