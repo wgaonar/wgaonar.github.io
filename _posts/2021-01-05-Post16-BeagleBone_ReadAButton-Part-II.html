@@ -155,11 +155,26 @@ int BUTTON::WaitForButton()
     return -1;
   }
   string message;
-  while (this->DigitalRead() != LOW);
-  while (this->DigitalRead() != HIGH);
-  message = "A rising edge was detected!";
-  cout << RainbowText(message, "Yellow") << endl;
-  return 1;
+
+  WriteFile(path, "edge", "rising");
+  while (stopWaitForButtonFlag == false)
+  {
+    previousValueOnPin = ReadButton(); 
+    if (previousValueOnPin == LOW)
+      break; 
+  }
+  while (stopWaitForButtonFlag == false)
+  {
+    if (ReadButton() == HIGH)
+      break; 
+  }
+  if (previousValueOnPin != valueOnPin)
+  {
+    message = "A RISING edge was detected!";
+    cout << RainbowText(message, "Pink") << endl;
+    return 1;
+  }
+  return 0;
 }
 {% endhighlight %}
 
@@ -186,27 +201,59 @@ int BUTTON::WaitForButton(int edge = RISING)
   {
   case RISING:
     WriteFile(path, "edge", "rising");
-    while (this->DigitalRead() != LOW);
-    while (this->DigitalRead() != HIGH);
-    message = "A rising edge was detected!";
-    cout << RainbowText(message, "Yellow") << endl;
+    while (stopWaitForButtonFlag == false)
+    {
+      previousValueOnPin = ReadButton(); 
+      if (previousValueOnPin == LOW)
+        break; 
+    }
+    while (stopWaitForButtonFlag == false)
+    {
+      if (ReadButton() == HIGH)
+        break; 
+    }
+    if (previousValueOnPin != valueOnPin)
+    {
+      message = "A RISING edge was detected!";
+      cout << RainbowText(message, "Pink") << endl;
+      return 1;
+    }
     break;
   case FALLING:
     WriteFile(path, "edge", "falling");
-    while (this->DigitalRead() != HIGH);
-    while (this->DigitalRead() != LOW);
-    message = "A falling edge was detected!";
-    cout << RainbowText(message, "Yellow") << endl;
+    while (stopWaitForButtonFlag == false)
+    {
+      previousValueOnPin = ReadButton(); 
+      if (previousValueOnPin == HIGH)
+        break; 
+    }
+    while (stopWaitForButtonFlag == false)
+    {
+      if (ReadButton() == LOW)
+        break; 
+    }
+    if (previousValueOnPin != valueOnPin)
+    {
+      message = "A FALLING edge was detected!";
+      cout << RainbowText(message, "Pink") << endl;
+      return 1;
+    }
     break;
   case BOTH:
     WriteFile(path, "edge", "both");
-    int previousValueOnPin = this->DigitalRead();
-    while (this->DigitalRead() == previousValueOnPin);
-    message = "A rising / falling edge was detected!";
-    cout << RainbowText(message, "Yellow") << endl;
+    previousValueOnPin = ReadButton();
+    while (stopWaitForButtonFlag == false)
+    {
+      if (previousValueOnPin != ReadButton())
+      {
+        message = "A RISING OR FALLING edge was detected!";
+        cout << RainbowText(message, "Yellow") << endl;
+        return 1;
+      }
+    }
     break;
   }
-  return 1;
+  return 0;
 }
 {% endhighlight %}
 
