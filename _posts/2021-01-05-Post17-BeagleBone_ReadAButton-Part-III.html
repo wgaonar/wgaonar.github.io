@@ -90,7 +90,7 @@ code {
 <p>
   In this post, I will continue to show you how to read a button with the BeagleBone Black.  
   In the   
-  <a href="{% post_url 2021-01-05-Post15-BeagleBone_ReadAButton-Part-II %}"> second entry</a> 
+  <a href="{% post_url 2021-01-05-Post16-BeagleBone_ReadAButton-Part-II %}"> second entry</a> 
   I showed how to wait for the press on a button stoping the main program 
   until a button has been pressed. 
 </p>
@@ -175,56 +175,9 @@ int BUTTON::WhenButtonWasPressed(callbackType callbackFunction)
 }
 {% endhighlight %}
 
-<p>  
-  The second method <span class="label coding">WaitForButton(int)</span> is an overload of the first.
-  The difference consists that this method receives only psync<span style="color: red;">one</span> 
-  of the next types of transition on the pin:
-  <ul>
-    <li>RISING</li>
-    <li>FALLING</li>
-    <li>BOTH</li>
-  </ul>
-</p>
-{% highlight cpp%}
-int BUTTON::WaitForButton(int edge = RISING)
-{
-  if (this->mode != INPUT)
-  {
-    perror("'waitForButton' method only works on INPUT mode");
-    return -1;
-  }
-  string message;
-  switch (edge)
-  {
-  case RISING:
-    WriteFile(path, "edge", "rising");
-    while (this->DigitalRead() != LOW);
-    while (this->DigitalRead() != HIGH);
-    message = "A rising edge was detected!";
-    cout << RainbowText(message, "Yellow") << endl;
-    break;
-  case FALLING:
-    WriteFile(path, "edge", "falling");
-    while (this->DigitalRead() != HIGH);
-    while (this->DigitalRead() != LOW);
-    message = "A falling edge was detected!";
-    cout << RainbowText(message, "Yellow") << endl;
-    break;
-  case BOTH:
-    WriteFile(path, "edge", "both");
-    int previousValueOnPin = this->DigitalRead();
-    while (this->DigitalRead() == previousValueOnPin);
-    message = "A rising / falling edge was detected!";
-    cout << RainbowText(message, "Yellow") << endl;
-    break;
-  }
-  return 1;
-}
-{% endhighlight %}
-
 <p>
-  The button can be declared as a <span class="label coding">BUTTON</span> object
-  specifying the pin attached to it:
+  The button can be declared as a <span style="color: red;">global</span> 
+  <span class="label coding">BUTTON</span> object specifying the pin attached to it:
 </p>
 
 {% highlight cpp%}
@@ -232,12 +185,35 @@ BUTTON redButtonPin(P8_08);
 {% endhighlight %}
 
 <p>
-  In the main program, only a single line makes to wait for the press of a button, 
-  before continue with the next line of code:
+  In the main program, a user function can be defined to do some process, for example, 
+  wait for the press on the button:
 </p>
-
 {% highlight cpp%}
-redButtonPin.WaitForButton();
+int UserCallBackFunction_ButtonRed() 
+{
+  string message;
+  message = "Hello, I am a USER defined callback function!"; 
+  cout << RainbowText(message, "Orange", "Indigo", "Bold") << endl;
+
+  int isButtonPushed = 0;
+  isButtonPushed = redButtonPin.WaitForButton();
+  
+  if (isButtonPushed == 1) {
+    message = "The red button was pressed!!!";
+    cout << RainbowText(message, "Red") << endl;
+  }
+
+  return 0;   
+}
+{% endhighlight %}
+
+<p>
+  Just before the main program ends, the method
+  <span class="label coding">StopWaitForButton()</span> has to be called in order
+  for joining and exiting the thread corresponding to the user defined function.
+</p>
+{% highlight cpp%}
+redButtonPin.StopWaitForButton(true);
 {% endhighlight %}
 
 <h2 style="font-size: 25px;">Complete code</h2>
