@@ -1,0 +1,314 @@
+---
+layout: post
+title: "Blinking, flashing and heartbeat patterns with LEDs and buttons"
+date:   2021-01-10 08:00:00 -0600
+categories: BeagleBone
+---
+
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post18/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I will continue to show you how to read a button with the BeagleBone Black.  
+  In the   
+  <a href="{% post_url 2021-01-05-Post16-BeagleBone_ReadAButton-Part-II %}"> second entry</a> 
+  I showed how to wait for the press of a button stoping the main program 
+  until a button has been pressed. 
+</p>
+<p>
+  On the other hand, in this post, I show a new method named 
+  <span class="label coding">WhenButtonWasPressed(*)</span> 
+  that executes a USER customized function when the button has been pressed.
+</p>
+
+<h1>Circuit and components</h1>
+
+<p>
+  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
+  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
+  as Arduino. It is so muy important to avoid damage to the board, especially
+  when you are working with buttons or digital inputs in general. 
+</p>
+
+The components are:
+<ul>
+  <li>1 Resistor of 10KΩ as a pull-down resistor</li>
+  <li>1 Push button of 12mm</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post17/Circuit_bb.jpg"
+    alt="Circuit_bb.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to read the input from a button.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>
+  This method was added to the C++ class <span class="label coding">BUTTON</span>  
+  which is derived from the <span class="label coding">GPIO</span>class.
+  <ul>
+    <li>Public methods: </li>
+    <ul>
+      <li><span class="label codinglist">WhenButtonWasPressed(*)</span></li>
+    </ul>
+  </ul>  
+</p>
+
+<p>
+  In the <span class="label coding">BUTTON</span> class has to be defined a callbackType
+  for the function pointer that will be used as an argument to the method. This can be done
+  in the header file BUTTON.h with the next line:
+</p>
+{% highlight cpp%}
+using callbackType = int (*)();
+{% endhighlight %}
+
+<p>  
+  The <span class="label coding">WhenButtonWasPressed(*)</span> method, first checks 
+  receives a user customized function when the button has been pressed and creates a
+  thread with a function pointer to that function which is executed in a <i>PARALELL</i>
+  way to the main function in the program.  In this user customized function any other
+  methods of the class can be called, for example: 
+  <span class="label coding">WaitForButton()</span> without affect the behavior of the
+  main function. 
+</p>
+{% highlight cpp%}
+int BUTTON::WhenButtonWasPressed(callbackType callbackFunction)
+{
+  if (this->mode != INPUT)
+  {
+    perror("'waitForButton' method only works on INPUT mode");
+    return -1;
+  }
+
+  string message = "'WhenButtonWasPressed' method has been activated!!!";
+  cout << RainbowText(message, "Orange") << endl;
+
+  whenButtonWasPressedThread = thread(callbackFunction);
+
+  return 1;
+}
+{% endhighlight %}
+
+<p>  
+  A new method named <span class="label coding">StopWaitForButton()</span> was added
+  to control the execution of the <span class="label coding">WaitForButton()</span>
+  method. This is done through a bool member variable 
+  <span class="label coding">stopWaitForButtonFlag</span> that can be set with a the right 
+  timing to stop that method.
+</p>
+{% highlight cpp%}
+void BUTTON::StopWaitForButton(bool newStopWaitForButtonFlag)
+{
+  stopWaitForButtonFlag = newStopWaitForButtonFlag;
+}
+{% endhighlight %}
+
+<p>
+  The button can be declared as a <span style="color: red;">global</span> 
+  <span class="label coding">BUTTON</span> object specifying the pin attached to it:
+</p>
+
+{% highlight cpp%}
+BUTTON redButtonPin(P8_08);
+{% endhighlight %}
+
+<p>
+  In the main program, a user function can be defined to do some process, for example, 
+  wait for the press on the button:
+</p>
+{% highlight cpp%}
+int UserCallBackFunction_ButtonRed() 
+{
+  string message;
+  message = "Hello, I am a USER defined callback function!"; 
+  cout << RainbowText(message, "Orange", "Indigo", "Bold") << endl;
+
+  int isButtonPushed = 0;
+  isButtonPushed = redButtonPin.WaitForButton();
+  
+  if (isButtonPushed == 1) {
+    message = "The red button was pressed!!!";
+    cout << RainbowText(message, "Red") << endl;
+  }
+
+  return 0;   
+}
+{% endhighlight %}
+
+<p>
+  Just before the main program ends, the method
+  <span class="label coding">StopWaitForButton()</span> has to be called in order
+  for joining and exiting the thread corresponding to the user defined function.
+</p>
+{% highlight cpp%}
+redButtonPin.StopWaitForButton(true);
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Complete code</h2>
+<p>
+  The next program will be pending for the press of a button and, at the same time is 
+  in a routine of delay for 5 seconds. Once the button has been pressed, a message is 
+  printed on the console. If the button was never pressed, the program ends after 
+  the 5 seconds.
+</p>
+<p>
+  The code is shown in the next listing:
+</p>
+
+<h3 style="font-size: 20px;">Listing3.3.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+#include <chrono>
+
+#include "../../Sources/GPIO.h"
+#include "../../Sources/BUTTON.h"
+#include "../../Sources/LED.h"
+
+using namespace std;
+
+void delayms(int millisecondsToSleep) {
+    this_thread::sleep_for(chrono::milliseconds(millisecondsToSleep));
+}
+
+// Global pin declaration
+BUTTON redButtonPin(P8_08);
+
+int UserCallBackFunction_ButtonRed() 
+{
+  string message;
+  message = "Hello, I am a USER defined callback function!"; 
+  cout << RainbowText(message, "Orange", "Indigo", "Bold") << endl;
+
+  int isButtonPushed = 0;
+  isButtonPushed = redButtonPin.WaitForButton();
+  
+  if (isButtonPushed == 1) {
+    message = "The red button was pressed!!!";
+    cout << RainbowText(message, "Red") << endl;
+  }
+
+  return 0;   
+}
+
+int main()
+{
+  string message = "Main function starting here...";
+  cout << endl << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  message = "The program is timing for ";
+  cout << RainbowText(message, "Yellow");
+  message = "5 seconds"; 
+  cout << RainbowText(message, "Yellow", "Default", "Blink");
+  message = " and is pending if a press on a button occurs";
+  cout << RainbowText(message, "Yellow") << endl;
+
+  redButtonPin.WhenButtonWasPressed(&UserCallBackFunction_ButtonRed);
+  delayms(5000);
+
+  redButtonPin.StopWaitForButton(true);
+
+  message = "Main function ends here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl << endl;
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post18/VideoCover.png">
+    <source src="/assets/Post18/Video.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
