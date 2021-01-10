@@ -88,20 +88,15 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I will continue to show you how to read a button with the BeagleBone Black.  
-  In the   
-  <a href="{% post_url 2021-01-05-Post16-BeagleBone_ReadAButton-Part-II %}"> second entry</a> 
-  I showed how to wait for the press of a button stoping the main program 
-  until a button has been pressed. 
-</p>
-<p>
-  On the other hand, in this post, I show a new method named 
-  <span class="label coding">WhenButtonWasPressed(*)</span> 
-  that executes a USER customized function when the button has been pressed.
+  In this post, I will resume the applications of LEDs and Buttons using the methods 
+  described in the last posts. In this case, one LED will be blinking, the other flashing,
+  another will be doing a heartbeat pattern. At the same time, two buttons will be
+  pending for a press for the user and If it occurs, two LEDs will be turned On. 
+  All these processes will be exectued for 10 seconds, which are timing within
+  the main routine of the program.
 </p>
 
 <h1>Circuit and components</h1>
-
 <p>
   The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
   works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
@@ -111,8 +106,10 @@ code {
 
 The components are:
 <ul>
-  <li>1 Resistor of 10KΩ as a pull-down resistor</li>
-  <li>1 Push button of 12mm</li>
+  <li>2 Resistor of 10KΩ as a pull-down resistor</li>
+  <li>5 Resistor of 1KΩ</li>
+  <li>2 Push button of 12mm</li>
+  <li>5 LEDs of different colors</li>
   <li>Jumpers male-male to make the connections</li>
 </ul>
 
@@ -120,10 +117,10 @@ The components are:
 <figure style="text-align: center; width:70%; 
               margin-left: auto; 
               margin-right: auto;">
-    <img src="/assets/Post17/Circuit_bb.jpg"
+    <img src="/assets/Post18/Circuit_bb.jpg"
     alt="Circuit_bb.jpg" width="100%"/>
   <figcaption>
-    Figure 1: Circuit to read the input from a button.
+    Figure 1: Circuit to some processes at the same time.
   </figcaption>
 </figure>
 
