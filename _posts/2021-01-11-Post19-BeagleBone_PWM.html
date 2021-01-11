@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "PWM on a LED"
-date:   2021-01-10 08:00:00 -0600
+date:   2021-01-11 08:00:00 -0600
 categories: BeagleBone
 ---
 
@@ -88,12 +88,7 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I will resume the applications of LEDs and Buttons using the methods 
-  described in the last posts. In this case, one LED will be blinking, the other flashing,
-  another will be doing a heartbeat pattern. At the same time, two buttons will be
-  pending for a press for the user and If it occurs, two LEDs will be turned On. 
-  All these processes will be exectued for 10 seconds, which are timing within
-  the main routine of the program.
+  In this post, I start with the PWM technique applied to control the brightness of a LED. 
 </p>
 
 <h1>Circuit and components</h1>
@@ -106,20 +101,18 @@ code {
 
 The components are:
 <ul>
-  <li>2 Resistor of 10KΩ as a pull-down resistor</li>
   <li>5 Resistor of 1KΩ</li>
-  <li>2 Push button of 12mm</li>
-  <li>5 LEDs of different colors</li>
+  <li>1 LED</li>
   <li>Jumpers male-male to make the connections</li>
 </ul>
 
 <figure style="text-align: center; width:70%; 
               margin-left: auto; 
               margin-right: auto;">
-    <img src="/assets/Post18/Circuit_bb.jpg"
+    <img src="/assets/Post19/Circuit_bb.jpg"
     alt="Circuit_bb.jpg" width="100%"/>
   <figcaption>
-    Figure 1: Circuit to some processes at the same time.
+    Figure 1: Circuit to control the brightness of a LED through a PWM technique.
   </figcaption>
 </figure>
 
