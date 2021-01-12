@@ -112,8 +112,8 @@ The components are:
 <figure style="text-align: center; width:70%; 
               margin-left: auto; 
               margin-right: auto;">
-    <img src="/assets/Post19/Circuit_bb.jpg"
-    alt="Circuit_bb.jpg" width="100%"/>
+    <img src="/assets/Post19/Circuit.jpg"
+    alt="Circuit.jpg" width="100%"/>
   <figcaption>
     Figure 1: Circuit to control the brightness of a LED through a PWM technique.
   </figcaption>
@@ -175,7 +175,7 @@ The components are:
 
 <p>  
   The <span class="label coding">SetDutyCycle(int)</span> method, receives an 
-  int number between 0 and 100 and converts it as a percentage of the period
+  integer number between 0 and 100 and converts it as a percentage of the period
   before to set the duty_cycle property of the pin in the sys file system. 
   The method checks if the number is less or greater than that range, and
   set the duty_cycle property as 0 or 100, respectively.
@@ -272,6 +272,11 @@ int main()
     Video: Execution of the program.
   </figcaption>
 </figure>
+
+<h2 style="font-size: 25px;">Libraries code</h2>
+<p>
+  The final version of the methods is shown in the next listings. 
+</p>
 
 <p>  
   The file <span class="label coding">PWM.h</span> is:
