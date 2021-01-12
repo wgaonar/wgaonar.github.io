@@ -142,7 +142,7 @@ The components are:
 
 <p>  
   The <span class="label coding">WriteFile(string, string, int)</span> method 
-  access to the file system path that control the pwm behavior on the pin at
+  accesses to the file system path that controls the PWM behavior on the pin at
   "/sys/devices/platform/ocp/".
 </p>
 
@@ -190,7 +190,7 @@ PWM pwmBlueLedPin(P8_13);
 {% endhighlight %}
 
 <p>  
-  After, a variable is declared, initialized and used to set the initial pwm value.
+  After, a variable is declared, initialized, and used to set the initial pwm value.
 </p>
 {% highlight cpp%}
 int pwmValue = 50;
@@ -198,7 +198,7 @@ pwmBlueLedPin.SetDutyCycle(pwmValue);
 {% endhighlight %}
 
 <p>  
-  Finally, this pwm value can be updated in this manner:
+  Finally, this PWM value can be updated in this manner:
 </p>
 {% highlight cpp%}
 pwmBlueLedPin.SetDutyCycle(pwmValue += 10);
