@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "PWM on a LED"
+title: "C++ PWM Class"
 date:   2021-01-11 08:00:00 -0600
 categories: BeagleBone
 ---
@@ -87,37 +87,24 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I start with the PWM technique applied to control the brightness of a LED.
+  In this post, I show a PWM C++ class implementation.
   Rembering the PWM is a technique that lets us emulate an analog signal in a digital pin.
   This is done by changing the time that a signal is On in a fixed period of time. 
   The ratio between the time ON and OFF is named duty cycle. The more duty cycle, the more is the
   "analog" average voltage measured on the digital pin. 
 </p>
 
-<h1>Circuit and components</h1>
 <p>
-  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
-  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
-  as Arduino. It is so muy important to avoid damage to the board, especially
-  when you are working with buttons or digital inputs in general. 
+  The BeagleBone has six pins than can be dedicated to do PWM.  These are:
+  <ul>
+    <li>P8_13</li>
+    <li>P8_19</li>
+    <li>P9_14</li>
+    <li>P9_16</li>
+    <li>P9_21</li>
+    <li>P9_22</li>
+  </ul>
 </p>
-
-The components are:
-<ul>
-  <li>5 Resistor of 1KΩ</li>
-  <li>1 LED</li>
-  <li>Jumpers male-male to make the connections</li>
-</ul>
-
-<figure style="text-align: center; width:70%; 
-              margin-left: auto; 
-              margin-right: auto;">
-    <img src="/assets/Post19/Circuit.jpg"
-    alt="Circuit.jpg" width="100%"/>
-  <figcaption>
-    Figure 1: Circuit to control the brightness of a LED through a PWM technique.
-  </figcaption>
-</figure>
 
 <h1>Coding</h1>
 <p>
@@ -136,6 +123,8 @@ The components are:
         <li><span class="label codinglist">SetPeriod(int)</span></li>
         <li><span class="label codinglist">SetDutyCycle(int)</span></li>
         <li><span class="label codinglist">Delayms(int)</span></li>
+        <li><span class="label codinglist">DoUserFunction(callbackType)</span></li>
+        <li><span class="label codinglist">StopUserFunction()</span></li>
       </ul>
   </ul>  
 </p>
@@ -181,102 +170,7 @@ The components are:
   set the duty_cycle property as 0 or 100, respectively.
 </p>
 
-<h2 style="font-size: 25px;">Code:</h2>
-<p>  
-  First an <span class="label coding">PWM</span> class objet is declared, for example:
-</p>
-{% highlight cpp%}
-PWM pwmBlueLedPin(P8_13);
-{% endhighlight %}
-
-<p>  
-  After, a variable is declared, initialized, and used to set the initial pwm value.
-</p>
-{% highlight cpp%}
-int pwmValue = 50;
-pwmBlueLedPin.SetDutyCycle(pwmValue);
-{% endhighlight %}
-
-<p>  
-  Finally, this PWM value can be updated in this manner:
-</p>
-{% highlight cpp%}
-pwmBlueLedPin.SetDutyCycle(pwmValue += 10);
-{% endhighlight %}
-
-<p>  
-  The complete code for this application is shown in the next listing together with its 
-  corresponding execution video.
-</p>
-
-{% highlight cpp%}
-#include <iostream>
-#include "../../Sources/PWM.h"
-
-using namespace std;
-
-int main()
-{
-  string message = "Main program starting here...";
-  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
-  
-  message = "Setting a PWM mode on a blue led";
-  cout << RainbowText(message, "Blue") << endl;
-  PWM pwmBlueLedPin(P8_13);
-
-  int pwmValue = 50;
-  message = "Set a pwm duty cycle of 50%' on a blue led and wait 1 second";
-  cout << RainbowText(message, "Violet") << endl;
-  pwmBlueLedPin.SetDutyCycle(pwmValue); 
-
-  message = "If you want to stop the program, enter 'y' for yes";
-  cout << RainbowText(message, "Blue") << endl;
-  message = "Or enter 'w' for increase brightness or 's' for decrease it";
-  cout << RainbowText(message, "Blue") << endl;
-
-  char userInput = '\0';
-  while (userInput != 'y')
-  {
-      message = "Enter an option 'y', 'w', 's': ";
-      cout << RainbowText(message, "Blue");
-      cin >> userInput;
-
-      switch (userInput)
-      {
-      case 'w':
-        pwmBlueLedPin.SetDutyCycle(pwmValue += 10);
-        break;
-      case 's':
-        pwmBlueLedPin.SetDutyCycle(pwmValue -= 10);
-        break;
-      default:
-        break;
-      }
-  }
-
-  message = "Main program finishes here...";
-  cout << RainbowText(message,"Blue", "White","Bold") << endl;
-
-  return 0;
-}
-{% endhighlight %}
-
-<h2 style="font-size: 25px;">Execution of the program:</h2>
-<figure style="text-align: center; width:100%; 
-              margin-left: auto; 
-              margin-right: auto;">
-  <video width="100%" controls poster="/assets/Post19/VideoCover.png">
-    <source src="/assets/Post19/Video.mp4" type="video/mp4">
-  </video>
-  <figcaption>
-    Video: Execution of the program.
-  </figcaption>
-</figure>
-
-<h2 style="font-size: 25px;">Libraries code</h2>
-<p>
-  The final version of the methods is shown in the next listings. 
-</p>
+<h2 style="font-size: 25px;">Class code</h2>
 
 <p>  
   The file <span class="label coding">PWM.h</span> is:
@@ -287,15 +181,23 @@ int main()
 
 #include <string>
 #include <thread>
-
 #include "RAINBOWCOLORS.h"
 
-using namespace std;
+/* 
+  Declare a type for a function pointer
+  It is the construct for: using function_type = int (*) ()
+    function_type:  the function name
+    int: return type  
+    (*): the dereference operator due to the adddress of the function name
+    (): the arguments of the function, in this case void
+  Stores the address of a function 
+*/
+using callbackType = int (*)();
 
-const string PWM_PATH ("/sys/devices/platform/ocp/");
-const string EHRPWM0_PATH = "48300000.epwmss/48300200.pwm/pwm/";
-const string EHRPWM1_PATH = "48302000.epwmss/48302200.pwm/pwm/";
-const string EHRPWM2_PATH = "48304000.epwmss/48304200.pwm/pwm/";
+const std::string PWM_PATH ("/sys/devices/platform/ocp/");
+const std::string EHRPWM0_PATH = "48300000.epwmss/48300200.pwm/pwm/";
+const std::string EHRPWM1_PATH = "48302000.epwmss/48302200.pwm/pwm/";
+const std::string EHRPWM2_PATH = "48304000.epwmss/48304200.pwm/pwm/";
 
 /* The pwm class internal number of the pin*/
 enum ID {
@@ -311,32 +213,27 @@ class PWM
 {
   private:
     int id; /* The PWM number of the object */
-    string idMap[6];
-    string name;   /* The name of the PWM e.g. pwm-6:1 */
-    string path;   /* The full path to the PWM e.g. /sys/class/pwm/pwm-6:1 */
+    std::string idMap[6];
+    std::string name;   /* The name of the PWM e.g. pwm-6:1 */
+    std::string path;   /* The full path to the PWM e.g. /sys/class/pwm/pwm-6:1 */
     int period;
     int dutyCycle;
     int enable;
+    bool stopDutyCycleFlag = false;
+
+    std::thread functionThread;
     
     // Method to write the files
-    virtual int WriteFile(string, string, int);
+    virtual int WriteFile(std::string, std::string, int);
     // Method to enable the pwm on the pin
     virtual int Enable();
     // Method to enable the pwm on the pin
     virtual int Disable();
 
   public:
-    // Constructor whit 1 argument
-    PWM(int);
 
-    // Overload Constructor with 2 arguments
-    PWM(int, int);
-
-    // Interface method to set the period
-    virtual int SetPeriod(int);
-
-    // Interface method to set the duty cycle
-    virtual int SetDutyCycle(int);
+    // Default constructor
+    PWM(int id = P8_13, int period = 500000);
 
     // Interface method to get the period
     virtual int GetPeriod();
@@ -344,8 +241,20 @@ class PWM
     // Interface method to get the duty cycle
     virtual int GetDutyCycle();
 
+    // Interface method to set the period
+    virtual int SetPeriod(int);
+
+    // Interface method to set the duty cycle
+    virtual int SetDutyCycle(int);
+    
     // Delay method in milliseconds
     virtual void Delayms(int);
+
+    // Method to do execute an user function
+    virtual int DoUserFunction(callbackType);
+
+    // Method to stop the user function
+    virtual void StopUserFunction();
 
     // Destructor
     virtual ~PWM();
@@ -373,124 +282,70 @@ using namespace std;
 
 class CustomException : public exception 
 {
-    private:
-      string reason;
-    public:
-      CustomException (const char* why) : reason (why) {};
-      virtual const char* what() const noexcept 
-      {
-          return reason.c_str();
-      }
-};
-
-// Overload constructor with 1 argument
-PWM::PWM(int pwmPin)
-{
-    id = pwmPin;
-    
-    idMap[P8_13] = "P8.13";
-    idMap[P8_19] = "P8.19";
-    idMap[P9_14] = "P9.14";
-    idMap[P9_16] = "P9.16";
-    idMap[P9_21] = "P9.21";
-    idMap[P9_22] = "P9.22";
-
-    switch (pwmPin)
+  private:
+    string reason;
+  public:
+    CustomException (const char* why) : reason (why) {};
+    virtual const char* what() const noexcept 
     {
-    case P8_13:
-      name = EHRPWM2_PATH + "pwmchip6/pwm-6:1/";
-      break;
-    case P8_19:
-      name = EHRPWM2_PATH + "pwmchip6/pwm-6:0/";
-      break;
-    case P9_14:
-      name = EHRPWM1_PATH + "pwmchip3/pwm-3:0/";
-      break;
-    case P9_16:
-      name = EHRPWM1_PATH + "pwmchip3/pwm-3:1/";
-      break;
-    case P9_21:
-      name = EHRPWM0_PATH + "pwmchip1/pwm-1:1/";
-      break;
-    case P9_22:
-      name = EHRPWM0_PATH + "pwmchip1/pwm-1:0/";
-      break;
-    default:
-      break;
+      return reason.c_str();
     }
-
-    path = PWM_PATH + name;
-
-    cout  << RainbowText("Trying to enable the PWM pin: ","Pink") 
-          << RainbowText(idMap[pwmPin], "Pink", "Default", "Bold") << endl;
-    string commandString = "config-pin " + idMap[pwmPin] + " pwm";
-    const char* command = commandString.c_str();
-    system(command);
-
-    // Set the default period for the PWM behavior
-    SetPeriod(500000); 
-
-    // Enabling the PWM behavior on the pin
-    Enable();
-
-    cout  << RainbowText("Setting the PWM pin with a period of ", "Pink")
-          << RainbowText(to_string(GetPeriod()), "Pink") 
-          << RainbowText("ns was a success!", "Pink") << endl; 
-}
+};
 
 // Overload constructor with 2 arguments
 PWM::PWM(int pwmPin, int newPeriod)
 {
-    id = pwmPin;
-    
-    idMap[P8_13] = "P8.13";
-    idMap[P8_19] = "P8.19";
-    idMap[P9_14] = "P9.14";
-    idMap[P9_16] = "P9.16";
-    idMap[P9_21] = "P9.21";
-    idMap[P9_22] = "P9.22";
+  id = pwmPin;
+  period = newPeriod;
 
-    switch (pwmPin)
-    {
-    case P8_13:
-      name = EHRPWM2_PATH + "pwmchip6/pwm-6:1/";
-      break;
-    case P8_19:
-      name = EHRPWM2_PATH + "pwmchip6/pwm-6:0/";
-      break;
-    case P9_14:
-      name = EHRPWM1_PATH + "pwmchip3/pwm-3:0/";
-      break;
-    case P9_16:
-      name = EHRPWM1_PATH + "pwmchip3/pwm-3:1/";
-      break;
-    case P9_21:
-      name = EHRPWM0_PATH + "pwmchip1/pwm-1:1/";
-      break;
-    case P9_22:
-      name = EHRPWM0_PATH + "pwmchip1/pwm-1:0/";
-      break;
-    default:
-      break;
-    }
+  idMap[P8_13] = "P8.13";
+  idMap[P8_19] = "P8.19";
+  idMap[P9_14] = "P9.14";
+  idMap[P9_16] = "P9.16";
+  idMap[P9_21] = "P9.21";
+  idMap[P9_22] = "P9.22";
 
-    path = PWM_PATH + name;
+  switch (pwmPin)
+  {
+  case P8_13:
+    name = EHRPWM2_PATH + "pwmchip6/pwm-6:1/";
+    break;
+  case P8_19:
+    name = EHRPWM2_PATH + "pwmchip6/pwm-6:0/";
+    break;
+  case P9_14:
+    name = EHRPWM1_PATH + "pwmchip3/pwm-3:0/";
+    break;
+  case P9_16:
+    name = EHRPWM1_PATH + "pwmchip3/pwm-3:1/";
+    break;
+  case P9_21:
+    name = EHRPWM0_PATH + "pwmchip1/pwm-1:1/";
+    break;
+  case P9_22:
+    name = EHRPWM0_PATH + "pwmchip1/pwm-1:0/";
+    break;
+  default:
+    break;
+  }
 
-    cout  << RainbowText("Trying to enable the PWM pin: ","Pink") 
-          << RainbowText(idMap[pwmPin], "Pink", "Default", "Bold") << endl;
-    string commandString = "config-pin " + idMap[pwmPin] + " pwm";
-    const char* command = commandString.c_str();
-    system(command);
+  path = PWM_PATH + name;
 
-    // Set the period for the PWM behavior
-    SetPeriod(newPeriod); 
+  cout  << RainbowText("Trying to enable the PWM pin: ","Pink") 
+        << RainbowText(idMap[pwmPin], "Pink", "Default", "Bold") << endl;
+  string commandString = "config-pin " + idMap[pwmPin] + " pwm";
+  const char* command = commandString.c_str();
+  system(command);
 
-    // Enabling the PWM behavior on the pin
-    Enable();
+  // Set the period for the PWM behavior
+  SetPeriod(newPeriod); 
 
-    cout  << RainbowText("Setting the PWM pin with a period of ", "Pink")
-          << RainbowText(to_string(GetPeriod()), "Pink") 
-          << RainbowText("ns was a success!", "Pink") << endl; 
+  // Enabling the PWM behavior on the pin
+  Enable();
+
+  cout  << RainbowText("Setting the PWM pin with a period of ", "Pink")
+        << RainbowText(to_string(GetPeriod()), "Pink") 
+        << RainbowText("ns was a success!", "Pink") << endl; 
 }
 
 /*
@@ -498,22 +353,23 @@ PWM::PWM(int pwmPin, int newPeriod)
     @param string path: The system path of the file to be modified
     @param string feature: The name of file to be written
     @param int value: The value to be written to in the file
-    @return int: 0 written has succeeded
+    @return int: 1 written has succeeded
 */
 int PWM::WriteFile(string path, string feature, int value) 
 {
-    string fileName = path + feature;
+  string fileName = path + feature;
 
-    ofstream file(fileName, ios_base::out);
-    if (!file.is_open()) 
-    {
-      perror(("Error while opening file: " + fileName).c_str());
-      throw CustomException("Error in 'writeFile' method");
-    } 
-    file << value;
-    file.close();
-    Delayms(10); 
-    return 0;
+  ofstream file(fileName, ios_base::out);
+  if (!file.is_open()) 
+  {
+    perror(("Error while opening file: " + fileName).c_str());
+    throw CustomException("Error in 'writeFile' method");
+  } 
+  file << value;
+  file.close();
+  Delayms(10);
+  
+  return 1;
 }
 
 /*
@@ -523,7 +379,7 @@ int PWM::WriteFile(string path, string feature, int value)
 */
 int PWM::Enable()
 {
-    if (WriteFile(path, "enable", 1) == 0)
+    if (WriteFile(path, "enable", 1) == 1)
       return 1;
     else 
     {
@@ -539,53 +395,12 @@ int PWM::Enable()
 */
 int PWM::Disable()
 {
-    if (WriteFile(path, "enable", 0) == 0)
+    if (WriteFile(path, "enable", 0) == 1)
       return 1;
     else 
     {
       perror("Error disabling the PWM on the pin");
       throw CustomException("Error in DisablePWM method");
-    }
-}
-
-/*
-    Public method to set the period of the PWM
-    The choosen period is in nanoseconds 
-    @param int: The desired period
-    @return int: 1 set period has succeeded / throw an exception if not
-*/
-int PWM::SetPeriod(int newPeriod)
-{
-    period = newPeriod;
-    if (WriteFile(path, "period", period) == 0)
-      return 1;
-    else 
-    {
-      perror("Error setting the PWM period for the pin");
-      throw CustomException("Error in WritePWMPeriod method");
-    }
-}
-
-/*
-    Public method to set the duty cycle of the PWM
-    @param int: The desired dutcy cycle in pertentage: 0-100
-    @return int: 1 set duty cycle has succeeded / throw an exception if not
-*/
-int PWM::SetDutyCycle(int newDutyCycle)
-{
-    if (newDutyCycle >= 0 && newDutyCycle <= 100)
-      dutyCycle = static_cast<int>(newDutyCycle / 100.0 * period);
-    else if (newDutyCycle < 0)
-      dutyCycle = 0;
-    else
-      dutyCycle = 100;
-
-    if (WriteFile(path, "duty_cycle", dutyCycle) == 0)
-      return 1;
-    else 
-    {
-      perror("Error setting the PWM duty cycle for the pin");
-      throw CustomException("Error in WritePWMDutyCycle method");
     }
 }
 
@@ -608,22 +423,98 @@ int PWM::GetDutyCycle()
 }
 
 /*
-    Public method to do a delay in milliseconds
-    @param int: duration of the delay
+    Public method to set the period of the PWM
+    The choosen period is in nanoseconds 
+    @param int: The desired period
+    @return int: 1 set period has succeeded / throw an exception if not
+*/
+int PWM::SetPeriod(int newPeriod)
+{
+    period = newPeriod;
+    if (WriteFile(path, "period", period) == 1)
+      return 1;
+    else 
+    {
+      perror("Error setting the PWM period for the pin");
+      throw CustomException("Error in WritePWMPeriod method");
+    }
+}
+
+/*
+    Public method to set the duty cycle of the PWM
+    @param int: The desired dutcy cycle in pertentage: 0-100
+    @return  int: 1 set duty cycle has succeeded / throw an exception if not
+            int: 0 if the user decides to stop this method
+*/
+int PWM::SetDutyCycle(int newDutyCycle)
+{
+  while (stopDutyCycleFlag == false)
+  {
+    if (newDutyCycle >= 0 && newDutyCycle <= 100)
+      dutyCycle = static_cast<int>(newDutyCycle / 100.0 * period);
+    else if (newDutyCycle < 0)
+      dutyCycle = 0;
+    else
+      dutyCycle = 100;
+    
+    if (WriteFile(path, "duty_cycle", dutyCycle) == 1)
+      return 1;
+    else 
+    {
+      perror("Error setting the PWM duty cycle for the pin");
+      throw CustomException("Error in WritePWMDutyCycle method");
+    }
+  }
+  return 0;
+}
+
+/*
+  Public method to do a delay in milliseconds
+  @param int: duration of the delay
 */
 void PWM::Delayms(int millisecondsToSleep) 
 {
   this_thread::sleep_for(chrono::milliseconds(millisecondsToSleep));
 }
 
+/*
+  Public callback method to do a user customized function when is called
+  @param callbackType: user function pointer to execute 
+  @return int: 1 the user function was called      
+*/
+
+int PWM::DoUserFunction (callbackType callbackFunction)
+{
+  string message = "'UserFunction' method has been activated!";
+  cout << RainbowText(message, "Orange") << endl;
+
+  functionThread = thread(callbackFunction);
+
+  return 1;
+}
+
+/*
+    Public method to stop the user function execution
+*/
+void PWM::StopUserFunction()
+{
+  stopDutyCycleFlag = true;
+}
+
 // Destructor
 PWM::~PWM() 
 {
+  if (functionThread.joinable())
+    functionThread.join();
+
+  // Turn Off the duty cycle on the pin
+  this->SetDutyCycle(0);
+
   // Disabling the pwm on the pin
-  Disable();
-  Delayms(10);
+  this->Disable();
+  this->Delayms(10);
   cout  << RainbowText("Destroying the GPIO_PIN with path: ","Gray")
-        << RainbowText(path, "Pink", "Default", "Bold") << endl;
+        << RainbowText(path, "Gray", "Default", "Bold") << endl;
 }
 {% endhighlight %}
 
