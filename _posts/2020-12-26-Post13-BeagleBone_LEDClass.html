@@ -1,0 +1,317 @@
+---
+layout: post
+title: "C++ LED Class"
+date:   2020-12-23 08:00:00 -0600
+categories: BeagleBone
+---
+
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 5%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post13/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show a Button C++ class implementation.
+</p>
+
+<h1>Coding</h1>
+The methods coded to the C++ class <span class="label coding">BUTTON</span> are:  
+<ul>
+  <li>Public methods: </li>
+    <ul>
+      <li><span class="label codinglist">int ReadButton()</span></li>
+      <li><span class="label codinglist">int WaitForButton()</span></li>
+      <li><span class="label codinglist">int WaitForButton(int)</span></li>
+      <li><span class="label codinglist">int WhenButtonWasPressed(callbackType)</span></li>
+      <li><span class="label codinglist">void StopWaitForButton()</span></li>
+    </ul>
+</ul> 
+
+<h2 style="font-size: 25px;">Code</h2>
+<h3>LED.h</h3>
+{% highlight cpp%}
+#ifndef LED_H
+#define LED_H
+
+#include <thread>
+#include "GPIO.h"
+
+class LED: public GPIO 
+{
+  private:
+    bool stopBlinkFlag = false;
+    bool stopFlashFlag = false;
+    bool stopHeartBeatFlag = false;
+    
+    std::thread blinkThread;
+    std::thread flashThread;
+    std::thread heartBeatThread;
+    
+    void MakeBlink(int); 
+    void MakeFlash(int, int);
+    void MakeHeartBeat(int, int);
+  public:
+    // Overload constructor
+    LED (int);
+
+    // Method to turn on the Led
+    void TurnOn();
+
+    // Method to turn off the Led
+    void TurnOff();
+
+    // Method for doing a blinking pattern
+    void Blink(int);
+
+    // Method for doing a flashing pattern
+    void Flash(int, int);
+
+    // Method for doing a digital heart beat pattern
+    void HeartBeat(int, int);
+
+    // Method for stoping a blinking
+    void StopBlink();
+
+    // Method for stoping a flashing
+    void StopFlash();
+    
+    // Method for stoping a digital heart beat
+    void StopHeartBeat();
+    
+    // Destructor
+    ~LED();
+};
+
+#endif // LED_H
+{% endhighlight %}
+
+<h3>LED.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+#include <chrono>
+#include <thread>
+
+#include "LED.h"
+
+// Overload constructor
+LED::LED(int newId) : GPIO(newId, OUTPUT) {}
+
+/*
+    Public method to turn on the Led attached to the pin 
+*/
+void LED::TurnOn()
+{
+  this->DigitalWrite(HIGH);
+}
+
+/*
+    Public method to turn on the Led attached to the pin 
+*/
+void LED::TurnOff()
+{
+  this->DigitalWrite(LOW);
+}
+
+
+/*
+    Public method to make a blink on the pin 
+    @param int: The desired duration in milliseconds
+*/
+void LED::Blink(int duration)
+{
+    string message; 
+    message = "Blinking has been activated with duration of: ";
+    message += to_string(duration) + "ms on pin: " + to_string(id);
+    
+    std::cout << RainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+    blinkThread = std::thread(&LED::MakeBlink, this, duration);
+}
+
+/*
+    Private method that contains the routine to blink 
+    @param int: The desired duration in milliseconds
+*/
+void LED::MakeBlink(int duration)
+{
+    while (this->stopBlinkFlag == false)
+    {
+        DigitalWrite(HIGH);
+        Delayms(duration);
+        DigitalWrite(LOW);
+        Delayms(duration);
+    }
+}
+
+/*
+    Public method to stop the blinking on the pin 
+    @param bool: Flag to stop the thread
+*/
+void LED::StopBlink ()
+{
+    stopBlinkFlag = true;
+}
+
+/*
+    Public method to make a flash on the pin 
+    @param int: The desired time ON in milliseconds
+    @param int: The desired time OFF in milliseconds
+*/
+void LED::Flash(int timeOn, int timeOff)
+{
+    string message 
+    {
+        "Flashing has been activated time on: "
+        + to_string(timeOn) + "ms and time off: " 
+        + to_string(timeOff) + "ms on pin: " + to_string(id)
+    };
+    std::cout << RainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+    flashThread = std::thread(&LED::MakeFlash, this, timeOn, timeOff);
+}
+
+/*
+    Private method that contains the routine to flash
+    @param int: The desired time ON in milliseconds
+    @param int: The desired time OFF in milliseconds
+*/
+void LED::MakeFlash(int timeOn, int timeOff)
+{
+    while (this->stopFlashFlag == false)
+    {
+        DigitalWrite(HIGH);
+        Delayms(timeOn);
+        DigitalWrite(LOW);
+        Delayms(timeOff);
+    }
+}
+
+/*
+    Public method to stop the flash on the pin 
+    @param bool: Flag to stop the thread
+*/
+void LED::StopFlash ()
+{
+    stopFlashFlag = true;
+}
+
+/*
+    Public method to make a digital heart beat on the pin 
+    @param int: The desired time On of the pulse in milliseconds
+    @param int: The desired ratio between the pulses and the pause in the pattern
+*/
+void LED::HeartBeat(int timeOn, int ratio)
+{
+    string message 
+    {
+        "Heart beat has been activated with a time ON of: "
+        + to_string(timeOn) + "ms on pin: " + to_string(id)
+        + " with a ratio pulse/pause of: " + to_string(ratio)
+    };
+    std::cout << RainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+    heartBeatThread = std::thread(&LED::MakeHeartBeat, this, timeOn, ratio);
+}
+
+/*
+    Private method that contains the routine to do the digital heart beat 
+    @param int: The desired time On of the pulse in milliseconds
+    @param int: The desired ratio between the pulses and the pause in the pattern
+*/
+void LED::MakeHeartBeat(int timeOn, int ratio)
+{
+  while (this->stopHeartBeatFlag == false)
+  {
+    for (int i = 0; i < 2; i++)
+    {
+      DigitalWrite(HIGH);
+      Delayms(timeOn);
+      DigitalWrite(LOW);
+      Delayms(timeOn);
+    }
+    Delayms(timeOn*ratio);
+  }
+}
+
+/*
+    Public method to stop the digital heart beat on the pin 
+    @param bool: Flag to stop the thread
+*/
+void LED::StopHeartBeat ()
+{
+    stopHeartBeatFlag = true;
+}
+
+// Destructor
+LED::~LED()
+{
+    if (blinkThread.joinable())
+        blinkThread.join();
+    if (flashThread.joinable())
+        flashThread.join();
+    if (heartBeatThread.joinable())
+        heartBeatThread.join();
+}
+{% endhighlight %}
+
+Se you in the next post.
