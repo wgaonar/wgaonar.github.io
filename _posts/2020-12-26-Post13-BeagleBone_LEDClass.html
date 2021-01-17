@@ -122,17 +122,39 @@ The methods coded to the C++ class <span class="label coding">BUTTON</span> are:
 </p>
 
 <p>  
-  The <span class="label coding">Blink(int)</span> method receives the duration in milliseconds of blinking from the main program. It call the <span class="label coding">MakeBlink(int)</span> method to do the blinking.
+  The <span class="label coding">Blink(int)</span> method receives the duration in milliseconds of blinking from the main program. It calls the <span class="label coding">MakeBlink(int)</span> method to do the blinking.
 </p>
+
 <p>
-  The <span class="label coding">MakeBlink()</span> method contains the routine to do the blinking which uses the <span class="label coding">digitalWrite()</span> and <span class="label coding"> Delayms()</span> methods which are inherited from the GPIO class..  The most important contribution is about the way that blinking is performed. It uses a <b>thread</b> constructed by means of a function pointer to do the blink pattern. The advantage is that one o more blinking patterns can be done at the <span style="color: red;font-weight: bold;">same same time in a parallel way</span> on different Leds.
+  The <span class="label coding">Flash(int, int)</span> method receives two values from the main program, the duration in milliseconds to turn the Led On and Off respectively. It calls the <span class="label coding">MakeFlash(int, int)</span> method to do the flashing.
 </p>
+
+<p>
+  The <span class="label coding">HeartBeat(int, int)</span> method receives two values from the main program. The first is the time in milliseconds to turn the Led On and Off two times, and the second is a ratio to keep the Led Off during a certain time. It calls the <span class="label coding">MakeHeartBeat(int, int)</span> method to do the heart beat pattern.
+</p>
+
+<p>
+  The <span class="label coding">MakeBlink()</span> method contains the routine to do the blinking which uses the <span class="label coding">digitalWrite()</span> and <span class="label coding"> Delayms()</span> methods inherited from the GPIO class.  The most important contribution is about the way that blinking is performed. It uses a <b>thread</b> constructed by means of a function pointer to do the blink pattern. The advantage is that one o more blinking patterns can be done at the <span style="color: red;font-weight: bold;">same same time in a parallel way</span> on different Leds.
+</p>
+
+<p>
+  The <span class="label coding">MakeFlash()</span> method contains the routine to do the flashing. Likewise to the <span class="label coding">MakeBlink()</span> method, it uses the <span class="label coding">digitalWrite()</span> and <span class="label coding"> Delayms()</span> methods inherited from the GPIO class and it is performed through a <b>thread</b> constructed by means of a function pointer to do the flash pattern.
+</p>
+
+<p>
+  The <span class="label coding">MakeHeartBeat()</span> method contains the routine to do "digital" heart beat beat pattern which consists in turning the Led On and Off two times and keep the Led Off during a time calculated as the multiplication of the time On by this ratio value. Likewise to the <span class="label coding">MakeBlink()</span> method, it uses the <span class="label coding">digitalWrite()</span> and <span class="label coding"> Delayms()</span> methods inherited from the GPIO class and it is performed through a <b>thread</b> constructed by means of a function pointer to do the heart beat pattern.
+</p>
+
 <p>
   The <span class="label coding">StopBlink()</span> method lets the user stops the blinking pattern from the main program. This method sets the private boolean variable <span class="label coding">stopBlinkFlag</span> to true letting to the <span class="label coding">MakeBlink()</span> method completes or finishes the constructed thread.
 </p>
 
 <p>
-  
+  The <span class="label coding">StopFlash()</span> method lets the user stops the flash pattern from the main program. This method sets the private boolean variable <span class="label coding">stopFlashFlag</span> to true letting to the <span class="label coding">MakeFlash()</span> method completes or finishes the constructed thread.
+</p>
+
+<p>
+  The <span class="label coding">StopHeartBeat()</span> method lets the user stops the heart beat pattern from the main program. This method sets the private boolean variable <span class="label coding">stopHeartBeatFlag</span> to true letting to the <span class="label coding">MakeHeartBeat()</span> method completes or finishes the constructed thread.
 </p>
 
 <h3>LED.h</h3>
@@ -313,7 +335,7 @@ void LED::HeartBeat(int timeOn, int ratio)
         + to_string(timeOn) + "ms on pin: " + to_string(id)
         + " with a ratio pulse/pause of: " + to_string(ratio)
     };
-    std::cout << RainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+    std::cout << RainbowText(message, "Pink", "Default", "Bold") << endl; 
     heartBeatThread = std::thread(&LED::MakeHeartBeat, this, timeOn, ratio);
 }
 
