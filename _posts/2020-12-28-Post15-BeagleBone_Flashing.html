@@ -1,0 +1,426 @@
+---
+layout: post
+title: "Flashing a pair of Leds with the BeagleBone"
+date:   2020-12-29 08:00:00 -0600
+categories: BeagleBone
+---
+
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post14/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I will show you how to make a flashing on a pair of Leds, i.e., turn
+  on and off a Led but with a different duration between the state on and state off.  
+  I will be using the C++ library described in the post 
+  <a href="{% post_url 2020-12-22-Post10-BeagleBone_LEDClass %}"> Beaglebone and C++</a> to 
+  access and control the general purpose digital pins (GPIO) pins of the BeagleBone.
+</p>
+
+<h1>Circuit and components</h1>
+
+<p>
+  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
+  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
+  as Arduino. It is so muy important to avoid damage to the board, especially
+  when you are working with buttons or digital inputs in general. 
+</p>
+
+The components are:
+<ul>
+  <li>1 Blue Led of 3mm</li>
+  <li>1 Resistor of 1KΩ</li>
+  <li>1 White Led of 3mm</li>
+  <li>1 Resistor of 1KΩ</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post15/Circuit_bb.jpg"
+    alt="Circuit_bb.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to make a flashing on a pair of Leds.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+
+<p>
+  I added the corresponding methods to do the flashing to the class called <b>LED</b> 
+  and introduced in the post <a href="{% post_url 2020-12-28-Post14-BeagleBone_Blinking %}"> 
+  Blinking a pair of Leds with the BeagleBone</a> who is derived from GPIO class 
+  mentioned earlier in the introduction. The methods are:
+  <ul>
+    <li>Public methods: </li>
+    <ul>
+      <li><span class="label codinglist">flash()</span></li>
+      <li><span class="label codinglist">stopFlash()</span></li>
+    </ul>
+    <li>Private methods</li>
+    <ul>
+      <li><span class="label codinglist">makeFlash()</span></li>
+    </ul>
+  </ul>  
+</p>
+<p>  
+  The <span class="label coding">flash()</span> method receives the duration for turning on 
+  and the duration for turning off the Led from the main program and it constructs the 
+  thread for the flashing pattern through a function pointer called  
+  <span class="label coding">makeFlash()</span>. This method contains the routine to do the 
+  flashing. The most important contribution is about the way that flashing is performed. 
+  through a <b>thread</b> execution. The advantage is that one o more flashing patterns can be 
+  done at the <span style="color: red;font-weight: bold;">same time in a parallel way</span>.
+</p>
+
+<p>
+  The thread construction is done by the next line, where the 
+  <span class="label coding">makeFlash()</span>  method is called
+  as a function pointer in the thread. It receieves 2 arguments: 
+  <span class="label coding">timeOn</span> and 
+  <span class="label coding">timeOff</span>, which corresponding to
+  the duration that the led will be On and Off, respectively.
+</p>
+
+{% highlight cpp%}
+flashThread = std::thread(&LED::makeFlash, this, timeOn, timeOff);
+{% endhighlight %}
+
+<p>
+  The code that makes the flashing uses the 
+  <span class="label coding">digitalWrite()</span>  and 
+  <span class="label coding">delayms()</span> methods which 
+  are inherited from the GPIO class.
+</p>
+
+{% highlight cpp%}
+while (this->stopFlashFlag == false)
+{
+  digitalWrite(HIGH);
+  delayms(timeOn);
+  digitalWrite(LOW);
+  delayms(timeOff);
+}
+{% endhighlight %}
+
+<p>
+  To stop the flashing pattern the user can access the public method 
+  <span class="label coding">stopFlash()</span>  and set
+  the boolean variable <span class="label coding">stopFlashFlag</span> to true. 
+  The next line shows how the method reads and assigns the new value to this variable.
+</p>
+
+{% highlight cpp%}
+stopFlashFlag = newStopFlashFlag;
+{% endhighlight %}
+
+<p>
+  Finally, in the destructor of the LED class, the flashing thread is waited to join
+  once the variable stopFlash has been set to true from the main program and the 
+  destructor of the base class GPIO is called to unset the pin assigned to the Led. 
+</p>
+
+{% highlight cpp%}
+if (flashThread.joinable())
+  flashThread.join();
+{% endhighlight %}
+
+<p>  
+  This occurs when the user enters the character <span class="label coding">'y'</span> from 
+  the keyboard due that the  main thread of the program can be used to wait for this input 
+  without affecting the flashing.
+</p>
+
+{% highlight cpp%}
+char userInput = '\0';
+while (userInput != 'y')
+{
+  message = "Do you want to stop flashing? Enter 'y' for yes: ";
+  cout << rainbowText(message, "Violet");
+  cin >> userInput;
+  if (userInput == 'y') {
+    ledPinBlue.stopFlash(true);
+    ledPinWhite.stopFlash(true);
+  }
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Complete code</h2>
+<p>
+  The code is shown in the next listings:
+</p>
+
+<h3 style="font-size: 20px;">LED.h</h3>
+{% highlight cpp%}
+#ifndef LED_H
+#define LED_H
+#include <thread>
+#include "GPIO.h"
+class LED: public GPIO 
+{
+  private:
+    bool stopBlinkFlag = false;
+    bool stopFlashFlag = false;
+    std::thread blinkThread;
+    std::thread flashThread;
+    void makeBlink(int); 
+    void makeFlash(int, int);
+
+  public:
+    // Overload constructor
+    LED (int, int);
+
+    // Method for doing a blinking pattern
+    void blink(int);
+
+    // Method for doing a flashing pattern
+    void flash(int, int);
+
+    // Method for stoping a blinking
+    void stopBlink(bool);
+
+    // Method for stoping a flashing
+    void stopFlash(bool);
+
+    // Destructor
+    virtual ~LED();
+};
+#endif // LED_H
+{% endhighlight %}
+
+<h3 style="font-size: 20px;">LED.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include "LED.h"
+#include "../../Sources/RainbowColors.h"
+
+// Overload constructor
+LED::LED(int newId, int newMode) : GPIO(newId, newMode) {}
+
+/*
+  Public method to make a blink on the pin 
+  @param int: The desired duration in milliseconds
+*/
+void LED::blink(int duration)
+{
+  string message 
+  {
+    "Blinking has been activated with duration of: "
+    + to_string(duration) + "ms on pin: " + to_string(id)
+  };
+  std::cout << rainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+  blinkThread = std::thread(&LED::makeBlink, this, duration);
+}
+
+/*
+  Private method that contains the routine to blink 
+  @param int: The desired duration in milliseconds
+*/
+void LED::makeBlink(int duration)
+{
+  while (this->stopBlinkFlag == false)
+  {
+    digitalWrite(HIGH);
+    delayms(duration);
+    digitalWrite(LOW);
+    delayms(duration);
+  }
+}
+
+/*
+  Public method to stop the blinking on the pin 
+  @param bool: Flag to stop the thread
+*/
+void LED::stopBlink (bool newStopBlinkFlag)
+{
+  stopBlinkFlag = newStopBlinkFlag;
+}
+
+/*
+    Public method to make a flash on the pin 
+    @param int: The desired time ON in milliseconds
+    @param int: The desired time OFF in milliseconds
+*/
+void LED::flash(int timeOn, int timeOff)
+{
+  string message 
+  {
+    "Flashing has been activated time on: "
+    + to_string(timeOn) + "ms and time off: " 
+    + to_string(timeOff) + "ms on pin: " + to_string(id)
+  };
+  std::cout << rainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+  flashThread = std::thread(&LED::makeFlash, this, timeOn, timeOff);
+}
+
+/*
+  Private method that contains the routine to flash
+  @param int: The desired time ON in milliseconds
+  @param int: The desired time OFF in milliseconds
+*/
+void LED::makeFlash(int timeOn, int timeOff)
+{
+  while (this->stopFlashFlag == false)
+  {
+    digitalWrite(HIGH);
+    delayms(timeOn);
+    digitalWrite(LOW);
+    delayms(timeOff);
+  }
+}
+
+/*
+  Public method to stop the blinking on the pin 
+  @param bool: Flag to stop the thread
+*/
+void LED::stopFlash (bool newStopFlashFlag)
+{
+  stopFlashFlag = newStopFlashFlag;
+}
+
+LED::~LED()
+{
+  if (blinkThread.joinable())
+    blinkThread.join();
+  if (flashThread.joinable())
+    flashThread.join();
+}
+{% endhighlight %}
+
+<h3 style="font-size: 20px;">Listing2.2.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+#include "GPIO.h"
+#include "LED.h"
+
+using namespace std;
+
+int main()
+{
+  string message = "Main program starting here...";
+  cout << rainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  LED ledPinBlue(P8_18,OUTPUT);
+  LED ledPinWhite(P8_26, OUTPUT);
+
+  message = "Start a flashing on a blue led";
+  cout << rainbowText(message, "Blue") << endl;
+  ledPinBlue.flash(50,500);
+
+  message = "Start a flashing on a white led";
+  cout << rainbowText(message, "White") << endl;
+  ledPinWhite.flash(100, 1000);
+
+  char userInput = '\0';
+  while (userInput != 'y')
+  {
+    message = "Do you want to stop flashing? Enter 'y' for yes: ";
+    cout << rainbowText(message, "Violet");
+    cin >> userInput;
+    if (userInput == 'y') {
+        ledPinBlue.stopFlash(true);
+        ledPinWhite.stopFlash(true);
+    }
+  }
+    
+  message = "Main program finishes here...";
+  cout << rainbowText(message,"Blue", "White","Bold") << endl;
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post15/VideoCover.png">
+    <source src="/assets/Post15/Video.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post.

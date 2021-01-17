@@ -1,0 +1,322 @@
+---
+layout: post
+title: "Reading a button Part II"
+date:   2021-01-06 08:00:00 -0600
+categories: BeagleBone
+---
+
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post18/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I will continue to show you how to read a button with the BeagleBone Black.  
+  In the   
+  <a href="{% post_url 2021-01-05-Post17-BeagleBone_ReadAButton-Part-I %}"> first entry</a> 
+  I showed how to read an input from a button doing <i>POLLING</i> in the code, i.e., 
+  checking continuously for the state of the button inside the main program. 
+</p>
+<p>
+  In this post, I show a new method named <span class="label coding">WaitForButton()</span> 
+  to the C++ class <span class="label coding">BUTTON</span> that stop the main program 
+  until a button has been pressed.
+</p>
+
+<h1>Circuit and components</h1>
+
+<p>
+  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
+  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
+  as Arduino. It is so muy important to avoid damage to the board, especially
+  when you are working with buttons or digital inputs in general. 
+</p>
+
+The components are:
+<ul>
+  <li>1 Resistor of 10KΩ as a pull-down resistor</li>
+  <li>1 Push button of 12mm</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post18/Circuit_bb.jpg"
+    alt="Circuit_bb.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to read the input from a button.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>
+  I added the corresponding methods to read a button into the class <b>BUTTON</b> 
+  who is derived from GPIO class. The methods are:
+  <ul>
+    <li>Public methods: </li>
+    <ul>
+      <li><span class="label codinglist">WaitForButton()</span></li>
+      <li><span class="label codinglist">WaitForButton(int)</span></li>
+    </ul>
+  </ul>  
+</p>
+
+<p>  
+  The <span class="label coding">WaitForButton()</span> method, first checks if the GPIO 
+  attached to a button has been set up as INPUT and then wait until the button has changed
+  from a <span class="label coding">LOW</span> state to a 
+  <span class="label coding">HIGH</span> state. This means the button has been pressed.
+</p>
+{% highlight cpp%}
+int BUTTON::WaitForButton()
+{
+  if (this->mode != INPUT)
+  {
+    perror("'waitForButton' method only works on INPUT mode");
+    return -1;
+  }
+  string message;
+
+  WriteFile(path, "edge", "rising");
+  while (stopWaitForButtonFlag == false)
+  {
+    previousValueOnPin = ReadButton(); 
+    if (previousValueOnPin == LOW)
+      break; 
+  }
+  while (stopWaitForButtonFlag == false)
+  {
+    if (ReadButton() == HIGH)
+      break; 
+  }
+  if (previousValueOnPin != valueOnPin)
+  {
+    message = "A RISING edge was detected!";
+    cout << RainbowText(message, "Pink") << endl;
+    return 1;
+  }
+  return 0;
+}
+{% endhighlight %}
+
+<p>  
+  The second method <span class="label coding">WaitForButton(int)</span> is an overload of the first.
+  The difference consists that this method receives <span style="color: red;">one</span> 
+  of the next types of transition on the pin:
+  <ul>
+    <li>RISING</li>
+    <li>FALLING</li>
+    <li>BOTH</li>
+  </ul>
+</p>
+{% highlight cpp%}
+int BUTTON::WaitForButton(int edge = RISING)
+{
+  if (this->mode != INPUT)
+  {
+    perror("'waitForButton' method only works on INPUT mode");
+    return -1;
+  }
+  string message;
+  switch (edge)
+  {
+  case RISING:
+    WriteFile(path, "edge", "rising");
+    while (stopWaitForButtonFlag == false)
+    {
+      previousValueOnPin = ReadButton(); 
+      if (previousValueOnPin == LOW)
+        break; 
+    }
+    while (stopWaitForButtonFlag == false)
+    {
+      if (ReadButton() == HIGH)
+        break; 
+    }
+    if (previousValueOnPin != valueOnPin)
+    {
+      message = "A RISING edge was detected!";
+      cout << RainbowText(message, "Pink") << endl;
+      return 1;
+    }
+    break;
+  case FALLING:
+    WriteFile(path, "edge", "falling");
+    while (stopWaitForButtonFlag == false)
+    {
+      previousValueOnPin = ReadButton(); 
+      if (previousValueOnPin == HIGH)
+        break; 
+    }
+    while (stopWaitForButtonFlag == false)
+    {
+      if (ReadButton() == LOW)
+        break; 
+    }
+    if (previousValueOnPin != valueOnPin)
+    {
+      message = "A FALLING edge was detected!";
+      cout << RainbowText(message, "Pink") << endl;
+      return 1;
+    }
+    break;
+  case BOTH:
+    WriteFile(path, "edge", "both");
+    previousValueOnPin = ReadButton();
+    while (stopWaitForButtonFlag == false)
+    {
+      if (previousValueOnPin != ReadButton())
+      {
+        message = "A RISING OR FALLING edge was detected!";
+        cout << RainbowText(message, "Yellow") << endl;
+        return 1;
+      }
+    }
+    break;
+  }
+  return 0;
+}
+{% endhighlight %}
+
+<p>
+  The button can be declared as a <span class="label coding">BUTTON</span> object
+  specifying the pin attached to it:
+</p>
+
+{% highlight cpp%}
+BUTTON redButtonPin(P8_08);
+{% endhighlight %}
+
+<p>
+  In the main program, only a single line makes to wait for the press of a button, 
+  before continue with the next line of code:
+</p>
+
+{% highlight cpp%}
+redButtonPin.WaitForButton();
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Complete code</h2>
+<p>
+  The code is shown in the next listing:
+</p>
+
+<h3 style="font-size: 20px;">Listing3.2.cpp</h3>
+{% highlight cpp%}
+#include <iostream>
+#include "../../Sources/GPIO.h"
+#include "../../Sources/BUTTON.h"
+
+using namespace std;
+
+int main()
+{
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  BUTTON redButtonPin(P8_08);
+  message = "The program is waiting for a press on a Button\nPlease, press the red button!";
+  cout << endl << RainbowText(message, "Red") << endl;
+
+  redButtonPin.WaitForButton();
+  message = "The red button was pressed!!!";
+  cout << RainbowText(message, "Red") << endl;
+  
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post18/VideoCover.png">
+    <source src="/assets/Post18/Video.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post.
