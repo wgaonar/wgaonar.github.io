@@ -199,7 +199,7 @@ class BUTTON : public GPIO
 #endif // BUTTON_H
 {% endhighlight %}
 
-<h3><BUTTON.cpp/h3>
+<h3>BUTTON.cpp</h3>
 {% highlight cpp%}
 #include <iostream>
 #include <chrono>
@@ -362,9 +362,9 @@ int BUTTON::WhenButtonWasPressed(callbackType callbackFunction)
     Public method to stop function executed whe the button was pressed
     @param bool: Flag to stop the thread
 */
-void BUTTON::StopWaitForButton(bool newStopWaitForButtonFlag)
+void BUTTON::StopWaitForButton()
 {
-  stopWaitForButtonFlag = newStopWaitForButtonFlag;
+  stopWaitForButtonFlag = true;
 }
 
 // Destructor
