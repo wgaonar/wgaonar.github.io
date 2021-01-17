@@ -158,6 +158,7 @@ The methods coded to the C++ class <span class="label coding">BUTTON</span> are:
 </p>
 
 <h3>LED.h</h3>
+
 {% highlight cpp%}
 #ifndef LED_H
 #define LED_H
@@ -215,6 +216,7 @@ class LED: public GPIO
 {% endhighlight %}
 
 <h3>LED.cpp</h3>
+
 {% highlight cpp%}
 #include <iostream>
 #include <chrono>
@@ -226,7 +228,7 @@ class LED: public GPIO
 LED::LED(int newId) : GPIO(newId, OUTPUT) {}
 
 /*
-    Public method to turn on the Led attached to the pin 
+  Public method to turn on the Led attached to the pin 
 */
 void LED::TurnOn()
 {
@@ -234,31 +236,30 @@ void LED::TurnOn()
 }
 
 /*
-    Public method to turn on the Led attached to the pin 
+  Public method to turn on the Led attached to the pin 
 */
 void LED::TurnOff()
 {
   this->DigitalWrite(LOW);
 }
 
-
 /*
-    Public method to make a blink on the pin 
-    @param int: The desired duration in milliseconds
+  Public method to make a blink on the pin 
+  @param int: The desired duration in milliseconds
 */
 void LED::Blink(int duration)
 {
-    string message; 
-    message = "Blinking has been activated with duration of: ";
-    message += to_string(duration) + "ms on pin: " + to_string(id);
-    
-    std::cout << RainbowText(message, "Pink", "Default", "Bold") << endl; 
-    blinkThread = std::thread(&LED::MakeBlink, this, duration);
+  string message; 
+  message = "Blinking has been activated with duration of: ";
+  message += to_string(duration) + "ms on pin: " + to_string(id);
+  
+  std::cout << RainbowText(message, "Pink", "Default", "Bold") << endl; 
+  blinkThread = std::thread(&LED::MakeBlink, this, duration);
 }
 
 /*
-    Private method that contains the routine to blink 
-    @param int: The desired duration in milliseconds
+  Private method that contains the routine to blink 
+  @param int: The desired duration in milliseconds
 */
 void LED::MakeBlink(int duration)
 {
@@ -273,11 +274,10 @@ void LED::MakeBlink(int duration)
 
 /*
   Public method to stop the blinking on the pin 
-  @param bool: Flag to stop the thread
 */
 void LED::StopBlink ()
 {
-    stopBlinkFlag = true;
+  stopBlinkFlag = true;
 }
 
 /*
@@ -298,9 +298,9 @@ void LED::Flash(int timeOn, int timeOff)
 }
 
 /*
-    Private method that contains the routine to flash
-    @param int: The desired time ON in milliseconds
-    @param int: The desired time OFF in milliseconds
+  Private method that contains the routine to flash
+  @param int: The desired time ON in milliseconds
+  @param int: The desired time OFF in milliseconds
 */
 void LED::MakeFlash(int timeOn, int timeOff)
 {
@@ -314,12 +314,11 @@ void LED::MakeFlash(int timeOn, int timeOff)
 }
 
 /*
-    Public method to stop the flash on the pin 
-    @param bool: Flag to stop the thread
+  Public method to stop the flash on the pin 
 */
 void LED::StopFlash ()
 {
-    stopFlashFlag = true;
+  stopFlashFlag = true;
 }
 
 /*
@@ -329,14 +328,14 @@ void LED::StopFlash ()
 */
 void LED::HeartBeat(int timeOn, int ratio)
 {
-    string message 
-    {
-        "Heart beat has been activated with a time ON of: "
-        + to_string(timeOn) + "ms on pin: " + to_string(id)
-        + " with a ratio pulse/pause of: " + to_string(ratio)
-    };
-    std::cout << RainbowText(message, "Pink", "Default", "Bold") << endl; 
-    heartBeatThread = std::thread(&LED::MakeHeartBeat, this, timeOn, ratio);
+  string message 
+  {
+    "Heart beat has been activated with a time ON of: "
+    + to_string(timeOn) + "ms on pin: " + to_string(id)
+    + " with a ratio pulse/pause of: " + to_string(ratio)
+  };
+  std::cout << RainbowText(message, "Pink", "Default", "Bold") << endl; 
+  heartBeatThread = std::thread(&LED::MakeHeartBeat, this, timeOn, ratio);
 }
 
 /*
@@ -360,8 +359,7 @@ void LED::MakeHeartBeat(int timeOn, int ratio)
 }
 
 /*
-    Public method to stop the digital heart beat on the pin 
-    @param bool: Flag to stop the thread
+  Public method to stop the digital heart beat on the pin 
 */
 void LED::StopHeartBeat ()
 {
@@ -371,12 +369,12 @@ void LED::StopHeartBeat ()
 // Destructor
 LED::~LED()
 {
-    if (blinkThread.joinable())
-        blinkThread.join();
-    if (flashThread.joinable())
-        flashThread.join();
-    if (heartBeatThread.joinable())
-        heartBeatThread.join();
+  if (blinkThread.joinable())
+    blinkThread.join();
+  if (flashThread.joinable())
+    flashThread.join();
+  if (heartBeatThread.joinable())
+    heartBeatThread.join();
 }
 {% endhighlight %}
 
