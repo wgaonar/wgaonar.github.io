@@ -88,98 +88,52 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I show a Button C++ class implementation.
+  In this post, I show a LED C++ class implementation which is derived from GPIO class and adds some methods for blink a led. 
 </p>
 
 <h1>Coding</h1>
 The methods coded to the C++ class <span class="label coding">BUTTON</span> are:  
 <ul>
+  <li>Private methods: </li>
+  <ul>
+    <li><span class="label codinglist">void MakeBlink(int)</span></li>
+    <li><span class="label codinglist">void MakeFlash(int, int)</span></li>
+    <li><span class="label codinglist">void MakeHeartBeat(int, int)</span></li>
+  </ul>
   <li>Public methods: </li>
     <ul>
-      <li><span class="label codinglist">int ReadButton()</span></li>
-      <li><span class="label codinglist">int WaitForButton()</span></li>
-      <li><span class="label codinglist">int WaitForButton(int)</span></li>
-      <li><span class="label codinglist">int WhenButtonWasPressed(callbackType)</span></li>
-      <li><span class="label codinglist">void StopWaitForButton()</span></li>
+      <li><span class="label codinglist">void TurnOn()</span></li>
+      <li><span class="label codinglist">void TurnOff()</span></li>
+      <li><span class="label codinglist">void Blink(int)</span></li>
+      <li><span class="label codinglist">void Flash(int, int)</span></li>
+      <li><span class="label codinglist">void HeartBeat(int, int)</span></li>
+      <li><span class="label codinglist">void StopBlink()</span></li>
+      <li><span class="label codinglist">void StopFlash()</span></li>
+      <li><span class="label codinglist">void StopHeartBeat()</span></li>
     </ul>
-</ul> 
-
-
+</ul>
 
 <p>
-  I coded a new class called <b>LED</b> who is derived from GPIO class and adds some new
-  methods for blink a led. 
-  The methods are:
-  <ul>
-    <li>Public methods: </li>
-    <ul>
-      <li><span class="label codinglist">blink()</span></li>
-      <li><span class="label codinglist">stopBlink()</span></li>
-    </ul>
-    <li>Private methods</li>
-    <ul>
-      <li><span class="label codinglist">makeBlink()</span></li>
-    </ul>
-  </ul>  
+  The <span class="label coding">TurnOn()</span> method sets the Led to On.
 </p>
+
+<p>
+  The <span class="label coding">TurnOff()</span> method sets the Led to Off.
+</p>
+
 <p>  
-  The <span class="label coding">blink()</span> method receives the duration of blinking 
-  from the main program. While the <span class="label coding">makeBlink()</span> method 
-  contains the routine to do the blinking. The most important contribution is about the way
-  that blinking is performed. It uses a <b>thread</b> called by the 
-  <span class="label coding">makeBlink()</span> method as a function pointer to construct 
-  the thread of the blink pattern. The advantage is that one o more blinking 
-  patterns can be done at the <span style="color: red;font-weight: bold;">same time in a 
-  parallel way</span>.
+  The <span class="label coding">Blink(int)</span> method receives the duration in milliseconds of blinking from the main program. It call the <span class="label coding">MakeBlink(int)</span> method to do the blinking.
+</p>
+<p>
+  The <span class="label coding">MakeBlink()</span> method contains the routine to do the blinking which uses the <span class="label coding">digitalWrite()</span> and <span class="label coding"> Delayms()</span> methods which are inherited from the GPIO class..  The most important contribution is about the way that blinking is performed. It uses a <b>thread</b> constructed by means of a function pointer to do the blink pattern. The advantage is that one o more blinking patterns can be done at the <span style="color: red;font-weight: bold;">same same time in a parallel way</span> on different Leds.
+</p>
+<p>
+  The <span class="label coding">StopBlink()</span> method lets the user stops the blinking pattern from the main program. This method sets the private boolean variable <span class="label coding">stopBlinkFlag</span> to true letting to the <span class="label coding">MakeBlink()</span> method completes or finishes the constructed thread.
 </p>
 
 <p>
-  The thread construction is done by the next line, where the 
-  <span class="label coding">makeBlink()</span> method is called as a function pointer in the thread.
+  
 </p>
-
-{% highlight cpp%}
-blinkThread = std::thread(&LED::makeBlink, this, duration);
-{% endhighlight %}
-
-<p>
-  The code that makes the blinking uses the <span class="label coding">digitalWrite()</span> 
-  and <span class="label coding">delayms()</span>   methods which 
-  are inherited from the GPIO class.
-</p>
-
-{% highlight cpp%}
-while (this->stopThread == false)
-{
-  digitalWrite(HIGH);
-  delayms(duration);
-  digitalWrite(LOW);
-  delayms(duration);
-}
-{% endhighlight %}
-
-<p>
-  To stop the blinking pattern the user can access the public method 
-  <span class="label coding">stopBlink()</span>   and set
-  the boolean variable <span class="label coding">stopBlinkFlag</span> to true. 
-  The next line shows how the method reads and 
-  assigns the new value to this variable.
-</p>
-
-{% highlight cpp%}
-stopBlinkFlag = newStopBlinkFlag;
-{% endhighlight %}
-
-<p>
-  Finally, in the destructor of the LED class, the blinking thread is waited to join
-  once the variable stopBlink has been set to true from the main program and the 
-  destructor of the base class GPIO is called to unset the pin assigned to the Led. 
-</p>
-
-{% highlight cpp%}
-if (blinkThread.joinable())
-  blinkThread.join();
-{% endhighlight %}
 
 <h3>LED.h</h3>
 {% highlight cpp%}
@@ -222,13 +176,13 @@ class LED: public GPIO
     // Method for doing a digital heart beat pattern
     void HeartBeat(int, int);
 
-    // Method for stoping a blinking
+    // Method for stopping a blinking
     void StopBlink();
 
-    // Method for stoping a flashing
+    // Method for stopping a flashing
     void StopFlash();
     
-    // Method for stoping a digital heart beat
+    // Method for stopping a digital heart beat
     void StopHeartBeat();
     
     // Destructor
@@ -276,7 +230,7 @@ void LED::Blink(int duration)
     message = "Blinking has been activated with duration of: ";
     message += to_string(duration) + "ms on pin: " + to_string(id);
     
-    std::cout << RainbowText(message, "Pink", "Dafault", "Bold") << endl; 
+    std::cout << RainbowText(message, "Pink", "Default", "Bold") << endl; 
     blinkThread = std::thread(&LED::MakeBlink, this, duration);
 }
 
@@ -286,18 +240,18 @@ void LED::Blink(int duration)
 */
 void LED::MakeBlink(int duration)
 {
-    while (this->stopBlinkFlag == false)
-    {
-        DigitalWrite(HIGH);
-        Delayms(duration);
-        DigitalWrite(LOW);
-        Delayms(duration);
-    }
+  while (this->stopBlinkFlag == false)
+  {
+    DigitalWrite(HIGH);
+    Delayms(duration);
+    DigitalWrite(LOW);
+    Delayms(duration);
+  }
 }
 
 /*
-    Public method to stop the blinking on the pin 
-    @param bool: Flag to stop the thread
+  Public method to stop the blinking on the pin 
+  @param bool: Flag to stop the thread
 */
 void LED::StopBlink ()
 {
@@ -305,20 +259,20 @@ void LED::StopBlink ()
 }
 
 /*
-    Public method to make a flash on the pin 
-    @param int: The desired time ON in milliseconds
-    @param int: The desired time OFF in milliseconds
+  Public method to make a flash on the pin 
+  @param int: The desired time ON in milliseconds
+  @param int: The desired time OFF in milliseconds
 */
 void LED::Flash(int timeOn, int timeOff)
 {
-    string message 
-    {
-        "Flashing has been activated time on: "
-        + to_string(timeOn) + "ms and time off: " 
-        + to_string(timeOff) + "ms on pin: " + to_string(id)
-    };
-    std::cout << RainbowText(message, "Pink", "Dafault", "Bold") << endl; 
-    flashThread = std::thread(&LED::MakeFlash, this, timeOn, timeOff);
+  string message 
+  {
+    "Flashing has been activated time on: "
+    + to_string(timeOn) + "ms and time off: " 
+    + to_string(timeOff) + "ms on pin: " + to_string(id)
+  };
+  std::cout << RainbowText(message, "Pink", "Default", "Bold") << endl; 
+  flashThread = std::thread(&LED::MakeFlash, this, timeOn, timeOff);
 }
 
 /*
@@ -328,13 +282,13 @@ void LED::Flash(int timeOn, int timeOff)
 */
 void LED::MakeFlash(int timeOn, int timeOff)
 {
-    while (this->stopFlashFlag == false)
-    {
-        DigitalWrite(HIGH);
-        Delayms(timeOn);
-        DigitalWrite(LOW);
-        Delayms(timeOff);
-    }
+  while (this->stopFlashFlag == false)
+  {
+    DigitalWrite(HIGH);
+    Delayms(timeOn);
+    DigitalWrite(LOW);
+    Delayms(timeOff);
+  }
 }
 
 /*

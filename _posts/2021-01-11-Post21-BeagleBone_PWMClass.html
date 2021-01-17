@@ -369,7 +369,7 @@ int PWM::WriteFile(string path, string feature, int value)
 }
 
 /*
-    Private method to enable the PWM onthe pin.
+    Private method to enable the PWM on the pin.
     It is used in the constructor
     @return int: 1 set duty cycle has succeeded / throw an exception if not
 */
@@ -385,7 +385,7 @@ int PWM::Enable()
 }
 
 /*
-    Private method to disable the PWM onthe pin.
+    Private method to disable the PWM on the pin.
     It is used in the constructor
     @return int: 1 set duty cycle has succeeded / throw an exception if not
 */
@@ -420,7 +420,7 @@ int PWM::GetDutyCycle()
 
 /*
     Public method to set the period of the PWM
-    The choosen period is in nanoseconds 
+    The chosen period is in nanoseconds 
     @param int: The desired period
     @return int: 1 set period has succeeded / throw an exception if not
 */
@@ -438,7 +438,7 @@ int PWM::SetPeriod(int newPeriod)
 
 /*
     Public method to set the duty cycle of the PWM
-    @param int: The desired dutcy cycle in pertentage: 0-100
+    @param int: The desired duty cycle in percentage: 0-100
     @return  int: 1 set duty cycle has succeeded / throw an exception if not
             int: 0 if the user decides to stop this method
 */
