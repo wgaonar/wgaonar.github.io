@@ -98,10 +98,11 @@ code {
   to colorize text in the terminal. The header and the code file are shown here:
 </p>
 
-<h3>RainbowColors.h</h3>
+<h3>RAINBOWCOLORS.h</h3>
 {% highlight cpp%}
 #ifndef RAINBOWCOLORS_H
 #define RAINBOWCOLORS_H
+
 #include <string>
 #include <map>
 
@@ -110,17 +111,18 @@ General format to color the text in the terminal:
 -> "\033[{format_attibute};{foreground_color};{background_color}m {TEXT} \033[{reset_format_attribute} m" 
 */
 
-std::string rainbowText  (std::string, std::string);
-std::string rainbowText  (std::string, std::string, std::string);
-std::string rainbowText  (std::string, std::string, std::string, std::string);
+std::string RainbowText  (std::string, std::string);
+std::string RainbowText  (std::string, std::string, std::string);
+std::string RainbowText  (std::string, std::string, std::string, std::string);
+
 #endif  // RAINBOWCOLORS_H
 {% endhighlight %}
 
-<h3>RainbowColors.cpp</h3>
+<h3>RAINBOWCOLORS.cpp</h3>
 {% highlight cpp%}
 #include <string>
 #include <map>
-#include "RainbowColors.h"
+#include "RAINBOWCOLORS.h"
 
 std::map <std::string, std::string> mapForegroundColor= 
 {
@@ -164,29 +166,32 @@ std::map <std::string, std::string> mapSetFormat =
   { "Hidden", "8" }
 };
 
-std::string rainbowText ( std::string src,
-                          std::string foregroundColor = "Default"
+std::string RainbowText (   std::string src,
+                            std::string foregroundColor = "Default"
                         )
 {
   auto pairFound = mapForegroundColor.find(foregroundColor);
   if (pairFound != mapForegroundColor.end())
-    foregroundColor = pairFound->first;
+      foregroundColor = pairFound->first;
   else
-    foregroundColor = "Default";
+      foregroundColor = "Default";
+
   std::string backgroundColor = "Default";
   std::string format = "Default";
+
   std::string const escCode = "\033";
+  
   std::string formattedText = escCode  + "[" +
-              mapSetFormat.at(format) + ";" +
-              mapForegroundColor.at(foregroundColor) + ";" +
-              mapBackgroundColor.at(backgroundColor) + "m" +
-              src + escCode + "[0m";
+                mapSetFormat.at(format) + ";" +
+                mapForegroundColor.at(foregroundColor) + ";" +
+                mapBackgroundColor.at(backgroundColor) + "m" +
+                src + escCode + "[0m";
   return formattedText;
 }
 
-std::string rainbowText ( std::string src,
-                          std::string foregroundColor = "Default",
-                          std::string backgroundColor = "Default"
+std::string RainbowText (   std::string src,
+                            std::string foregroundColor = "Default",
+                            std::string backgroundColor = "Default"
                         )
 {
   auto pairFound = mapForegroundColor.find(foregroundColor);
@@ -213,10 +218,10 @@ std::string rainbowText ( std::string src,
   return formattedText;
 }
 
-std::string rainbowText (  std::string src,
-                          std::string foregroundColor = "Default",
-                          std::string backgroundColor = "Default",
-                          std::string format = "Default"
+std::string RainbowText (   std::string src,
+                            std::string foregroundColor = "Default",
+                            std::string backgroundColor = "Default",
+                            std::string format = "Default"
                         )
 {
   auto pairFound = mapForegroundColor.find(foregroundColor);
@@ -245,8 +250,7 @@ std::string rainbowText (  std::string src,
                 mapBackgroundColor.at(backgroundColor) + "m" +
                 src + escCode + "[0m";
   return formattedText;
-}
-  
+}  
 {% endhighlight %}
 
 <h2>Write and Read to and from the digital pins</h2>
@@ -259,21 +263,21 @@ std::string rainbowText (  std::string src,
 <p>
   I wrote some functions to set up the pin's state:
   <ul>
-    <li>writeFile()</li>
-    <li>readFile()</li>
-    <li>exportGPIO()</li>
-    <li>unexportGPIO()</li>
-    <li>setMode()</li>
+    <li>WriteFile()</li>
+    <li>ReadFile()</li>
+    <li>ExportGPIO()</li>
+    <li>UnexportGPIO()</li>
+    <li>SetMode()</li>
   </ul>
   Besides, I wrote other functions read and write the pin's state:
   <ul>
-    <li>readFile()</li>
-    <li>writeFile()</li>
-    <li>delayms()</li>
+    <li>int DigitalWrite(int)</li>
+    <li>int DigitalRead()</li>
+    <li>Delayms(int)</li>
   </ul>
 </p>
 
-These functions are coded in the GPIO.h and GPIO.cpp files shown next:
+These functions are coded in the GPIO.h and GPIO.cpp files, which are shown here:
 
 <h3> GPIO.h </h3>
 {% highlight cpp%}
@@ -337,7 +341,9 @@ class GPIO
     virtual int ExportGPIO();
     virtual int UnexportGPIO();
     virtual int SetMode(int);
-  
+   
+
+
   public:
     // Overload constructor
     GPIO (int, int);
