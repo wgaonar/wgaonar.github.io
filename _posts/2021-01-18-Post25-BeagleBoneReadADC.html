@@ -1,0 +1,186 @@
+---
+layout: post
+title: "C++ ADC Class"
+date:   2021-01-18 08:00:00 -0600
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; margin-left: auto; margin-right: auto;">
+  <img src="/assets/Post25/Cover.png" alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show an simple application of the analog to digital converter (ADC) C++ class implementation shown previously in <a href="{% post_url 2021-01-16-Post24-BeagleBone_ADCClass %}"> this post</a>. Remembering that the BeagleBone has 7 analog inputs and ADC of 12 bits that lets to de user to represent an analog signal within a range of 4096 values. It is important to remember that the reference for analog voltage is <span style="color: red;">1.8V</span>. It the user provides a greater voltage, the BeagleBone could be damaged. 
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. It consists of a Potentiometer connected to analog GND (0V) located at the pin P9_34 and analog VDD (1.8V) at the pin P9_32 and the output connected to P9_39 pin.
+</p>
+
+The components are:
+<ul>
+  <li>1 Potentiometer of 200KΩ</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post25/Circuit_bb.jpg"
+    alt="Circuit.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to read an analog to digital converted value.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>  
+  First an <span class="label coding">ADC</span> class objet is declared, for example:
+</p>
+{% highlight cpp%}
+ADC adcPin(P9_39);
+{% endhighlight %}
+
+<p>  
+  An int variable is declared and initialized to store the digital converted values.
+</p>
+{% highlight cpp%}
+int adcValue = 0;
+
+{% endhighlight %}
+
+<p>  
+  The digital values can be obtained through the next class method :
+</p>
+{% highlight cpp%}
+adcValue = adcPin.ReadADC();
+{% endhighlight %}
+
+<p>  
+  The complete code for this application is shown in the next listing together with its 
+  corresponding execution video.
+</p>
+
+<h2 style="font-size: 25px;">Listing_5.1</h2>
+{% highlight cpp%}
+#include <iostream>
+#include "../../Sources/ADC.h"
+
+using namespace std;
+
+int main()
+{
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  message = "Setting  ADC mode on a pin";
+  cout << RainbowText(message, "Blue") << endl;
+  ADC adcPin(P9_39);
+
+  message = "Read an analog value and wait 100 milliseconds between each read";
+  cout << RainbowText(message, "Blue") << endl;
+
+  int adcValue = 0;
+  for (int i = 0; i < 100; i++)
+  {
+    adcValue = adcPin.ReadADC();
+    cout << "Reading " << i+1 << " of " << " 100: ";
+    cout << adcValue << endl;
+    adcPin.Delayms(100);
+  }
+
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post25/VideoCover.png">
+    <source src="/assets/Post25/Video.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
