@@ -15,7 +15,7 @@
    id="svg8"
    inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
    sodipodi:docname="Cover.svg"
-   inkscape:export-filename="/Users/wilmer/GitHubSite/wgaonar.github.io/assets/Post24/Cover.png"
+   inkscape:export-filename="/Users/wilmer/GitHubSite/wgaonar.github.io/assets/Post25/Cover.png"
    inkscape:export-xdpi="191.39999"
    inkscape:export-ydpi="191.39999">
   <defs
@@ -36,9 +36,9 @@
      showgrid="true"
      units="in"
      inkscape:window-width="1920"
-     inkscape:window-height="1035"
+     inkscape:window-height="1080"
      inkscape:window-x="0"
-     inkscape:window-y="23"
+     inkscape:window-y="0"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata5">
@@ -56,19 +56,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:26.2268px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="31.643322"
-       y="44.317226"
-       id="text2261"><tspan
-         sodipodi:role="line"
-         id="tspan2259"
-         x="31.643322"
-         y="44.317226"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, ';stroke-width:0.264583">ADC Value</tspan></text>
     <g
-       id="g872">
+       id="g872"
+       transform="translate(-0.32915449,-28.965595)">
       <image
          width="81.886566"
          height="129.05162"
