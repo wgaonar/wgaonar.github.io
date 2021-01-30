@@ -127,7 +127,42 @@ float adcVoltage = 0.0;
   The voltage values can be obtained through the next class method:
 </p>
 {% highlight cpp%}
-adcValue = adcPin.ReadADC();
+adcVoltage = adcPin.ReadVoltage();
+{% endhighlight %}
+
+<p>  
+  In this case, the readings are taken through a user-defined function that runs on the background from the main program until a key from the keyboard will be pressed. It can be attached to the pin through the next method: 
+</p>
+{% highlight cpp%}
+adcPin.DoUserFunction(&AnalogRead);
+{% endhighlight %}  
+ 
+<p>  
+  This callback type function can be a <span class="code">while loop</span> which reads not only the analog voltage but the digital value too. For example:
+</p>
+{% highlight cpp%}
+int AnalogRead()
+{
+  while (stopAnalogRead == false)
+  {
+    adcValue = adcPin.ReadADC();
+    cout << "ADC value on pin: " << adcValue << endl;
+    adcVoltage = adcPin.ReadVoltage();
+    cout << "Voltage on the pin: " << adcVoltage << endl;
+    adcPin.Delayms(100);
+  }
+  return 0;
+}
+{% endhighlight %}
+
+<p>  
+  An aspect to take into account is the declaration of global variables in order to make it possible this function works.
+</p>
+{% highlight cpp%}
+// Global variables
+bool stopAnalogRead = false;
+int adcValue = 0;
+float adcVoltage = 0.0;
 {% endhighlight %}
 
 <p>  
@@ -135,32 +170,52 @@ adcValue = adcPin.ReadADC();
   corresponding execution video.
 </p>
 
-<h2 style="font-size: 25px;">Listing_5.1</h2>
+<h2 style="font-size: 25px;">Listing_5.2</h2>
 {% highlight cpp%}
 #include <iostream>
 #include "../../Sources/ADC.h"
 
 using namespace std;
 
+// Global ADC pin declaration 
+ADC adcPin(P9_39);
+
+// Global variables
+bool stopAnalogRead = false;
+int adcValue = 0;
+float adcVoltage = 0.0;
+int AnalogRead()
+{
+  while (stopAnalogRead == false)
+  {
+    adcValue = adcPin.ReadADC();
+    cout << "ADC value on pin: " << adcValue << endl;
+    adcVoltage = adcPin.ReadVoltage();
+    cout << "Voltage on the pin: " << adcVoltage << endl;
+    adcPin.Delayms(100);
+  }
+  return 0;
+}
+
 int main()
 {
   string message = "Main program starting here...";
   cout << RainbowText(message,"Blue", "White", "Bold") << endl;
-  
-  message = "Setting  ADC mode on a pin";
-  cout << RainbowText(message, "Blue") << endl;
-  ADC adcPin(P9_39);
 
-  message = "Read an analog value and wait 100 milliseconds between each read";
-  cout << RainbowText(message, "Blue") << endl;
+  // Call the function to read the pin
+  adcPin.DoUserFunction(&AnalogRead);
 
-  int adcValue = 0;
-  for (int i = 0; i < 100; i++)
+  char userInput = '\0';
+  while (userInput != 'y')
   {
-    adcValue = adcPin.ReadADC();
-    cout << "Reading " << i+1 << " of " << " 100: ";
-    cout << adcValue << endl;
-    adcPin.Delayms(100);
+    message = "Do you want to stop the readings on the pin? Enter 'y' for yes: ";
+    cout << RainbowText(message, "Blue")  << endl;
+    cin >> userInput;
+    if (userInput == 'y') 
+    {
+      stopAnalogRead = true;
+      adcPin.StopUserFunction();
+    }
   }
 
   message = "Main program finishes here...";
@@ -174,8 +229,8 @@ int main()
 <figure style="text-align: center; width:100%; 
               margin-left: auto; 
               margin-right: auto;">
-  <video width="100%" controls poster="/assets/Post25/VideoCover.png">
-    <source src="/assets/Post25/Video.mp4" type="video/mp4">
+  <video width="100%" controls poster="/assets/Post26/VideoCover.png">
+    <source src="/assets/Post26/Video.mp4" type="video/mp4">
   </video>
   <figcaption>
     Video: Execution of the program.

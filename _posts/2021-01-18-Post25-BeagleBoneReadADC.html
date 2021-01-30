@@ -132,6 +132,19 @@ adcValue = adcPin.ReadADC();
 {% endhighlight %}
 
 <p>  
+  Now, this method can be inside of a <span class="code">for loop</span> to take 100 readings for example every 100 milliseconds:
+</p>
+{% highlight cpp%}
+for (int i = 0; i < 100; i++)
+  {
+    adcValue = adcPin.ReadADC();
+    cout << "Reading " << i+1 << " of " << " 100: ";
+    cout << adcValue << endl;
+    adcPin.Delayms(100);
+  }
+{% endhighlight %}
+
+<p>  
   The complete code for this application is shown in the next listing together with its 
   corresponding execution video.
 </p>
