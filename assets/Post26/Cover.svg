@@ -28,17 +28,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.80382722"
-     inkscape:cx="495.17134"
+     inkscape:cx="255.69202"
      inkscape:cy="398.99199"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g872"
      inkscape:document-rotation="0"
      showgrid="true"
      units="in"
-     inkscape:window-width="1920"
-     inkscape:window-height="1080"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-width="1844"
+     inkscape:window-height="1035"
+     inkscape:window-x="76"
+     inkscape:window-y="23"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata5">
@@ -58,9 +58,7 @@
      id="layer1">
     <g
        id="g872"
-       transform="translate(-0.32915449,-28.965595)"
-       inkscape:export-xdpi="191.39999"
-       inkscape:export-ydpi="191.39999">
+       transform="translate(-0.32915449,-28.965595)">
       <image
          width="81.886566"
          height="129.05162"
@@ -97,14 +95,14 @@
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:23.9709px;line-height:1.25;font-family:sans-serif;fill:#800080;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="123.72164"
+         x="113.84701"
          y="112.81442"
          id="text859"><tspan
            sodipodi:role="line"
            id="tspan857"
-           x="123.72164"
+           x="113.84701"
            y="112.81442"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.9709px;font-family:Ayuthaya;-inkscape-font-specification:'Ayuthaya, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#800080;stroke-width:0.264583">0-4095</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.9709px;font-family:Ayuthaya;-inkscape-font-specification:'Ayuthaya, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#800080;stroke-width:0.264583">0 - 1.8</tspan></text>
     </g>
   </g>
 </svg>
