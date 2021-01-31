@@ -1,0 +1,222 @@
+---
+layout: post
+title: "Reading an analog voltage with continuous sampling"
+date:   2021-01-24 08:00:00 -0600
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 0%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; margin-left: auto; margin-right: auto;">
+  <img src="/assets/Post28/Cover.png" alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show a simple application to read an analog voltage running in the background with its own thread with the ADC C++ class implementation shown previously in <a href="{% post_url 2021-01-16-Post24-BeagleBone_ADCClass %}"> this post</a>. Remembering that the BeagleBone has 7 analog inputs and ADC of 12 bits that let to de user to represent an analog signal within a range of 4096 values. It is important to remember that the reference for analog voltage is <span style="color: red;">1.8V</span>. If the user provides a greater voltage, the BeagleBone could be damaged. 
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. It consists of a Potentiometer power supplied with the analog GND (0V) located at the pin P9_34 and to analog VDD (1.8V) at the pin P9_32. Finally, its output is connected to the P9_39 pin.
+</p>
+
+The components are:
+<ul>
+  <li>1 Potentiometer of 200KΩ</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post28/Circuit_bb.jpg"
+    alt="Circuit.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to read an analog value with continuous sampling.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>  
+  First an <span class="label coding">ADC</span> class objet is declared, for example:
+</p>
+{% highlight cpp%}
+ADC adcPin(P9_39);
+{% endhighlight %}
+
+<p>  
+  A float variable is declared and initialized to store the analog voltage. You can note the name contains the suffix <span class="code">Out</span> because this variable is passed by reference to the corresponding method, after in the main program.
+</p>
+{% highlight cpp%}
+float adcVoltageOut = 0.0;
+{% endhighlight %}
+
+<p>  
+  An integer variable is declared and initialized to set the interval time between each reading.
+</p>
+{% highlight cpp%}
+int sampleTime = 100;
+{% endhighlight %}
+
+<p>  
+  The continuous sampling of analog voltage can be obtained through the next class method. It takes two arguments, the first is the variable, <span style="color: red;">passed by reference</span>, to store the digital value and the second is the interval between each reading. The sampling is made in the background through an internal thread execution. Besides, this method does not return any value.
+</p>
+{% highlight cpp%}
+adcPin.ReadVoltageContinuosSampling(adcVoltageOut,sampleTime);
+{% endhighlight %}
+
+<p>  
+  This method can be stopped through the next line of code:
+</p>
+{% highlight cpp%}
+adcPin.StopReadVoltageContinuosSampling();
+{% endhighlight %}
+
+<p>  
+  In the main program a <span class="code">while loop</span> can be used to wait for a user key press to stop the continuous sampling method before finishing the program. 
+</p>
+{% highlight cpp%}
+while (userInput != 'y')
+{
+  message = "Do you want to stop the readings on the pin? Enter 'y' for yes:";
+  cout << RainbowText(message, "Blue") << endl;
+  cin >> userInput;
+  if (userInput == 'y') 
+  {
+    adcPin.StopReadVoltageContinuosSampling();
+  }
+}
+{% endhighlight %}
+
+<p>  
+  The complete code for this application is shown in the next listing together with its 
+  corresponding execution video.
+</p>
+
+<h2 style="font-size: 25px;">Listing_5.4</h2>
+{% highlight cpp%}
+#include <iostream>
+#include "../../Sources/ADC.h"
+
+using namespace std;
+
+int main()
+{
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  message = "Setting ADC mode on a pin";
+  cout << RainbowText(message, "Blue") << endl;
+  ADC adcPin(P9_39);
+
+  message = "Read continuously the voltage on pin";
+  cout << RainbowText(message, "Blue") << endl;
+
+  float adcVoltageOut = 0.0;
+  int sampleTime = 100;
+  adcPin.ReadVoltageContinuosSampling(adcVoltageOut,sampleTime);
+  
+  char userInput = '\0';
+  while (userInput != 'y')
+  {
+    message = "Do you want to stop the readings on the pin? Enter 'y' for yes:";
+    cout << RainbowText(message, "Blue") << endl;
+    cin >> userInput;
+    if (userInput == 'y') 
+    {
+      adcPin.StopReadVoltageContinuosSampling();
+    }
+  }
+
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post28/VideoCover.png">
+    <source src="/assets/Post28/Video.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 

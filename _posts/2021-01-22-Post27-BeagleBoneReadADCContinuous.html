@@ -21,7 +21,7 @@ categories: BeagleBone
 }
 
 img {
-  border-radius: 5%;
+  border-radius: 0%;
 }
 
 video {
@@ -89,7 +89,7 @@ code {
 
 <h1>Circuit and components</h1>
 <p>
-  The circuit can be seen in Figure 1. It consists of a Potentiometer power supplied with the analog GND (0V) located at the pin P9_34 and to analog VDD (1.8V) at the pin P9_32. Finally, its output connected to the P9_39 pin.
+  The circuit can be seen in Figure 1. It consists of a Potentiometer power supplied with the analog GND (0V) located at the pin P9_34 and to analog VDD (1.8V) at the pin P9_32. Finally, its output is connected to the P9_39 pin.
 </p>
 
 The components are:
@@ -117,7 +117,7 @@ ADC adcPin(P9_39);
 {% endhighlight %}
 
 <p>  
-  An integer variable is declared and initialized to store the digital value. You can note the name contains the suffix <span class="code">Out</span> because this variable is passed by reference to the corresponding method after in the main program.
+  An integer variable is declared and initialized to store the digital value. You can note the name contains the suffix <span class="code">Out</span> because this variable is passed by reference to the corresponding method, after in the main program.
 </p>
 {% highlight cpp%}
 int adcValueOut = 0;
@@ -131,7 +131,7 @@ int sampleTime = 100;
 {% endhighlight %}
 
 <p>  
-  The continuous sampling of digital values can be obtained through the next class method. Note It takes two arguments, the first is the variable, <span style="color: red;">passed by reference</span>, to store the digital value and the second is the interval between each reading. The sampling is made in the background through an internal thread execution. Besides, this method does not return any value.
+  The continuous sampling of digital values can be obtained through the next class method. It takes two arguments, the first is the variable, <span style="color: red;">passed by reference</span>, to store the digital value and the second is the interval between each reading. The sampling is made in the background through an internal thread execution. Besides, this method does not return any value.
 </p>
 {% highlight cpp%}
 adcPin.ReadADCContinuousSampling(adcValueOut,sampleTime);
@@ -149,15 +149,15 @@ adcPin.StopReadADCContinuousSampling();
 </p>
 {% highlight cpp%}
 while (userInput != 'y')
+{
+  message = "Do you want to stop the readings on the pin? Enter 'y' for yes:";
+  cout << RainbowText(message, "Blue")  << endl;
+  cin >> userInput;
+  if (userInput == 'y') 
   {
-    message = "Do you want to stop the readings on the pin? Enter 'y' for yes:";
-    cout << RainbowText(message, "Blue")  << endl;
-    cin >> userInput;
-    if (userInput == 'y') 
-    {
-      adcPin.StopReadADCContinuousSampling();
-    }
+    adcPin.StopReadADCContinuousSampling();
   }
+}
 {% endhighlight %}
 
 <p>  
