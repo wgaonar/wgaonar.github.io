@@ -107,18 +107,18 @@ code {
     <li>Private methods: </li>
       <ul>
         <li><span class="label codinglist">int ReadFile(std::string)</span></li>
-        <li><span class="label codinglist">MakeReadADCContinuosSampling(int &, int)</span></li>
-        <li><span class="label codinglist">MakeReadVoltageContinuosSampling(float &, int)</span></li>
+        <li><span class="label codinglist">MakeReadADCContinuousSampling(int &, int)</span></li>
+        <li><span class="label codinglist">MakeReadVoltageContinuousSampling(float &, int)</span></li>
       </ul>
     <li>Public methods: </li>
       <ul>
         <li><span class="label codinglist">int ReadADC()</span></li>
         <li><span class="label codinglist">float ReadVoltage()</span></li>
-        <li><span class="label codinglist">void ReadADCContinuosSampling(int &, int)</span></li>
-        <li><span class="label codinglist">void ReadVoltageContinuosSampling(float &, int)</span></li>
+        <li><span class="label codinglist">void ReadADCContinuousSampling(int &, int)</span></li>
+        <li><span class="label codinglist">void ReadVoltageContinuousSampling(float &, int)</span></li>
         <li><span class="label codinglist">void DoUserFunction(callbackType)</span></li>
-        <li><span class="label codinglist">void StopReadADCContinuosSampling()</span></li>
-        <li><span class="label codinglist">void StopReadVoltageContinuosSampling()</span></li>
+        <li><span class="label codinglist">void StopReadADCContinuousSampling()</span></li>
+        <li><span class="label codinglist">void StopReadVoltageContinuousSampling()</span></li>
         <li><span class="label codinglist">void StopUserFunction()</span></li>
         <li><span class="label codinglist">void Delayms(int);</span></li>
       </ul>
@@ -131,11 +131,11 @@ code {
 </p>
 
 <p>  
-  The <span class="label coding">MakeReadVoltageContinuosSampling(float &, int)</span> method, when is activated, runs on a thread to read the analog voltage on the pin and pass this value through a reference variable to the main program. 
+  The <span class="label coding">MakeReadVoltageContinuousSampling(float &, int)</span> method, when is activated, runs on a thread to read the analog voltage on the pin and pass this value through a reference variable to the main program. 
 </p>
 
 <p>  
-  The <span class="label coding">MakeReadADCContinuosSampling(int &, int)</span> method, when is activated, runs on a thread to read the ADC value on the pin and pass this value through a reference variable to the main program. 
+  The <span class="label coding">MakeReadADCContinuousSampling(int &, int)</span> method, when is activated, runs on a thread to read the ADC value on the pin and pass this value through a reference variable to the main program. 
 </p>
 
 <p>  
@@ -147,11 +147,11 @@ code {
 </p>
 
 <p>  
-  The <span class="label coding">void ReadADCContinuosSampling(int &, int)</span> method, can be invoked from the main program to do a continuos sampling on the ADC value. It calls the private <span class="coding">MakeReadADCContinuosSampling(int &, int)</span> method to do this.
+  The <span class="label coding">void ReadADCContinuousSampling(int &, int)</span> method, can be invoked from the main program to do a continuous sampling on the ADC value. It calls the private <span class="coding">MakeReadADCContinuousSampling(int &, int)</span> method to do this.
 </p>
 
 <p>  
-  The <span class="label coding">void ReadVoltageContinuosSampling(int &, int)</span> method, can be invoked from the main program to do a continuos sampling on the pin's voltage. It calls the private <span class="coding">MakeReadVoltageContinuosSampling(int &, int)</span> method to do this.
+  The <span class="label coding">void ReadVoltageContinuousSampling(int &, int)</span> method, can be invoked from the main program to do a continuous sampling on the pin's voltage. It calls the private <span class="coding">MakeReadVoltageContinuousSampling(int &, int)</span> method to do this.
 </p>
 
 <p>  
@@ -159,11 +159,11 @@ code {
 </p>
 
 <p>  
-  The <span class="label coding">StopReadADCContinuosSampling()</span> method finishes the execution of the thread called by the <span class="label coding">void ReadADCContinuosSampling(int &, int)</span> method.
+  The <span class="label coding">StopReadADCContinuousSampling()</span> method finishes the execution of the thread called by the <span class="label coding">void ReadADCContinuousSampling(int &, int)</span> method.
 </p>
 
 <p>  
-  The <span class="label coding">StopReadVoltageContinuosSampling()</span> method finishes the execution of the thread called by the <span class="label coding">void ReadVoltageContinuosSampling(int &, int)</span> method.
+  The <span class="label coding">StopReadVoltageContinuousSampling()</span> method finishes the execution of the thread called by the <span class="label coding">void ReadVoltageContinuousSampling(int &, int)</span> method.
 </p>
 
 <p>  
@@ -221,8 +221,8 @@ class ADC
     std::thread ReadVoltageThread;
     std::thread functionThread;
 
-    void MakeReadADCContinuosSampling(int &, int);
-    void MakeReadVoltageContinuosSampling(float &, int);
+    void MakeReadADCContinuousSampling(int &, int);
+    void MakeReadVoltageContinuousSampling(float &, int);
     
     // Method to read files
     virtual int ReadFile(std::string);
@@ -238,20 +238,20 @@ class ADC
     // Interface method to get the voltage on the pin
     virtual float ReadVoltage();
 
-    // Interface method for reading the ADC value continuosly on the pin
-    virtual void ReadADCContinuosSampling(int &, int);
+    // Interface method for reading the ADC value continuously on the pin
+    virtual void ReadADCContinuousSampling(int &, int);
 
-    // Interface method for reading the Voltage continuosly on the pin
-    virtual void ReadVoltageContinuosSampling(float &, int);
+    // Interface method for reading the Voltage continuously on the pin
+    virtual void ReadVoltageContinuousSampling(float &, int);
     
     // Method to do execute an user function
     virtual int DoUserFunction(callbackType);
 
-    // Method to stop the ADC continuos sampling 
-    virtual void StopReadADCContinuosSampling();
+    // Method to stop the ADC continuous sampling 
+    virtual void StopReadADCContinuousSampling();
 
-    // Method to stop the voltage continuos sampling
-    virtual void StopReadVoltageContinuosSampling();
+    // Method to stop the voltage continuous sampling
+    virtual void StopReadVoltageContinuousSampling();
     
     // Method to stop the user function
     virtual void StopUserFunction();
@@ -358,23 +358,23 @@ float ADC::ReadVoltage()
 }
 
 /*
-  Public method to get continuosly the ADC value on pin 
+  Public method to get continuously the ADC value on pin 
   @param int: Reference output for the ADC value between 0 - 4095
   @param int: The time interval between each sample
 */
-void ADC::ReadADCContinuosSampling(int &adcValueOut, int sampleTime)
+void ADC::ReadADCContinuousSampling(int &adcValueOut, int sampleTime)
 {
   message = "Read ADC input has been activated";
   cout << RainbowText(message, "Violet", "Default", "Bold") << endl;
 
-  ReadADCThread = std::thread(&ADC::MakeReadADCContinuosSampling, this, std::ref(adcValueOut),sampleTime);
+  ReadADCThread = std::thread(&ADC::MakeReadADCContinuousSampling, this, std::ref(adcValueOut),sampleTime);
 }
 
 /*
   Private method that contains the routine to make the ADC read 
   @param int: A reference variable to store The pin's value between 0 - 4095
 */
-void ADC::MakeReadADCContinuosSampling(int &adcValueOut, int sampleTime)
+void ADC::MakeReadADCContinuousSampling(int &adcValueOut, int sampleTime)
 {
   while (stopReadADCFlag == false)
   {
@@ -389,29 +389,29 @@ void ADC::MakeReadADCContinuosSampling(int &adcValueOut, int sampleTime)
 /*
   Public method to stop reading the ADC 
 */
-void ADC::StopReadADCContinuosSampling()
+void ADC::StopReadADCContinuousSampling()
 {
   stopReadADCFlag = true;
 }
 
 /*
-  Public method to get continuosly the voltage value on pin 
+  Public method to get continuously the voltage value on pin 
   @param float: Reference output for the ADC value between 0 - 1.8
   @param int: The time interval between each sample
 */
-void ADC::ReadVoltageContinuosSampling(float &voltageOut, int sampleTime)
+void ADC::ReadVoltageContinuousSampling(float &voltageOut, int sampleTime)
 {
   message = "Read voltage has been activated";
   cout << RainbowText(message, "Violet", "Default", "Bold") << endl;
 
-  ReadVoltageThread = std::thread(&ADC::MakeReadVoltageContinuosSampling, this, std::ref(voltageOut),sampleTime);
+  ReadVoltageThread = std::thread(&ADC::MakeReadVoltageContinuousSampling, this, std::ref(voltageOut),sampleTime);
 }
 
 /*
   Private method that contains the routine to make the ADC read 
   @param int: A reference variable to store The pin's value between 0 - 4095
 */
-void ADC::MakeReadVoltageContinuosSampling(float &voltageOut, int sampleTime)
+void ADC::MakeReadVoltageContinuousSampling(float &voltageOut, int sampleTime)
 {
   while (stopReadVoltageFlag == false)
   {
@@ -426,7 +426,7 @@ void ADC::MakeReadVoltageContinuosSampling(float &voltageOut, int sampleTime)
 /*
   Public method to stop reading the voltage 
 */
-void ADC::StopReadVoltageContinuosSampling()
+void ADC::StopReadVoltageContinuousSampling()
 {
   stopReadVoltageFlag = true;
 }

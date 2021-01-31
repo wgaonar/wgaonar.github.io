@@ -117,52 +117,47 @@ ADC adcPin(P9_39);
 {% endhighlight %}
 
 <p>  
-  A float variable is declared and initialized to store the analog voltage.
+  An integer variable is declared and initialized to store the digital value. You can note the name contains the word Out, because this variable is passed by reference to the corresponding method after in the main program.
 </p>
 {% highlight cpp%}
-float adcVoltage = 0.0;
+int adcValueOut = 0;
 {% endhighlight %}
 
 <p>  
-  The voltage values can be obtained through the next class method:
+  An integer variable is declared and initialized to set the interval time between each reading.
 </p>
 {% highlight cpp%}
-adcVoltage = adcPin.ReadVoltage();
+int sampleTime = 100;
 {% endhighlight %}
 
 <p>  
-  In this case, the readings are taken through a user-defined function that runs on the background from the main program until a key from the keyboard will be pressed. It can be attached to the pin through the next method: 
+  The continuos sampling of digital values can be obtained through the next class method. Note It takes two arguments, the first is the variable, <span style="color: red;">passed by reference</span>, to store the digital value and the second is the interval between each reading. The sampling is made in background through an internal thread execution. Besides, this method does not return any value.
 </p>
 {% highlight cpp%}
-adcPin.DoUserFunction(&AnalogRead);
-{% endhighlight %}  
- 
+adcPin.ReadADCContinuousSampling(adcValueOut,sampleTime);
+{% endhighlight %}
+
 <p>  
-  This callback type function can be a <span class="code">while loop</span> which reads not only the analog voltage but the digital value too. For example:
+  This method can be stopped through the next line of code:
 </p>
 {% highlight cpp%}
-int AnalogRead()
-{
-  while (stopAnalogRead == false)
+adcPin.StopReadADCContinuousSampling();
+{% endhighlight %}
+
+<p>  
+  In the main program a <span class="code">while loop</span> can be used to wait for a user key press to stop the continuous sampling method before to finish the program. 
+</p>
+{% highlight cpp%}
+while (userInput != 'y')
   {
-    adcValue = adcPin.ReadADC();
-    cout << "ADC value on pin: " << adcValue << endl;
-    adcVoltage = adcPin.ReadVoltage();
-    cout << "Voltage on the pin: " << adcVoltage << endl;
-    adcPin.Delayms(100);
+    message = "Do you want to stop the readings on the pin? Enter 'y' for yes:";
+    cout << RainbowText(message, "Blue")  << endl;
+    cin >> userInput;
+    if (userInput == 'y') 
+    {
+      adcPin.StopReadADCContinuousSampling();
+    }
   }
-  return 0;
-}
-{% endhighlight %}
-
-<p>  
-  An aspect to take into account is the declaration of global variables in order to make it possible this function works.
-</p>
-{% highlight cpp%}
-// Global variables
-bool stopAnalogRead = false;
-int adcValue = 0;
-float adcVoltage = 0.0;
 {% endhighlight %}
 
 <p>  
@@ -191,7 +186,7 @@ int main()
 
   int adcValueOut = 0;
   int sampleTime = 100;
-  adcPin.ReadADCContinuosSampling(adcValueOut,sampleTime);
+  adcPin.ReadADCContinuousSampling(adcValueOut,sampleTime);
   
   char userInput = '\0';
   while (userInput != 'y')
@@ -201,7 +196,7 @@ int main()
     cin >> userInput;
     if (userInput == 'y') 
     {
-      adcPin.StopReadADCContinuosSampling();
+      adcPin.StopReadADCContinuousSampling();
     }
   }
 
