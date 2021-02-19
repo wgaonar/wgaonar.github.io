@@ -15,7 +15,7 @@
    id="svg8"
    inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
    sodipodi:docname="Cover.svg"
-   inkscape:export-filename="/Users/wilmer/GitHubSite/wgaonar.github.io/assets/Post27/Cover.png"
+   inkscape:export-filename="/Users/wilmer/GitHubSite/wgaonar.github.io/assets/Post28/Cover.png"
    inkscape:export-xdpi="191.39999"
    inkscape:export-ydpi="191.39999">
   <defs
@@ -169,18 +169,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.85440696"
-     inkscape:cx="569.49666"
-     inkscape:cy="477.22783"
+     inkscape:zoom="0.64614621"
+     inkscape:cx="267.33737"
+     inkscape:cy="446.26487"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g4555"
      inkscape:document-rotation="0"
      showgrid="true"
      units="in"
      inkscape:window-width="1920"
-     inkscape:window-height="1080"
+     inkscape:window-height="1009"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="23"
      inkscape:window-maximized="0"
      inkscape:object-paths="true" />
   <metadata
@@ -223,14 +223,14 @@
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:23.9709px;line-height:1.25;font-family:sans-serif;fill:#800080;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="124.29707"
-         y="54.056648"
+         x="118.97385"
+         y="55.285084"
          id="text859"><tspan
            sodipodi:role="line"
            id="tspan857"
-           x="124.29707"
-           y="54.056648"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.9709px;font-family:Ayuthaya;-inkscape-font-specification:'Ayuthaya, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#800080;stroke-width:0.264583">0-4095</tspan></text>
+           x="118.97385"
+           y="55.285084"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.9709px;font-family:Ayuthaya;-inkscape-font-specification:'Ayuthaya, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-5.29167px;fill:#800080;stroke-width:0.264583">0.0 - 1.8</tspan></text>
       <g
          id="g4160"
          transform="translate(2.1304814,-3.3488223)">
