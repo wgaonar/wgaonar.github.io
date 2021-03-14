@@ -1,0 +1,261 @@
+---
+layout: post
+title: "PWM on a the six leds"
+date:   2021-03-06 08:00:00 -0600
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: left;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post30/Cover.jpeg"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show the six PWM pins available on the BeagleBone and how to work with them to control the brightness of six LEDs.
+  Remembering the PWM is a technique that lets us emulate an analog signal in a digital pin.
+  This is done by changing the time that a signal is On in a fixed period of time. 
+  The ratio between the time ON and OFF is named duty cycle. The more duty cycle, the more is the
+  "analog" average voltage measured on the digital pin. In  
+  <a href="{% post_url 2021-03-04-Post29-BeagleCPP-Checkpoint %}"> this post </a> 
+  You can find updated code of the class.
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
+  works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers 
+  as Arduino. It is so muy important to avoid damage to the board, especially
+  when you are working with buttons or digital inputs in general. 
+</p>
+
+The components are:
+<ul>
+  <li>5 Resistor of 1KΩ</li>
+  <li>1 LED</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post30/Circuit_bb.jpg"
+    alt="Circuit.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to control the brightness of six LEDs through a PWM technique.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>  
+  First of all, each one of the six <span class="label coding">PWM</span> class objects is declared:
+</p>
+{% highlight cpp%}
+// Global pwm pin declaration
+PWM pwmBlueLedPin(P8_13);
+PWM pwmWhiteLedPin(P8_19);
+PWM pwmGreenLedPin(P9_14);
+PWM pwmYellowLedPin(P9_16);
+PWM pwmRedLedPin(P9_21);
+PWM pwmBlueLedPin2(P9_22);
+{% endhighlight %}
+
+<p>  
+  Secondly, a function to do a "stairs pattern" is defined. This function takes an argument a <span class="label coding">PWM</span> object and makes a cycle increasing the duty cycle from 0 to 100 and after, decreasing it from 100 to 0.
+</p>
+{% highlight cpp%}
+int DoStairs(PWM pwmPin)
+{
+  // Make a 'stairs pattern to up' on the Led
+  cout << "Doing a stairs pattern to up on a Blue Led..." << endl;
+
+  for (int pwmValue = 0; pwmValue <= 100; pwmValue += 10)
+  {
+    cout << "Setting a duty cycle of: " << pwmValue << endl;
+    pwmPin.SetDutyCycle(pwmValue);
+    pwmPin.Delayms(50);
+  }
+  cout << endl;
+
+  // Make a 'stairs pattern to down' on the Led
+  cout << "Doing a stairs pattern to down on a Blue Led..." << endl;
+
+  for (int pwmValue = 100; pwmValue >= 0; pwmValue -= 10)
+  {
+    cout << "Setting a duty cycle of: " << pwmValue << endl;
+    pwmPin.SetDutyCycle(pwmValue);
+    pwmPin.Delayms(50);
+  }
+  cout << endl;
+    
+  return 0;
+}
+{% endhighlight %}
+
+<p>  
+  Finally, in the main code the function is called for every PWM pin:
+</p>
+{% highlight cpp%}
+pDoStairs(pwmBlueLedPin);
+DoStairs(pwmWhiteLedPin);
+DoStairs(pwmGreenLedPin);
+DoStairs(pwmYellowLedPin);
+DoStairs(pwmRedLedPin);
+DoStairs(pwmBlueLedPin2);
+{% endhighlight %}
+
+<p>  
+  The complete code for this application is shown in the next listing together with its 
+  corresponding execution video.
+</p>
+
+<h2 style="font-size: 25px;">Listing_4.2</h2>
+{% highlight cpp%}
+#include <iostream>
+#include <cmath>
+#include "../../Sources/PWM.h"
+
+using namespace std;
+
+// Global pwm pin declaration
+PWM pwmBlueLedPin(P8_13);
+PWM pwmWhiteLedPin(P8_19);
+PWM pwmGreenLedPin(P9_14);
+PWM pwmYellowLedPin(P9_16);
+PWM pwmRedLedPin(P9_21);
+PWM pwmBlueLedPin2(P9_22);
+
+int DoStairs(PWM pwmPin)
+{
+  // Make a 'stairs pattern to up' on the Led
+  cout << "Doing a stairs pattern to up on a Blue Led..." << endl;
+
+  for (int pwmValue = 0; pwmValue <= 100; pwmValue += 10)
+  {
+    cout << "Setting a duty cycle of: " << pwmValue << endl;
+    pwmPin.SetDutyCycle(pwmValue);
+    pwmPin.Delayms(50);
+  }
+  cout << endl;
+
+  // Make a 'stairs pattern to down' on the Led
+  cout << "Doing a stairs pattern to down on a Blue Led..." << endl;
+
+  for (int pwmValue = 100; pwmValue >= 0; pwmValue -= 10)
+  {
+    cout << "Setting a duty cycle of: " << pwmValue << endl;
+    pwmPin.SetDutyCycle(pwmValue);
+    pwmPin.Delayms(50);
+  }
+  cout << endl;
+    
+  return 0;
+}
+
+int main()
+{
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  DoStairs(pwmBlueLedPin);
+  DoStairs(pwmWhiteLedPin);
+  DoStairs(pwmGreenLedPin);
+  DoStairs(pwmYellowLedPin);
+  DoStairs(pwmRedLedPin);
+  DoStairs(pwmBlueLedPin2);
+
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post30/VideoCover.png">
+    <source src="/assets/Post30/Video.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
