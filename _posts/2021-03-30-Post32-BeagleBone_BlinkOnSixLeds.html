@@ -1,0 +1,242 @@
+---
+layout: post
+title: "Blinking six Leds"
+date:   2021-03-30 08:00:00 -0600
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 5%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: center;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post32/Cover.png"
+    alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show how to blink in order six LEDs using Delays routines. This is done with the <span class="label coding">Delayms()</span> function which uses a <span class="label coding">sleep_for</span> method to do the delay.
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone works at <span style="color: red;">3.3V</span> and not 5V like microcontrollers as Arduino. It is so muy important to avoid damage to the board, especially when you are working with buttons or digital inputs in general. 
+</p>
+
+The components are:
+<ul>
+  <li>6 Resistor of 1KΩ</li>
+  <li>6 LED</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post32/Circuit_bb.jpg"
+    alt="Circuit.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to blink six LEDs with Delayms() member function.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>  
+  Initially, the <span class="label coding">GPIO</span> objects are initialized as <span class="label coding">OUTPUT</span> pins.
+</p>
+{% highlight cpp%}
+GPIO blueLed1(P9_22, OUTPUT);
+GPIO redLed(P8_12, OUTPUT);
+GPIO yellowLed(P8_14, OUTPUT);
+GPIO greenLed(P8_16, OUTPUT);
+GPIO whiteLed(P8_18, OUTPUT);
+GPIO blueLed2(P8_26, OUTPUT);
+{% endhighlight %}
+
+<p> 
+Next, each one of six LEDs are set to <span class="label coding">HIGH</span>, waiting in this state for a certain time through the  <span class="label coding">Delayms()</span> function <span style="color: red;">before</span> turning ON the next one. 
+</p>
+{% highlight cpp%}
+int time = 100;
+blueLed1.DigitalWrite(HIGH);
+Delayms(time);
+{% endhighlight %}
+
+<p></p>
+After that, the program does the inverse process setting each one of the six LEDs to <span class="label coding">LOW</span> and waiting with the <span class="label coding">Delayms()</span> function <span style="color: red;">before</span> turning OFF the previous one.
+</p>
+{% highlight cpp%}
+int time = 100;
+Delayms(time);
+blueLed1.DigitalWrite(HIGH);
+{% endhighlight %}
+
+<p>  
+  The complete code for the application are shown in the next listing together with its corresponding execution video.
+</p>
+
+<h2 style="font-size: 25px;">Listing_1.3</h2>
+{% highlight cpp%}
+/************************************************************************
+Listing_1.3.cpp
+@wgaonar
+24/03/2021
+https://github.com/wgaonar/BeagleCPP
+
+Turn ON / OFF  six leds in order
+
+Class: GPIO
+************************************************************************/
+#include <iostream>
+#include "../../Sources/GPIO.h"
+
+using namespace std;
+
+int main()
+{
+
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  GPIO blueLed1(P9_22, OUTPUT);
+  GPIO redLed(P8_12, OUTPUT);
+  GPIO yellowLed(P8_14, OUTPUT);
+  GPIO greenLed(P8_16, OUTPUT);
+  GPIO whiteLed(P8_18, OUTPUT);
+  GPIO blueLed2(P8_26, OUTPUT);
+
+  char userInput = '\0';
+  while (userInput != 'y')
+  {
+    int time = 100;
+    blueLed1.DigitalWrite(HIGH);
+    Delayms(time);
+
+    redLed.DigitalWrite(HIGH);
+    Delayms(time);
+
+    yellowLed.DigitalWrite(HIGH);
+    Delayms(time);
+
+    greenLed.DigitalWrite(HIGH);
+    Delayms(time);
+
+    whiteLed.DigitalWrite(HIGH);
+    Delayms(time);
+
+    blueLed2.DigitalWrite(HIGH);
+    Delayms(time);
+
+    blueLed2.DigitalWrite(LOW);
+    Delayms(time);
+
+    whiteLed.DigitalWrite(LOW);
+    Delayms(time);
+
+    greenLed.DigitalWrite(LOW);
+    Delayms(time);
+
+    yellowLed.DigitalWrite(LOW);
+    Delayms(time);
+
+    redLed.DigitalWrite(LOW);
+    Delayms(time);
+
+    blueLed1.DigitalWrite(LOW);
+    Delayms(time);
+
+    cout << "Enter 'y', to finish the program: " << endl;
+    cin >> userInput;
+  }
+  
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "Bold") << endl;
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post32/VideoCover.png">
+    <source src="/assets/Post32/Listing_1.3.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
