@@ -1,0 +1,262 @@
+---
+layout: post
+title: "Control the Brightness of a LED with a Potentiometer"
+date:   2021-04-04 08:00:00 -0600
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 0%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: center;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; margin-left: auto; margin-right: auto;">
+  <img src="/assets/Post33/Cover.png" alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show how to control the brightness of a LED with a potentiometer. The LED is wired to a PWM pin and the Potentiometer to an ADC pin. Remembering that the BeagleBone has 7 analog inputs and ADC of 12 bits that let the user to represent an analog signal within a range of 4096 values. It is important to remember that the reference for analog voltage is <span style="color: red;">1.8V</span>. If the user provides a greater voltage, the BeagleBone could be damaged. 
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. It consists of a Potentiometer power supplied with the analog GND (0V) located at the pin P9_34 and to analog VDD (1.8V) at the pin P9_32. Finally, its output is connected to the P9_39 pin.
+</p>
+
+The components are:
+<ul>
+  <li>1 Potentiometer of 1MΩ</li>
+  <li>1 Resistor of 1KΩ</li>
+  <li>1 LED of 3mm</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post33/Circuit_bb.jpg"
+    alt="Circuit.jpg" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to control the brightness of a LED with an analog input from a potentiometer.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>  
+  First, <span class="label coding">ADC</span> and <span class="label coding">PWM</span> class objects are declared as global variables:
+</p>
+{% highlight cpp%}
+// Global ADC pin declaration 
+ADC adcPin(P9_39);
+// Global PWM pin declaration
+PWM pwmBlueLedPin(P8_13);
+{% endhighlight %}
+
+<p>
+  An integer variable is declared and initialized to store the analog value on the pin. You can note the name contains the suffix <span class="label coding">Out</span> because this variable is passed by reference to the corresponding method, after in the main program. On the other hand, boolean and integer variables are declared and initialized to stop and keep the execution of the PWM cycle on the pin and the value on this, respectively.
+</p>
+{% highlight cpp%}
+// Global variables
+bool stopBrightLed = false;
+int adcValueOut = 0;
+int pwmValue = 0;
+{% endhighlight %}
+
+<p>  
+  A user function is defined to read the analog value (0-4095) on the potentiometer and to write the mapped value (0-100) on the PWM pin. This function is controlled by the boolean variable <span class="label coding">stopBrightLed</span> which gives the signal to stop the execution.
+</p>
+{% highlight cpp%}
+int BrightLed()
+{
+  while (stopBrightLed == false)
+  {
+    adcPin.ReadADC(adcValueOut);
+    cout << "ADC value on pin: " << adcValueOut << " / ";
+    pwmValue = adcValueOut / 4095.0 * 100; 
+    cout << "PWM value: " << pwmValue << endl;
+    pwmBlueLedPin.SetDutyCycle(pwmValue);
+    Delayms(100);
+  }
+  return 0;
+}
+{% endhighlight %}
+
+<p>  
+  In the main program a <span class="code">while loop</span> can be used to wait for a user keypress to stop the continuous sampling method before finishing the program. 
+</p>
+{% highlight cpp%}
+char userInput = '\0';
+while (userInput != 'y')
+{
+  message = "Do you want to stop the readings on the pin? Enter 'y' for yes:";
+  cout << RainbowText(message, "Blue") << endl;
+  cin >> userInput;
+  if (userInput == 'y') stopBrightLed = true;
+}
+{% endhighlight %}
+
+<p>  
+  Before finishing the program, the PWM value on the pin is cleaned. 
+</p>
+{% highlight cpp%}
+// Clean the pwm value on pin
+pwmBlueLedPin.SetDutyCycle(0);
+{% endhighlight %}
+
+<p>  
+  The complete code for this application is shown in the next listing together with its 
+  corresponding execution video.
+</p>
+
+<h2 style="font-size: 25px;">Listing_5.5</h2>
+{% highlight cpp%}
+/******************************************************************************
+Listing_5.5.cpp
+@wgaonar
+03/04/2021
+https://github.com/wgaonar/BeagleCPP
+
+Control de brightness of a LED with an analog value from a POT wired to AIN0 (P9_39) in background each 100 milliseconds while polling an key stroke by the user
+
+Class: ADC
+******************************************************************************/
+#include <iostream>
+#include "../../Sources/ADC.h"
+#include "../../Sources/PWM.h"
+
+using namespace std;
+
+// Global ADC pin declaration 
+ADC adcPin(P9_39);
+
+// Global PWM pin declaration
+PWM pwmBlueLedPin(P8_13);
+
+// Global variables
+bool stopBrightLed = false;
+int adcValueOut = 0;
+int pwmValue = 0;
+
+int BrightLed()
+{
+  while (stopBrightLed == false)
+  {
+    adcPin.ReadADC(adcValueOut);
+    cout << "ADC value on pin: " << adcValueOut << " / ";
+    pwmValue = adcValueOut / 4095.0 * 100; 
+    cout << "PWM value: " << pwmValue << endl;
+    pwmBlueLedPin.SetDutyCycle(pwmValue);
+    Delayms(100);
+  }
+  return 0;
+}
+
+int main()
+{
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+  // Call the function to read the pin
+  adcPin.DoUserFunction(&BrightLed);
+
+  char userInput = '\0';
+  while (userInput != 'y')
+  {
+    message = "Do you want to stop the readings on the pin? Enter 'y' for yes:";
+    cout << RainbowText(message, "Blue") << endl;
+    cin >> userInput;
+    if (userInput == 'y') stopBrightLed = true;
+  }
+
+  // Clean the pwm value on pin
+  pwmBlueLedPin.SetDutyCycle(0);
+  
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post33/VideoCover.png">
+    <source src="/assets/Post33/Listing_5.5.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
