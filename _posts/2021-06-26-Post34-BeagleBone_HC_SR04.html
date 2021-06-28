@@ -84,11 +84,36 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I show how to measure distance with the cheap ultrasonic sensor HC_SR04. The main contribution is to provide a class in C++ with implemented methods to get the distance with this sensor. This class is part of a whole library that can be found here: <a href="url">https://github.com/wgaonar/BeagleCPP</a>. There a few working examples for this sensor and these use Python on the Raspberry Pi instead of the BeagleBone. I did not found one example for C++. 
+  In this post, I show how to measure distance with the cheap ultrasonic sensor HC_SR04. The main contribution is to provide a class in C++ with implemented methods to get the distance with this sensor. This class is part of a whole library that can be found  <a href="https://github.com/wgaonar/BeagleCPP/tree/main/Chapter06_Sensors/HC_SR04">here</a>. There a few <a href="https://tutorials-raspberrypi.com/raspberry-pi-ultrasonic-sensor-hc-sr04/">working examples</a> for this sensor and these use Python on the Raspberry Pi instead of the BeagleBone or in <a href="https://sheldondwill.wordpress.com/2014/02/04/using-an-ultrasonic-sensor-hc-sr04-with-a-3-3v-micro-controller-tiva-c-series/">3.3V microcontrollers</a>. But, I did not found one example for C++. 
 </p>
 <p>    
   I use a voltage level shifter between 3.3V and 5.0V to prevent damage to the BeagleBone. It is important to remember that the logic voltage for the BeagleBone is <span style="color: red;">3.3V</span>. If the user provides a greater voltage, the BeagleBone could be damaged.
 </p>
+<p>    
+  It is important to note that the HC_SR04 can be used with the same timing parameters as it is used with a microcontroller. The nominal timing times can be seen in Figure 1 with a 10us pulse to activate the sensor with the trigger pin. 
+</p>
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post34/HC_SR04_Timing_1.png"
+    alt="HC_SR04_Timing_1.png" width="100%"/>
+  <figcaption>
+    Figure 1: Timing module for the ultrasonic sensor HC_SR04 with a microcontroller.
+  </figcaption>
+</figure>
+
+<p>    
+With the BeagleBone, Raspberry Pi and other Single Board Computers the time required to access the system files of the pins has to take into account. In the Beaglebone this time is about 200us with this library. For this reason, to use the HC_SR04 with the Beaglebone the pulse to activate the sensor has to be at least 5ms, as you can see in the diagram of Figure 2.
+</p>
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post34/HC_SR04_Timing_2.png"
+    alt="HC_SR04_Timing_2.png" width="100%"/>
+  <figcaption>
+    Figure 2: Timing module for the ultrasonic sensor HC_SR04 with a microprocessor as in the BeagleBone.
+  </figcaption>
+</figure>
 
 <h1>Circuit and components</h1>
 <p>
@@ -109,7 +134,7 @@ The components are:
     <img src="/assets/Post34/Circuit.png"
     alt="Circuit.jpg" width="100%"/>
   <figcaption>
-    Figure 1: Circuit to measure the distance with the ultrasonic sensor HC_SR04.
+    Figure 3: Circuit to measure the distance with the ultrasonic sensor HC_SR04.
   </figcaption>
 </figure>
 
