@@ -1,0 +1,248 @@
+---
+layout: post
+title: "Using a Median Filter With The Ultrasonic Sensor HC_SR04"
+date:   2021-06-28 08:00:00 -0500
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 0%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: center;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; margin-left: auto; margin-right: auto;">
+  <img src="/assets/Post35/Cover.png" alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show how to use a median filter for measuring the distance with the cheap ultrasonic sensor HC_SR04. This class is part of a whole library that can be found  <a href="https://github.com/wgaonar/BeagleCPP/tree/main/Chapter06_Sensors/HC_SR04">here</a>. As a reference, an excellent article about how to implement a median filter on Arduino can be found <a href="https://www.luisllamas.es/arduino-filtro-mediana-rapido/">here</a> in the Luis Llamas Blog. 
+</p>
+<p>    
+  I use a voltage level shifter between 3.3V and 5.0V to prevent damage to the BeagleBone. It is important to remember that the logic voltage for the BeagleBone is <span style="color: red;">3.3V</span>. If the user provides a greater voltage, the BeagleBone could be damaged.
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. It consists of a voltage level shifter, an HC-SRO4, and the BeagleBone. The pins used for trigger and echo are P9_15 and P9_17 and these were configured as digital output and input respectively.
+</p>
+
+The components are:
+<ul>
+  <li>1 Ultrasonic Sensor HC_SR04</li>
+  <li>1 Level Shifter for 3.3V - 5.0V TXS0108E </li>
+  <li>1 Protoboard mini</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post35/Circuit.png"
+    alt="circuit.png" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to measure the distance with the ultrasonic sensor HC_SR04.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>  
+  First, an <span class="label coding">HC_SR04</span> object is declared with global scope an using a previously <span class="label coding">GPIO</span> declared objects:
+</p>
+{% highlight cpp%}
+// Declaring the pins
+GPIO triggerPin(P9_15);
+GPIO echoPin(P9_17);
+
+// Declaring the HC_SR04 object
+HC_SR04 distanceSensor (triggerPin, echoPin);
+{% endhighlight %}
+
+<p>
+  The <span class="label coding">distanceSensor.MeasureDistanceCmWithMedian()</span> method is called on the previously defined <span class="label coding">HC_SR04</span> object. This activates the sensor through the trigger pin and waits for the pulse in the echo pin to measure the distance by counting the time required by the acoustic wave to come back to the sensor after it has hit an object. The method is shown in the next listing where it can be seen that some measurements are done and stored in a <span class="label coding">list<></span> which is sorted and the median is extracted. The minimum and maximum values for the number of measurements (window size) are 3 and 11, respectively. 
+</p>
+{% highlight cpp%}
+double HC_SR04::MeasureDistanceCmWithMedian(int windowSize)
+{
+  // Check for unreasonable window sizes values
+  if (windowSize < 3)
+    windowSize = 3;
+  if (windowSize > 11) 
+    windowSize = 11;
+
+  std::list <double> windowValues;
+
+  // Make the measures for the window
+  for (size_t i = 0; i < windowSize; i++) {
+    windowValues.push_back(this->MeasureDistanceCm());
+  }
+
+  // Sort the list of values 
+  windowValues.sort();
+
+  // Search for the median position
+  auto median = windowValues.begin();
+  advance(median , windowValues.size() / 2 );
+
+  return *median;
+}
+{% endhighlight %}
+
+<p>  
+  In the main program a <span class="coding">while loop</span> can be used to measure the distance each 250ms until the distance measurement will be less than 5cm:  
+</p>
+{% highlight cpp%}
+while (true) 
+{
+  cout << "Distance reading: " << count << " = " << distance << "cm\n";
+  count++;
+  Delayms(250);
+  if (distance <= 5) 
+  {
+    cout << "Too close! Exiting...\n";
+    break;
+  }
+  else distance = distanceSensor.MeasureDistanceCmWithMedian(7);
+}
+{% endhighlight %}
+
+<p>  
+  The complete code for this application is shown in the next listing together with its corresponding execution output.
+</p>
+
+<h2 style="font-size: 25px;">HC_SR04_1.2.cpp</h2>
+{% highlight cpp%}
+/******************************************************************************
+HC_SR04_1.2.cpp
+@wgaonar
+28/06/2021
+https://github.com/wgaonar/BeagleCPP
+
+Uses a Median filter for the sensor readings, if detected distance 
+is less than 5cm the program finishes 
+
+Class: HC_SR04
+******************************************************************************/
+
+#include <iostream>
+#include <list>
+
+#include "../../../Sources/GPIO.h"
+#include "../../../Sources/HC_SR04.h"
+
+using namespace std;
+
+// Declaring the pins
+GPIO triggerPin(P9_15);
+GPIO echoPin(P9_17);
+
+// Declaring the HC_SR04 object
+HC_SR04 distanceSensor (triggerPin, echoPin);
+
+
+int main() {
+  string message = "\nMain program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+
+  double distance = distanceSensor.MeasureDistanceCmWithMedian(7);
+  int count = 0;
+  while (true) 
+  {
+    cout << "Distance reading: " << count << " = " << distance << "cm\n";
+    count++;
+    Delayms(250);
+    if (distance <= 5) 
+    {
+      cout << "Too close! Exiting...\n";
+      break;
+    }
+    else distance = distanceSensor.MeasureDistanceCmWithMedian(7);
+  }
+
+  message = "\nMain program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post35/Execution.png"
+    alt="circuit.png" width="100%"/>
+  <figcaption>
+    Figure 2: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
