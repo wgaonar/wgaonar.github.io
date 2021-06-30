@@ -1,0 +1,238 @@
+---
+layout: post
+title: "Including Temperature and Offset To Work With Ultrasonic Sensor HC_SR04"
+date:   2021-06-29 08:00:00 -0500
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 0%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: center;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; width:70%; margin-left: auto; margin-right: auto;">
+  <img src="/assets/Post36/Cover.png" alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show how to include the air temperature in the calculus of the speed sound and include an offset value for the distance reported by the sensor. This value can be useful for example when the sensor is placed not at the edge of a robot and the measurements have to be subtracted to reference these at the robot's boundary avoiding an undesired collision. This class is part of a whole library that can be found  <a href="https://github.com/wgaonar/BeagleCPP/tree/main/Chapter06_Sensors/HC_SR04">here</a>.
+</p>
+<p>    
+  I use a voltage level shifter between 3.3V and 5.0V to prevent damage to the BeagleBone. It is important to remember that the logic voltage for the BeagleBone is <span style="color: red;">3.3V</span>. If the user provides a greater voltage, the BeagleBone could be damaged.
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. It consists of a voltage level shifter, an HC-SRO4, and the BeagleBone. The pins used for trigger and echo are P9_15 and P9_17 and these were configured as digital output and input respectively.
+</p>
+
+The components are:
+<ul>
+  <li>1 Ultrasonic Sensor HC_SR04</li>
+  <li>1 Level Shifter for 3.3V - 5.0V TXS0108E </li>
+  <li>1 Protoboard mini</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post36/Circuit.png"
+    alt="circuit.png" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to measure the distance with the ultrasonic sensor HC_SR04.
+  </figcaption>
+</figure>
+
+<h1>Coding</h1>
+<p>  
+  First, an <span class="label coding">HC_SR04</span> object is declared with global scope using a previously <span class="label coding">GPIO</span> declared objects and an overloaded constructor is used to include the offset in cm and the temperature in °Celsius:
+</p>
+{% highlight cpp%}
+GPIO triggerPin(P9_15);
+GPIO echoPin(P9_17);
+
+// Declaring the pins and the HC_SR04 object with offset and temperature correction factors
+HC_SR04 distanceSensor (triggerPin, echoPin, 1, 25);
+{% endhighlight %}
+
+<p>  
+  The overloaded constructor of the class takes these user values to include an offset and the temperature to estimate the sound speed that will be used in the calculus of the distance. Both values are class private members of type <span class="label coding">double</span>. For the temperature, the <a href="http://hyperphysics.phy-astr.gsu.edu/hbase/Sound/souspe3.html">standard equation</a> is used. This overloaded constructor is shown in the next listing:
+</p>
+
+{% highlight cpp%}
+// Overload Constructor with offset and temperature for correction 
+HC_SR04::HC_SR04(GPIO newTriggerPin, GPIO newEchoPin, double newOffset, double temperature) :
+        triggerPin(newTriggerPin), echoPin(newEchoPin) 
+{
+  this->offset = newOffset; 
+  this->soundSpeed = 33130 + 60.6 * temperature; // Units in cm/s and ºC
+  InitSensor();
+
+  std::string message;
+  message = "\nHC-SR04: Sensor object with trigger pin: " +
+            this->triggerPin.GetPinHeaderId() + " / echo pin: " +
+            this->echoPin.GetPinHeaderId() + 
+            " was created!\n";
+  std::cout << RainbowText(message, "Violet");
+  
+  std::stringstream streamSoundSpeed;
+  std::cout << RainbowText("The sound speed that will be used is: ", "Violet");
+  streamSoundSpeed << std::fixed << std::setprecision(2) << this->soundSpeed;
+  std::cout << RainbowText(streamSoundSpeed.str(), "Violet") << std::endl;
+  
+  std::stringstream streamOffset;
+  std::cout << RainbowText("The distance offset that will be used is: ","Violet");
+  streamOffset << std::fixed << std::setprecision(2) << this->offset;
+  std::cout << RainbowText(streamOffset.str(), "Violet") << std::endl; 
+}
+{% endhighlight %}
+
+<p>
+  The class method <span class="label coding">MeasureDistanceCm()</span> to measure the distance works with the modified <span class="label coding">offset</span> and <span class="label coding">speedSound</span> values if the user has included these in the constructed <span class="label coding">HC_SR04</span> object. In another case, that method works with the default and standard values,i.e., an offset of <span class="label coding">0.0</span> and a sound speed of <span class="label coding">34300.0</span>, respectively.
+</p>
+
+<p>  
+  In the main program a <span class="coding">for loop</span> can be used to  measure the distance 10 times each second using the <span class="label coding">MeasureDistanceCmWithMedian()</span> which defines a window size to filter the data with a median value and calls the <span class="label coding">MeasureDistanceCm()</span> method to do the reading:  
+</p>
+{% highlight cpp%}
+double distance = distanceSensor.MeasureDistanceCmWithMedian(5);
+for (size_t i = 0; i < 10; i++) {
+  distance = distanceSensor.MeasureDistanceCmWithMedian(5);;
+  cout << "Distance reading: " << i << " = " << distance << "cm\n";
+  Delayms(1000);
+}
+{% endhighlight %}
+
+<p>  
+  The complete code for this application is shown in the next listing together with its corresponding execution output.
+</p>
+
+<h2 style="font-size: 25px;">HC_SR04_1.3.cpp</h2>
+{% highlight cpp%}
+/******************************************************************************
+HC_SR04_1.3.cpp
+@wgaonar
+29/06/2021
+https://github.com/wgaonar/BeagleCPP
+
+Uses a Median filter for each one of the 10 sensor readings each second. 
+The sensor object is constructed with offset and temperature correction factors
+
+Class: HC_SR04
+******************************************************************************/
+
+#include <iostream>
+#include <list>
+
+#include "../../../Sources/GPIO.h"
+#include "../../../Sources/HC_SR04.h"
+
+using namespace std;
+
+GPIO triggerPin(P9_15);
+GPIO echoPin(P9_17);
+
+// Declaring the pins and the HC_SR04 object with offset and temperature correction factors
+HC_SR04 distanceSensor (triggerPin, echoPin, 1, 25);
+
+
+int main() {
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+
+  double distance = distanceSensor.MeasureDistanceCmWithMedian(5);
+  for (size_t i = 0; i < 10; i++) {
+    distance = distanceSensor.MeasureDistanceCmWithMedian(5);;
+    cout << "Distance reading: " << i << " = " << distance << "cm\n";
+    Delayms(1000);
+  }
+
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post36/Execution.png"
+    alt="circuit.png" width="100%"/>
+  <figcaption>
+    Figure 2: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
