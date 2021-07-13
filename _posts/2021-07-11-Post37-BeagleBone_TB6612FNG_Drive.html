@@ -1,0 +1,347 @@
+---
+layout: post
+title: "Drive a DC motor with TB6612FNG driver"
+date:   2021-07-11 08:00:00 -0500
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 0%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: center;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; 
+              width:70%; margin-left: auto; 
+              margin-right: auto;">
+  <img src="/assets/Post37/Cover.png" alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show how to drive a DC Motor with the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. 
+  This driver is able to drive a couple of DC motors with a current of 1.2A and in a range of 2.5V to 13.5V. On the other hand, this uses 3 pins in a range of 2.7V to 5.5V to control each motor, 2 pins of these are to set the direction of rotation, and the last one to control the speed through PWM. More info can be found on the site of  <a href= "https://learn.sparkfun.com/tutorials/tb6612fng-hookup-guide/all">Sparkfun</a> 
+  This class is part of a whole library that can be found  <a href="https://github.com/wgaonar/BeagleCPP/tree/main/Chapter07_DCMotors/TB6612FNG">here</a>.
+</p>
+<p>    
+  It is important to remember that the logic voltage for the BeagleBone is <span style="color: red;">3.3V</span>. If the user provides a greater voltage, the BeagleBone could be damaged.
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. It consists of a TB6612FNG driver, a low voltage DC Motor, 4 AA batteries, and the BeagleBone. 
+</p>
+
+<figure style="text-align: center; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post37/Circuit.png" alt="circuit.png" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to drive a DC motor with the TB6612FNG driver.
+  </figcaption>
+</figure>
+
+<p>
+The pins used for control de motor are:
+  <ul>
+    <li>GPIO P8_12 and P8_14 to control the motor rotation direction</li>
+    <li>PWM P8_13 to control de speed</li>
+    <li>GPIO P8_16 to activate / deactivate de driver</li>
+  </ul>
+</p>
+
+The components are:
+<ul>
+  <li>1 DC Motor driver TB6612FNG</li>
+  <li>1 DC Motor 3.0 - 6.0V</li>
+  <li>4 AA Batteries </li>
+  <li>1 Protoboard mini</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<h1>Coding</h1>
+<p>  
+  First, a <span class="label coding">GPIO </span> and <span class="label coding">TB6612FNG</span> objects are declared with global scope to initialize the digital pin to activate/deactivate the driver and the Motor that will be driven. These objects are named <span class="label coding">standByPin</span> and <span class="label coding">MotorA</span>, respectively. In this object, the user can include a boolean initialization parameter <span class="label coding">true/false</span> to invert by software the motor direction rotation instead of inverting the motor's jumpers physically.
+</p>
+{% highlight cpp%}
+// Declare the pin to activate / deactivate the TB6612FNG module
+GPIO standByPin(P8_16, OUTPUT);
+
+// Declare the motor object directly with the header pin's names
+TB6612FNG MotorA (P8_12, P8_14, P8_13, false);
+{% endhighlight %}
+
+<p>  
+  The constructor of the class is shown in the next listing:
+</p>
+
+{% highlight cpp%}
+// Overload Constructor
+TB6612FNG::TB6612FNG (GPIO newInput1Pin, 
+                      GPIO newInput2Pin,
+                      PWM newPWMPin, 
+                      bool newSwapSpin) :
+                      input1Pin(newInput1Pin), 
+                      input2Pin(newInput2Pin),
+                      pwmPin(newPWMPin), 
+                      swapSpin(newSwapSpin)
+{
+  InitTB6612FNGPins();
+
+  std::string message;
+  message = "\nTB6612FNG object with the next parameters / pins was created:\n" +
+            std::string("\tIN1: ") + this->input1Pin.GetPinHeaderId() + "\n" + 
+            std::string("\tIN2: ") + this->input2Pin.GetPinHeaderId() + "\n" + 
+            std::string("\tPWM: ") + this->pwmPin.GetPinHeaderId() + "\n\n";
+  std::cout << RainbowText(message, "Light Red");
+}
+{% endhighlight %}
+
+<p>
+  The first thing to do is to activate the TB6612FNG driver. This can be done with the next line:
+</p>
+{% highlight cpp%}
+// Activate the module
+ActivateTB6612FNG(standByPin);
+{% endhighlight %}
+
+<p>
+  The TB6612FNG driver has a pin designed as StandBy to power it ON and OFF. If this pin is set to <span class="label coding">HIGH</span> the module will be ON and if this pin is set to <span class="label coding">LOW</span> the module will be OFF.
+  A couple of functions included in the class file let the user do that:
+  <ul>
+    <li><span class="label coding">void ActivateTB6612FNG(GPIO &);</span></li>
+    <li><span class="label coding">void DeactivateTB6612FNG(GPIO &);</span></li>
+  </ul>
+</p>
+
+<p>  
+  The instruction to move the motors is <span class="label coding">MotorA.Drive(i,1000,stop);</span> which is an overladed class method that receives three parameters: the speed, the time that the motor will be running at that speed and finally, the signal to do after the time has expired. The ranges or values of these parameters are:
+  <ul>
+    <li>Speed in percentage, i.e. integer values between <span class="coding">-100 and 100</span></span></li>
+    <li>Time of movement duration in milliseconds</li>
+    <li>Flag to indicate what the motor will do after the movement, i.e. <span class="coding">brake/stop</span></span> keywords</li>
+  </ul>
+   This overloaded class method <span class="coding">Drive(int, int , ACTION)</span> can be seen in the next listings:
+</p>
+{% highlight cpp%}
+/*
+  Public method to drive and brake / stop the motor after certain time
+  @param int: The desired speed (-100,100)
+  @param int: The desired duration in milliseconds
+  @param ACTION: Confirm to brake or stop the motor after driving it.     
+*/
+void TB6612FNG::Drive(int speed, int duration, ACTION action)
+{
+  if (duration < 0) 
+    duration *= -1;
+
+  this->Drive(speed);
+  Delayms(duration);
+  if (action == brake)
+    this->SetStopMode();
+  else if (action == stop)
+    this->SetShortBrakeMode();
+}
+{% endhighlight %}
+
+<p>
+The core class method is <span class="coding">Drive(int)</span> which receives as an argument the speed value and depending on that, it configures the desired rotation direction and speed for the motor. This method can be seen in the next listing:
+</p>
+{% highlight cpp%}
+/*
+  Public method to drive the motor
+  @param int: the desired speed (-100,100)     
+*/
+void TB6612FNG::Drive(int speed)
+{
+  // If it is desired, swap the turning direction 
+  speed *= swapSpinMotor;
+
+  // Verify and limit the speed
+  if (speed >= maxSpeed)
+    speed = maxSpeed;
+  if (speed <= -maxSpeed)
+    speed = -maxSpeed;
+
+  // Select and set the correct turn direction
+  std::string message;
+  if (speed >= 0)
+  {
+    message = "Turning motor CW with speed: ";
+    std::cout << RainbowText(message, "Light Red", "Default", "Bold") 
+              << speed << "%\n";
+    this->SetCWMode();
+  }
+  else
+  {
+    speed *= -1;
+    message = "Turning motor CCW with speed: ";
+    std::cout << RainbowText(message, "Light Red", "Default", "Bold") 
+              << speed << "%\n";
+    this->SetCCWMode();
+  }
+
+  // Set the motor speed
+  this->SetSpeed(speed);
+}
+{% endhighlight %}
+
+<p>
+  In the main program, some <span class="coding">for loops</span> can be used to drive the motor increasing and decreasing the speed and driving it in both directions.
+</p>
+{% highlight cpp%}
+for (size_t i = 0; i < 100; i+=10)
+MotorA.Drive(i,1000,stop);
+for (size_t i = 100; i > 0; i-=10)
+MotorA.Drive(i,1000,stop);
+
+for (size_t i = 0; i < 100; i+=10)
+MotorA.Drive(-i,1000,stop);
+for (size_t i = 100; i > 0; i-=10)
+MotorA.Drive(-i,1000,stop);
+{% endhighlight %}
+
+<p>
+  Finally, the TB6612FNG has to be deactivated using the next line.
+</p>
+{% highlight cpp%}
+// Deactivate the module
+DeactivateTB6612FNG(standByPin);
+{% endhighlight %}
+
+<p>  
+  The complete code for this application is shown in the next listing together with its corresponding execution output.
+</p>
+
+<h2 style="font-size: 25px;">TB6612FNG_1.1.cpp</h2>
+{% highlight cpp%}
+/******************************************************************************
+TB6612FNG_1.1.cpp
+@wgaonar
+02/07/2021
+https://github.com/wgaonar/BeagleCPP
+
+- Move the motor each second increasing the speed 10% each time and then reversing it.
+- Move the motor in the other direction increasing the speed 10% and then reversing it.
+
+Class: TB6612FNG
+******************************************************************************/
+#include <iostream>
+#include "../../../Sources/TB6612FNG.h"
+
+using namespace std;
+
+// Declare the pin to activate / deactivate the TB6612FNG module
+GPIO standByPin(P8_16, OUTPUT);
+
+// Declare the motor object directly with the header pin's names
+TB6612FNG MotorA (P8_12, P8_14, P8_13, false);
+
+int main()
+{
+
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+  
+   // Activate the module
+  ActivateTB6612FNG(standByPin);
+  
+  for (size_t i = 0; i < 100; i+=10)
+    MotorA.Drive(i,1000,stop);
+  for (size_t i = 100; i > 0; i-=10)
+    MotorA.Drive(i,1000,stop);
+
+  for (size_t i = 0; i < 100; i+=10)
+    MotorA.Drive(-i,1000,stop);
+  for (size_t i = 100; i > 0; i-=10)
+    MotorA.Drive(-i,1000,stop);
+
+  // Deactivate the module
+  DeactivateTB6612FNG(standByPin);
+  
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post37/Execution.png"
+    alt="circuit.png" width="100%"/>
+  <figcaption>
+    Figure 2: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
