@@ -128,7 +128,7 @@ The components are:
 
 <h1>Coding</h1>
 <p>  
-  First, some <span class="label coding">GPIO</span> and <span class="label coding">TB6612FNG</span> objects are declared with global scope to initialize the digital pin to activate/deactivate the driver, the control pins, and the Motor that will be driven. In this <span class="label coding">GPIO</span> objects are used as the parameters to construct the <span class="label coding">TB6612FNG</span> object. Remember that the user can include a boolean initialization parameter <span class="label coding">true/false</span> to invert by software the motor direction rotation instead of inverting the motor's jumpers physically.
+  First, some <span class="label coding">GPIO</span> and <span class="label coding">TB6612FNG</span> objects are declared with global scope to initialize the digital pin to activate/deactivate the driver, the control pins, and the Motor that will be driven. In this <span class="label coding">GPIO</span> objects are used as the parameters to construct the <span class="label coding">TB6612FNG</span> object. Remember that the user can include a boolean initialization parameter <span class="label coding">true/false</span> to invert by software the motor rotation direction instead of inverting the motor's jumpers physically.
 </p>
 {% highlight cpp%}
 // Declare the pin to activate / deactivate the TB6612FNG module
