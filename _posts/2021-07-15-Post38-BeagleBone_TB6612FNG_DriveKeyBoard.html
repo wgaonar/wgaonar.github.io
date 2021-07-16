@@ -152,7 +152,7 @@ ActivateTB6612FNG(standByPin);
 {% endhighlight %}
 
 <p>
-  Next, the user can change the motor speed using the key "W" and "S" to increase or decrease it, respectively. The class method <span class="label coding">Drive()</span>, checks if the user has input a value for the speed beyond the limits of 100 and -100 and keep it between this range. If the user presses the key "Y", the program finishes.
+  Next, the user can change the motor speed using the key "W" and "S" to increase or decrease it, respectively. The class method <span class="label coding">Drive()</span>, checks if the user has input a value for the speed beyond the limits of 100 and -100 and keep it between this range, but in this case, the user code can do that too. If the user presses the key "Y", the program finishes.
 </p>
 {% highlight cpp%}
 message = "Enter an option 'y', 'w', 's': ";
