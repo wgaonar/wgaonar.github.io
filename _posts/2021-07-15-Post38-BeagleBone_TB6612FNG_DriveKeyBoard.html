@@ -152,7 +152,7 @@ ActivateTB6612FNG(standByPin);
 {% endhighlight %}
 
 <p>
-  Next, the user can change the motor speed using the key "W" and "S" to increase or decrease it, respectively. For double-check, the code does not let to set a speed beyond the limits of 100 and -100, unless the class method does this too. If the user presses the key "Y", the program finishes.
+  Next, the user can change the motor speed using the key "W" and "S" to increase or decrease it, respectively. The class method <span class="label coding">Drive()</span>, checks if the user has input a value for the speed beyond the limits of 100 and -100 and keep it between this range. If the user presses the key "Y", the program finishes.
 </p>
 {% highlight cpp%}
 message = "Enter an option 'y', 'w', 's': ";
@@ -193,7 +193,7 @@ DeactivateTB6612FNG(standByPin);
 {% endhighlight %}
 
 <p>  
-  The complete code for this application using a <span class="coding">while loop</span> to drive the motor increasing and decreasing the speed until the user press the key "Y" is shown in the next listing together with its corresponding execution output.
+  The code uses a <span class="coding">while loop</span> to drive the motor increasing and decreasing the speed until the user press the key "Y". This is shown in the next listing together with its corresponding execution output.
 </p>
 
 <h2 style="font-size: 25px;">TB6612FNG_1.2.cpp</h2>
@@ -280,8 +280,8 @@ int main()
 <figure style="text-align: center; width:100%; 
               margin-left: auto; 
               margin-right: auto;">
-  <video width="100%" controls poster="/assets/Post38/VideoCover-TB6612FNG_1.2.png">
-    <source src="/assets/Post38/TB6612FNG_1.2.mp4" type="video/mp4">
+  <video width="100%" controls poster="/assets/Post39/VideoCover-TB6612FNG_1.2.png">
+    <source src="/assets/Post39/TB6612FNG_1.2.mp4" type="video/mp4">
   </video>
   <figcaption>
     Video: Execution of the program.
