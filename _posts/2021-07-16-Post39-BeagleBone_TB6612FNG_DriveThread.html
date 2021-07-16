@@ -87,7 +87,7 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I show how to drive a DC Motor from the keyboard using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. The remarkable aspect is the use of threads to drive the motor, aspect that let the program to do some other things at the same time that the motor is running.
+  In this post, I show how to drive a DC Motor from the keyboard using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. The remarkable aspect is the use of threads to drive the motor, an aspect that lets the program does some other things at the same time that the motor is running.
   In the 
   <a href="{% post_url 2021-07-11-Post37-BeagleBone_TB6612FNG_Drive %}"> first entry</a> dedicated to this driver, you can read about how to drive a motor with it.
 </p>
@@ -153,7 +153,7 @@ ActivateTB6612FNG(standByPin);
 {% endhighlight %}
 
 <p>
-  In this code, the method <span class="label coding">DriveThread()</span> is used to create a thread each time the motor is driven. These threads will be store in a <span class="label coding">vector</span> of threads inside the code.
+  In this code, the method <span class="label coding">DriveThread()</span> is used to create a thread each time the motor is driven. These threads will be store in a <span class="label coding">vector</span> of threads inside the code. This method is shown in the next listing:
 </p>
 {% highlight cpp%}
 /*
@@ -170,7 +170,7 @@ void TB6612FNG::DriveThread(int speed, int duration, ACTION action)
 {% endhighlight %}
 
 <p>
-  The method <span class="label coding">MakeDriveThread()</span> takes each thread and calls the method <span class="label coding">Drive()</span> to drive the motor during certain time and <span class="label coding">stop</span> or <span class="label coding">brake</span> this after the movement.
+  The method <span class="label coding">MakeDriveThread()</span> takes each thread and calls the method <span class="label coding">Drive()</span> to drive the motor during a certain time and <span class="label coding">stop</span> or <span class="label coding">brake</span> this after the movement. This method is:
 </p>
 {% highlight cpp%}
 /*
@@ -185,7 +185,7 @@ void TB6612FNG::MakeDriveThread(int speed, int duration, ACTION action)
 {% endhighlight %}
 
 <p>
-  The user can change the motor speed using the key "W" and "S" to increase or decrease it, respectively. The library does not let to set a speed beyond the limits of 100 and -100. If the user presses the key "Y", the program finishes. Immediately, the method <span class="label coding">DriveThread()</span> is used to create a thread each time the motor is driven. These threads will be store in a <span class="label coding">vector</span> of threads inside the code. While the motor is running, a message will be printing on the screen 100 times.
+  On the other hand, in the implementation, the user can change the motor speed using the key "W" and "S" to increase or decrease it, respectively. The library does not let to set a speed beyond the limits of 100 and -100. If the user presses the key "Y", the program finishes. Immediately, the method <span class="label coding">DriveThread()</span> is used to create a thread each time the motor is driven. These threads will be store in a <span class="label coding">vector</span> of threads inside the code. While the motor is running, a message will be printed on the screen 100 times.
 </p>
 {% highlight cpp%}
 // Drive the motors and printing messages on the terminal
@@ -209,11 +209,11 @@ default:
 {% endhighlight %}
 
 <p>  
-  The instruction to move the motors is <span class="label coding">MotorA.Drive(i);</span> which is the core class method that receives as an argument the speed value and depending on that, it configures the desired rotation direction and speed for the motor. 
+  The instruction to move the motors is <span class="label coding">MotorA.DriveThread(motorSpeed,5000,stop)</span>. It creates the thread and calls the <span class="label coding">Drive()</span> method to drive the motor for 5 seconds at the desired speed and stops it after the movement.
 </p>
 {% highlight cpp%}
   // Move the motor
-  MotorA.Drive(motorSpeed);
+  MotorA.DriveThread(motorSpeed,5000, stop);
 {% endhighlight %}
 
 <p>
