@@ -1,0 +1,385 @@
+---
+layout: post
+title: "Drive 2 DC motors using the TB6612FNG driver"
+date:   2021-07-17 08:00:00 -0500
+categories: BeagleBone
+---
+
+<style>
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 46%;
+  padding: 2%;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  border-radius: 0%;
+}
+
+video {
+  border-radius: 0%;
+}
+
+h1 {
+  font-weight: bolder;
+  text-align: center;
+  font-size: 35px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+p {
+  text-align: justify;
+}
+
+figure {
+  text-align: justify;
+}
+
+code {
+  font-family:'Courier New';
+  font-size: 80%;
+  line-height: 0%;
+}
+
+.label {
+  color: black;
+}
+
+.coding {
+  font-family:'Courier New', Courier, monospace
+}
+
+.codinglist {
+  font-family:'Courier New', Courier, monospace;
+  font-weight: bold;
+  color:firebrick;
+}
+</style>
+
+<figure style="text-align: center; 
+              width:70%; margin-left: auto; 
+              margin-right: auto;">
+  <img src="/assets/Post40/Cover.png" alt="Cover.png" width="100%"/>
+  <figcaption>
+  </figcaption>
+</figure>
+
+<h1>Introduction</h1>
+
+<p>
+  In this post, I show how to control a pair of DC Motors forward and backward. I am using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. The remarkable aspect is the use of some class functions to drive the  motors simultaneously in the same rotation direction.
+  In the 
+  <a href="{% post_url 2021-07-11-Post37-BeagleBone_TB6612FNG_Drive %}"> first entry</a> dedicated to this driver, you can read about how to drive only one motor with it.
+</p>
+<p>    
+  It is important to remember that the logic voltage for the BeagleBone is <span style="color: red;">3.3V</span>. If the user provides a greater voltage, the BeagleBone could be damaged.
+</p>
+
+<h1>Circuit and components</h1>
+<p>
+  The circuit can be seen in Figure 1. It consists of a TB6612FNG driver, 2 low voltage DC Motors, 4 AA batteries, and the BeagleBone. 
+</p>
+
+<figure style="text-align: center; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="/assets/Post40/Circuit.png" alt="circuit.png" width="100%"/>
+  <figcaption>
+    Figure 1: Circuit to drive a pair of DC motors with the TB6612FNG driver.
+  </figcaption>
+</figure>
+
+The components are:
+<ul>
+  <li>1 DC Motor driver TB6612FNG</li>
+  <li>2 DC Motor 3.0 - 6.0V</li>
+  <li>4 AA Batteries </li>
+  <li>1 Protoboard mini</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+The pin to <b>control de driver</b> is:
+<ul>
+  <li>GPIO P8_16 to activate / deactivate de driver</li>
+</ul>
+The pins used for control the <b>motor A</b>  are:
+<ul>
+  <li>GPIO P8_12 and P8_14 to control the motor rotation direction</li>
+  <li>PWM P8_13 to control de speed</li>
+</ul>
+The pins used for control the <b>motor B</b> are:
+<ul>
+  <li>GPIO P8_17 and P8_18 to control the motor rotation direction</li>
+  <li>PWM P8_19 to control de speed</li>
+</ul>
+
+
+<h1>Coding</h1>
+<p>  
+  <span class="label coding">GPIO</span> and <span class="label coding">TB6612FNG</span> objects are declared with global scope to initialize the digital pin to activate/deactivate the driver and the pins that will control the motors.
+</p>
+<p>
+  This <span class="label coding">GPIO</span> objects are used as the parameters to construct the <span class="label coding">TB6612FNG</span> objects. Remember that the user can include a boolean initialization parameter <span class="label coding">true/false</span> to invert by software the motor rotation direction instead of inverting the motor's jumpers physically. 
+</p>
+<p>  
+  As It is shown next, I have used this parameter to invert the rotation direction of the <span class="label coding">Motor B</span> setting the last parameter to <span class="label coding">true</span>, instead of inverting the jumpers physically. This feature can be useful when you do not have access to the circuit or the motor directly.   
+</p>
+{% highlight cpp%}
+// Declare the pin to activate / deactivate the TB6612FNG module
+GPIO standByPin(P8_16);
+
+// Declaring the pins for motor 1 
+GPIO AIN1 (P8_12);
+GPIO AIN2 (P8_14);
+PWM PWMA (P8_13);
+
+// Declaring the  pins for motor 2
+GPIO BIN1 (P8_17);
+GPIO BIN2 (P8_18);
+PWM PWMB (P8_19);
+
+// Declare the object for motor 1
+TB6612FNG MotorA (AIN1, AIN2, PWMA, false);
+
+// Declare the object for motor 2 
+TB6612FNG MotorB (BIN1, BIN2, PWMB, true);
+{% endhighlight %}
+
+<p>
+  The next line shows how to activate the TB6612FNG driver:
+</p>
+{% highlight cpp%}
+// Activate the module
+ActivateTB6612FNG(standByPin);
+{% endhighlight %}
+
+<p>
+  To control the speed of both motors, the user can change it using the keys "W" and "S" to increase or decrease it, respectively. The class method <span class="label coding">Drive()</span> checks if the user has input a value for the speed beyond the limits of 100 and -100 and keep it between this range, but in this case, the user code can do that too. If the user presses the key "Y", the program finishes.
+</p>
+{% highlight cpp%}
+// Update the motors speed
+switch (userInput)
+{
+case 'w':
+  motorSpeed += 10;
+  if (motorSpeed >= 100)
+    motorSpeed = 100;
+  break;
+case 's':
+  motorSpeed -= 10;
+  if (motorSpeed <= -100)
+    motorSpeed = -100;
+  break;
+default:
+  break;
+}
+{% endhighlight %}
+
+<p>
+  To move the motors, the code use the functions <span class="label coding">Forward()</span> and <span class="label coding">Backward()</span> defined in the same  <span class="label coding">TB6612FNG</span> class. These functions <b>are not members</b> of any <span class="label coding">TB6612FNG</span> object, by the contrary, they are independently and can be called directly from the main implementation code.
+</p>
+
+<p>  
+  The <span class="label coding">Forward()</span> and <span class="label coding">Backward()</span> take as argument 2 <span class="label coding">TB6612FNG</span> objects passed by reference and the speed value that will be used to drive the motors.
+</p>
+
+{% highlight cpp%}
+/*
+  Function to drive FORWARD a robot with a couple of motors
+  @param TB6612FNG &: The reference to the left motor of the robot
+  @param TB6612FNG &: The reference to the right motor of the robot
+  @param int: The desired speed (0,100). It set up the correct value if
+              the user enters a negative value.    
+*/
+void Forward (TB6612FNG &motorLeft, TB6612FNG &motorRight, int speed)
+{
+  if (speed < 0)
+    speed *= -1;
+  motorLeft.Drive(speed);
+  motorRight.Drive(speed);
+}
+{% endhighlight %}
+
+{% highlight cpp%}
+/*
+  Function to drive BACKWARD a robot with a couple of motors
+  @param TB6612FNG &: The reference to the motor of the robot
+  @param TB6612FNG &: The reference to the motor of the robot
+  @param int: The desired speed (-100,0). It set up the correct value if
+              the user enters a positive value. 
+*/
+void Backward (TB6612FNG &motorLeft, TB6612FNG &motorRight, int speed)
+{
+  if (speed > 0)
+    speed *= -1;
+  motorLeft.Drive(speed);
+  motorRight.Drive(speed);
+}
+{% endhighlight %}
+
+<p>  
+  In order to complement the behavior of the class,  the <span class="label coding">Brake()</span> function is defined too. It brakes both motors which are <span class="label coding">TB6612FNG</span> objects passed by reference. 
+</p>
+
+{% highlight cpp %}
+/*
+  Function to BRAKE a robot with a couple of motors
+  @param TB6612FNG &: The reference to the motor of the robot
+  @param TB6612FNG &: The reference to the motor of the robot
+*/ 
+void Brake (TB6612FNG &motorLeft, TB6612FNG &motorRight)
+{
+  motorLeft.Brake();
+  motorRight.Brake();
+}
+{% endhighlight %}
+
+<p>
+  In the implementation code the user can decides when calls one, other, or one third option to brake both motors with the <span class="label coding">Brake()</span> function.
+</p>
+{% highlight cpp%}
+// Move the motors
+    if (motorSpeed > 0)
+      Forward(MotorA, MotorB, motorSpeed);
+    else if (motorSpeed < 0)
+      Backward(MotorA, MotorB, motorSpeed);
+    else
+      Brake(MotorA, MotorB);
+{% endhighlight %}
+
+<p>
+  Finally, the TB6612FNG has to be deactivated using the next line.
+</p>
+{% highlight cpp%}
+// Deactivate the module
+DeactivateTB6612FNG(standByPin);
+{% endhighlight %}
+
+<p>  
+  The complete code for this application using a <span class="coding">while loop</span> to control both motors increasing and decreasing the speed until the user press the key "Y". This code is shown in the next listing together with its corresponding execution output.
+</p>
+
+<h2 style="font-size: 25px;">TB6612FNG_1.4.cpp</h2>
+{% highlight cpp%}
+/******************************************************************************
+TB6612FNG_1.4.cpp
+@wgaonar
+08/07/2021
+https://github.com/wgaonar/BeagleCPP
+
+- Move forward and backward 2 motors with the same speed
+
+Class: TB6612FNG
+******************************************************************************/
+#include <iostream>
+#include "../../../Sources/TB6612FNG.h"
+
+using namespace std;
+
+// Declare the pin to activate / deactivate the TB6612FNG module
+GPIO standByPin(P8_16);
+
+// Declaring the pins for motor 1 
+GPIO AIN1 (P8_12);
+GPIO AIN2 (P8_14);
+PWM PWMA (P8_13);
+
+// Declaring the  pins for motor 2
+GPIO BIN1 (P8_17);
+GPIO BIN2 (P8_18);
+PWM PWMB (P8_19);
+
+// Declare the object for motor 1
+TB6612FNG MotorA (AIN1, AIN2, PWMA, false);
+
+// Declare the object for motor 2 
+TB6612FNG MotorB (BIN1, BIN2, PWMB, true);
+
+int main()
+{
+  string message = "Main program starting here...";
+  cout << RainbowText(message,"Blue", "White", "Bold") << endl;
+
+  // Activate the module
+  ActivateTB6612FNG(standByPin);
+
+  message = "If you want to stop the program, enter 'y' for yes";
+  cout << RainbowText(message, "Blue") << endl;
+  message = "Or enter 'w' for increase speed or 's' for decrease it";
+  cout << RainbowText(message, "Blue") << endl;
+
+  int motorSpeed = 0;
+  char userInput = '\0';
+  while (userInput != 'y')
+  {
+    message = "Enter an option 'y', 'w', 's': ";
+    cout << RainbowText(message, "Blue");
+    cin >> userInput;
+
+    // Update the motors speed
+    switch (userInput)
+    {
+    case 'w':
+      motorSpeed += 10;
+      if (motorSpeed >= 100)
+        motorSpeed = 100;
+      break;
+    case 's':
+      motorSpeed -= 10;
+      if (motorSpeed <= -100)
+        motorSpeed = -100;
+      break;
+    default:
+      break;
+    }
+
+    // Move the motors
+    if (motorSpeed > 0)
+      Forward(MotorA, MotorB, motorSpeed);
+    else if (motorSpeed < 0)
+      Backward(MotorA, MotorB, motorSpeed);
+    else
+      Brake(MotorA, MotorB);
+  }  
+
+  // Deactivate the module
+  DeactivateTB6612FNG(standByPin);
+
+  message = "Main program finishes here...";
+  cout << RainbowText(message,"Blue", "White","Bold") << endl;
+
+  return 0;
+}
+{% endhighlight %}
+
+<h2 style="font-size: 25px;">Execution of the program:</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls poster="/assets/Post40/VideoCover-TB6612FNG_1.4.png">
+    <source src="/assets/Post40/TB6612FNG_1.4.mp4" type="video/mp4">
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+Se you in the next post. 
