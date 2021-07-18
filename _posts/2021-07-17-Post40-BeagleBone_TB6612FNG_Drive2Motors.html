@@ -86,7 +86,7 @@ code {
 <h1>Introduction</h1>
 
 <p>
-  In this post, I show how to control a pair of DC Motors forward and backward. I am using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. The remarkable aspect is the use of some class functions to drive the  motors simultaneously in the same rotation direction.
+  In this post, I show how to control a pair of DC Motors forward and backward. I am using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. The remarkable aspect is the use of some class functions to drive the motors simultaneously in the same rotation direction.
   In the 
   <a href="{% post_url 2021-07-11-Post37-BeagleBone_TB6612FNG_Drive %}"> first entry</a> dedicated to this driver, you can read about how to drive only one motor with it.
 </p>
@@ -137,10 +137,10 @@ The pins used for control the <b>motor B</b> are:
   <span class="label coding">GPIO</span> and <span class="label coding">TB6612FNG</span> objects are declared with global scope to initialize the digital pin to activate/deactivate the driver and the pins that will control the motors.
 </p>
 <p>
-  This <span class="label coding">GPIO</span> objects are used as the parameters to construct the <span class="label coding">TB6612FNG</span> objects. Remember that the user can include a boolean initialization parameter <span class="label coding">true/false</span> to invert by software the motor rotation direction instead of inverting the motor's jumpers physically. 
+  These <span class="label coding">GPIO</span> objects are used as the parameters to construct the <span class="label coding">TB6612FNG</span> objects. Remember that the user can include a boolean initialization parameter <span class="label coding">true/false</span> to invert by software the motor rotation direction instead of inverting the motor's jumpers physically. 
 </p>
 <p>  
-  As It is shown next, I have used this parameter to invert the rotation direction of the <span class="label coding">Motor B</span> setting the last parameter to <span class="label coding">true</span>, instead of inverting the jumpers physically. This feature can be useful when you do not have access to the circuit or the motor directly.   
+  As is shown next, I have used this parameter to invert the rotation direction of the <span class="label coding">Motor B</span> setting the last parameter to <span class="label coding">true</span>, instead of inverting the jumpers physically. This feature can be useful when you do not have access to the circuit or the motor directly.   
 </p>
 {% highlight cpp%}
 // Declare the pin to activate / deactivate the TB6612FNG module
@@ -172,7 +172,7 @@ ActivateTB6612FNG(standByPin);
 {% endhighlight %}
 
 <p>
-  To control the speed of both motors, the user can change it using the keys "W" and "S" to increase or decrease it, respectively. The class method <span class="label coding">Drive()</span> checks if the user has input a value for the speed beyond the limits of 100 and -100 and keep it between this range, but in this case, the user code can do that too. If the user presses the key "Y", the program finishes.
+  To control the speed of both motors, the user can change it using the keys "W" and "S" to increase or decrease it, respectively. The class method <span class="label coding">Drive()</span> checks if the user has input a value for the speed beyond the limits of 100 and -100 and keeps it between this range, but in this case, the user code can do that too. If the user presses the key "Y", the program finishes.
 </p>
 {% highlight cpp%}
 // Update the motors speed
@@ -194,7 +194,7 @@ default:
 {% endhighlight %}
 
 <p>
-  To move the motors, the code use the functions <span class="label coding">Forward()</span> and <span class="label coding">Backward()</span> defined in the same  <span class="label coding">TB6612FNG</span> class. These functions <b>are not members</b> of any <span class="label coding">TB6612FNG</span> object, by the contrary, they are independently and can be called directly from the main implementation code.
+  To move the motors, the code uses the functions <span class="label coding">Forward()</span> and <span class="label coding">Backward()</span> defined in the same  <span class="label coding">TB6612FNG</span> class. These functions <b>are not members</b> of any <span class="label coding">TB6612FNG</span> object, on the contrary, they are independent and can be called directly from the main implementation code.
 </p>
 
 <p>  
@@ -253,7 +253,7 @@ void Brake (TB6612FNG &motorLeft, TB6612FNG &motorRight)
 {% endhighlight %}
 
 <p>
-  In the implementation code the user can decides when calls one, other, or one third option to brake both motors with the <span class="label coding">Brake()</span> function.
+  In the implementation code, the user can decide when calls one, other, or one-third option to brake both motors with the <span class="label coding">Brake()</span> function.
 </p>
 {% highlight cpp%}
 // Move the motors
