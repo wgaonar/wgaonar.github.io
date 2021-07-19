@@ -257,12 +257,12 @@ void Brake (TB6612FNG &motorLeft, TB6612FNG &motorRight)
 </p>
 {% highlight cpp%}
 // Move the motors
-    if (motorSpeed > 0)
-      Forward(MotorA, MotorB, motorSpeed);
-    else if (motorSpeed < 0)
-      Backward(MotorA, MotorB, motorSpeed);
-    else
-      Brake(MotorA, MotorB);
+if (motorSpeed > 0)
+  Forward(MotorA, MotorB, motorSpeed);
+else if (motorSpeed < 0)
+  Backward(MotorA, MotorB, motorSpeed);
+else
+  Brake(MotorA, MotorB);
 {% endhighlight %}
 
 <p>
