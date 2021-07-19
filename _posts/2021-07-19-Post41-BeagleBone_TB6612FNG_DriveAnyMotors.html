@@ -284,15 +284,15 @@ DeactivateTB6612FNG(standByPin);
   The complete code for this application using a <span class="coding">while loop</span> to control both motors increasing and decreasing the speed until the user press the key "Y". This code is shown in the next listing together with its corresponding execution output.
 </p>
 
-<h2 style="font-size: 25px;">TB6612FNG_1.4.cpp</h2>
+<h2 style="font-size: 25px;">TB6612FNG_1.5.cpp</h2>
 {% highlight cpp%}
 /******************************************************************************
-TB6612FNG_1.4.cpp
+TB6612FNG_1.5.cpp
 @wgaonar
-08/07/2021
+09/07/2021
 https://github.com/wgaonar/BeagleCPP
 
-- Move forward and backward 2 motors with the same speed
+- Drive a 2 or more motors through a vector
 
 Class: TB6612FNG
 ******************************************************************************/
@@ -320,6 +320,9 @@ TB6612FNG MotorA (AIN1, AIN2, PWMA, false);
 // Declare the object for motor 2 
 TB6612FNG MotorB (BIN1, BIN2, PWMB, true);
 
+// Declare the vector of pointers to TB6612FNG objects
+vector<TB6612FNG *> vectorOfMotors = {&MotorA, &MotorB};
+
 int main()
 {
   string message = "Main program starting here...";
@@ -341,7 +344,7 @@ int main()
     cout << RainbowText(message, "Blue");
     cin >> userInput;
 
-    // Update the motors speed
+    // Update the motor's speed
     switch (userInput)
     {
     case 'w':
@@ -360,15 +363,15 @@ int main()
 
     // Move the motors
     if (motorSpeed > 0)
-      Forward(MotorA, MotorB, motorSpeed);
+      Forward(vectorOfMotors, motorSpeed);
     else if (motorSpeed < 0)
-      Backward(MotorA, MotorB, motorSpeed);
+      Backward(vectorOfMotors, motorSpeed);
     else
-      Brake(MotorA, MotorB);
-  }  
+      Brake(vectorOfMotors);
+  }
 
   // Deactivate the module
-  DeactivateTB6612FNG(standByPin);
+  DeactivateTB6612FNG(standByPin);  
 
   message = "Main program finishes here...";
   cout << RainbowText(message,"Blue", "White","Bold") << endl;
@@ -381,8 +384,8 @@ int main()
 <figure style="text-align: center; width:100%; 
               margin-left: auto; 
               margin-right: auto;">
-  <video width="100%" controls poster="/assets/Post40/VideoCover-TB6612FNG_1.4.png">
-    <source src="/assets/Post40/TB6612FNG_1.4.mp4" type="video/mp4">
+  <video width="100%" controls poster="/assets/Post41/VideoCover-TB6612FNG_1.5.png">
+    <source src="/assets/Post41/TB6612FNG_1.5.mp4" type="video/mp4">
   </video>
   <figcaption>
     Video: Execution of the program.
