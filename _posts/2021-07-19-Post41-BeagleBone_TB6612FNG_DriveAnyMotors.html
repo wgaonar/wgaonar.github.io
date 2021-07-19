@@ -87,10 +87,10 @@ code {
 
 <p>
   In this post, I show how to control <b>any</b> DC Motors forward and backward. I am using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. In the
-  <a href="{% post_url 2021-07-17-Post40-BeagleBone_TB6612FNG_Drive2Motors %}">last entry</a>you can read about how to drive a pair of DC motors with this driver.
+  <a href="{% post_url 2021-07-17-Post40-BeagleBone_TB6612FNG_Drive2Motors %}">last entry</a>, you can read about how to drive a pair of DC motors with this driver.
 </p>
 <p>
-  The remarkable aspect is the use of <b>C++ vectors</b> to drive the number of DC motors that the user wants in a simultaneously way and in the same rotation direction. You have to take into account that the TB6612FNG driver only can manage 2 DC motors. If you need more, you have to add more drivers. In this post I show how to use the STL <span class="label coding">std::vector</span> to drive 2 DC motors.
+  The remarkable aspect is the use of <b>C++ vectors</b> to drive the number of DC motors that the user wants in simultaneously and in the same rotation direction. You have to take into account that the TB6612FNG driver only can manage 2 DC motors. If you need more, you have to add more drivers. In this post, I show how to use the STL <span class="label coding">std::vector</span> to drive 2 DC motors.
 </p>
 <p>    
   It is important to remember that the logic voltage for the BeagleBone is <span style="color: red;">3.3V</span>. If the user provides a greater voltage, the BeagleBone could be damaged.
@@ -166,7 +166,7 @@ TB6612FNG MotorB (BIN1, BIN2, PWMB, true);
 {% endhighlight %}
 
 <p>  
-  After that, I declare a <b>vector of pointers</b> to the TB6612FNG objects and initializes that with the MotorA and MotorB declared previously but passing these by <b>reference</b> instead by value. This avoid to create a copy for each object and working directly with the motors. Is here, where the user can add the number of motors desired. This can be done in the same way with the pair of motors shown here.  
+  After that, I declare a <b>vector of pointers</b> to the TB6612FNG objects and initializes that with the MotorA and MotorB declared previously but passing these by <b>reference</b> instead of by value. This avoids creating a copy for each object and working directly with the motors. Is here, where the user can add the number of motors desired. This can be done in the same way with the pair of motors shown here.  
 </p>
 {% highlight cpp%}
 // Declare the vector of pointers to TB6612FNG objects
@@ -208,7 +208,7 @@ default:
 </p>
 
 <p>  
-  The <span class="label coding">Forward()</span> and <span class="label coding">Backward()</span> take as argument a vector of pointers to <span class="label coding">TB6612FNG</span> objects passed by reference and the speed value that will be used to drive the motors. Inside of these functions, a <span class="label coding">for loop</span> iterates on each <span class="label coding">TB6612FNG</span> object, i.e., on each motor, and drive it in the same rotation direction at the desired speed.
+  The <span class="label coding">Forward()</span> and <span class="label coding">Backward()</span> functions take as arguments a vector of pointers to <span class="label coding">TB6612FNG</span> objects passed by reference and the speed value that will be used to drive the motors. Inside of these functions, a <span class="label coding">for loop</span> iterates on each <span class="label coding">TB6612FNG</span> object, i.e., on each motor, and drive it in the same rotation direction at the desired speed.
 </p>
 
 {% highlight cpp%}
@@ -281,7 +281,7 @@ DeactivateTB6612FNG(standByPin);
 {% endhighlight %}
 
 <p>  
-  The complete code for this application using a <span class="coding">while loop</span> to control both motors increasing and decreasing the speed until the user press the key "Y". This code is shown in the next listing together with its corresponding execution output.
+  The complete code for this application using a <span class="coding">while loop</span> to control the motors increasing and decreasing the speed until the user press the key "Y". This code is shown in the next listing together with its corresponding execution output.
 </p>
 
 <h2 style="font-size: 25px;">TB6612FNG_1.5.cpp</h2>
