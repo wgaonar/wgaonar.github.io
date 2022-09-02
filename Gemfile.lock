@@ -29,8 +29,6 @@ GEM
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.0)
-    faraday-retry (2.0.0)
-      faraday (~> 2.0)
     ffi (1.15.5)
     forwardable-extended (2.6.0)
     gemoji (3.0.1)
@@ -261,16 +259,14 @@ PLATFORMS
   universal-darwin-21
 
 DEPENDENCIES
-  faraday-retry
   github-pages (~> 227)
   http_parser.rb (~> 0.6.0)
   jekyll-archives
-  jekyll-feed (~> 0.12)
+  jekyll-feed
   jekyll-paginate
   jekyll-seo-tag
   jekyll-sitemap
   kramdown
-  minima (~> 2.5)
   rouge
   tzinfo (~> 1.2)
   tzinfo-data
