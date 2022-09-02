@@ -28,6 +28,7 @@ group :jekyll_plugins do
   gem 'kramdown'
   gem 'rouge'
   gem 'faraday-retry'
+  gem "kramdown-parser-gfm"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
