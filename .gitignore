@@ -3,3 +3,7 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
+
+# OS junk files
+[Tt]humbs.db
+*.DS_Store
