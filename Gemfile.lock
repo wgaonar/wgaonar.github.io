@@ -265,12 +265,11 @@ DEPENDENCIES
   github-pages (~> 227)
   http_parser.rb (~> 0.6.0)
   jekyll-archives
-  jekyll-feed (~> 0.12)
+  jekyll-feed
   jekyll-paginate
   jekyll-seo-tag
   jekyll-sitemap
   kramdown
-  minima (~> 2.5)
   rouge
   tzinfo (~> 1.2)
   tzinfo-data
