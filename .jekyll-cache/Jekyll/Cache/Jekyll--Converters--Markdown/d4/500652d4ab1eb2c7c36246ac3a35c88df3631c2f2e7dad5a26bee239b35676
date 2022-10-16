@@ -1,0 +1,2 @@
+I"�<p>En este post muestro el circuito, el diagrama de flujo, el código y la implementación de un programa en lenguaje ensamblador en el microcontrolador <a href="http://ww1.microchip.com/downloads/en/devicedoc/41291f.pdf">PIC 16F886</a> para realizar una temporización que permita cambiar el estado de un LED cada segundo haciendo uso de rutinas de demora tipo <strong>delay</strong></p>
+:ET

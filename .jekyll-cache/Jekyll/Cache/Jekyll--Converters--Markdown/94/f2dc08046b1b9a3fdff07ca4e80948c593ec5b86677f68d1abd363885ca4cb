@@ -1,0 +1,2 @@
+I".<p>En este post muestro cómo configurar el <a href="https://www.seeedstudio.com/Motor-Bridge-Cape-p-2569.html">Motor Cape</a> de <a href="https://www.seeedstudio.com">Seeed Studio</a> para realizar el control de motores de corriente continua (motores DC), servomotores y motores paso a paso con nuestra BeagleBone. Específicamente, se pueden manejar hasta 4 motores DC y 6 servomotores simultáneamente ó hasta 2 motores paso a paso y 6 servomotores, ó una combinación de 1 motor paso a paso, 2 motores Dc y 6 servomotores en una forma simultánea.</p>
+:ET

@@ -1,0 +1,2 @@
+I"<p>In this post, I show how to read the temperature from the analog sensor LM35. The datasheet can be found <a href="https://www.ti.com/document-viewer/LM35/datasheet">here</a>. This sensor has an output voltage linearly-proportional to the Centigrade temperature of 10mV/°C and, it can measure in a range of -55°C - 150°C attaching a resistor from the output pin to a negative source voltage, but it is common used to using it in a temperature range from 2° to 150°C, due that, the resistor is not necessary.</p>
+:ET

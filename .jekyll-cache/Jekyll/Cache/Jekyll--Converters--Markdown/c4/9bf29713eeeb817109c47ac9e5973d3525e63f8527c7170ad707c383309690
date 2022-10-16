@@ -1,0 +1,732 @@
+I"��<p>In this post, I show a PWM C++ class implementation. Remembering the PWM is a technique that lets us emulate an analog signal in a digital pin. This is done by changing the time that a signal is On in a fixed period of time. The ratio between the time ON and OFF is named duty cycle. The more duty cycle, the more is the “analog” average voltage measured on the digital pin.</p>
+
+<p>The BeagleBone has six pins than can be dedicated to do PWM.  These are:</p>
+<ul>
+  <li>P8_13</li>
+  <li>P8_19</li>
+  <li>P9_14</li>
+  <li>P9_16</li>
+  <li>P9_21</li>
+  <li>P9_22</li>
+</ul>
+
+<h2 id="coding">Coding</h2>
+
+<p>The methods coded to the C++ class <code class="language-plaintext highlighter-rouge">PWM</code> are:</p>
+<ul>
+  <li>Private methods:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">WriteFile(string, string, int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Enable()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Disable()</code></li>
+    </ul>
+  </li>
+  <li>Public methods:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">int GetPeriod()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">int GetDutyCycle()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">int SetPeriod(int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">int SetDutyCycle(int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void Delayms(int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">int DoUserFunction(callbackType)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void StopUserFunction()</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">WriteFile(string, string, int)</code> method accesses to the file system path that controls the PWM behaviour on the pin at <strong>“/sys/devices/platform/ocp/”</strong>.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">Enable()</code> method activates the PWM on the pin setting the enable property to 1 This method is called in the Constructor.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">Disable()</code> method deactivates the PWM on the pin setting the enable property to 0. This method is called in the  Destructor.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">GetPeriod()</code> method, returns the last set pin’s period.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">GetDutyCycle()</code> method, returns the last set pin’s duty cycle.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">SetPeriod(int)</code> method, receives an int number and set the period property of the pin in the sys file system.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">SetDutyCycle(int)</code> method, receives an integer number between 0 and 100 and converts it as a percentage of the period before to set the duty_cycle property of the pin in the sys file system. The method checks if the number is less or greater than that range, and set the duty_cycle property as 0 or 100, respectively.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">DoUserFunction(callbackType)</code> method, receives a user function thought a function pointer from the main program to do something in background through the execution of a thread.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">StopUserFunction()</code> method finishes the execution of the thread called by the user function that should be defined in the previous explained <code class="language-plaintext highlighter-rouge">void DoUserFunction(callbackType)</code> method.</p>
+
+<h2 id="class-code">Class code</h2>
+
+<h3 id="pwmh">PWM.h</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+</pre></td><td class="rouge-code"><pre><span class="cp">#ifndef PWM_H
+#define PWM_H
+</span>
+<span class="cp">#include &lt;string&gt;
+#include &lt;thread&gt;
+#include "RAINBOWCOLORS.h"
+</span>
+<span class="cm">/* 
+  Declare a type for a function pointer
+  It is the construct for: using function_type = int (*) ()
+    function_type:  the function name
+    int: return type  
+    (*): the dereference operator due to the address of the function name
+    (): the arguments of the function, in this case void
+  Stores the address of a function 
+*/</span>
+<span class="k">using</span> <span class="n">callbackType</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="p">)();</span>
+
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">PWM_PATH</span> <span class="p">(</span><span class="s">"/sys/devices/platform/ocp/"</span><span class="p">);</span>
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">EHRPWM0_PATH</span> <span class="o">=</span> <span class="s">"48300000.epwmss/48300200.pwm/pwm/"</span><span class="p">;</span>
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">EHRPWM1_PATH</span> <span class="o">=</span> <span class="s">"48302000.epwmss/48302200.pwm/pwm/"</span><span class="p">;</span>
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">EHRPWM2_PATH</span> <span class="o">=</span> <span class="s">"48304000.epwmss/48304200.pwm/pwm/"</span><span class="p">;</span>
+
+<span class="cm">/* The pwm class internal number of the pin*/</span>
+<span class="k">enum</span> <span class="n">ID</span> <span class="p">{</span>
+  <span class="n">P8_13</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="n">P8_19</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="n">P9_14</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="n">P9_16</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="n">P9_21</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+  <span class="n">P9_22</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> 
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">PWM</span>
+<span class="p">{</span>
+  <span class="nl">private:</span>
+    <span class="kt">int</span> <span class="n">id</span><span class="p">;</span> <span class="cm">/* The PWM number of the object */</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">idMap</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>   <span class="cm">/* The name of the PWM e.g. pwm-6:1 */</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">path</span><span class="p">;</span>   <span class="cm">/* The full path to the PWM e.g. /sys/class/pwm/pwm-6:1 */</span>
+    <span class="kt">int</span> <span class="n">period</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">dutyCycle</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">enable</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">stopDutyCycleFlag</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">functionThread</span><span class="p">;</span>
+    
+    <span class="c1">// Method to write the files</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">WriteFile</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+    <span class="c1">// Method to enable the pwm on the pin</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">Enable</span><span class="p">();</span>
+    <span class="c1">// Method to enable the pwm on the pin</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">Disable</span><span class="p">();</span>
+
+  <span class="nl">public:</span>
+
+    <span class="c1">// Default constructor</span>
+    <span class="n">PWM</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">P8_13</span><span class="p">,</span> <span class="kt">int</span> <span class="n">period</span> <span class="o">=</span> <span class="mi">500000</span><span class="p">);</span>
+
+    <span class="c1">// Interface method to get the period</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">GetPeriod</span><span class="p">();</span>
+
+    <span class="c1">// Interface method to get the duty cycle</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">GetDutyCycle</span><span class="p">();</span>
+
+    <span class="c1">// Interface method to set the period</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">SetPeriod</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Interface method to set the duty cycle</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">SetDutyCycle</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+    
+    <span class="c1">// Delay method in milliseconds</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Delayms</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Method to do execute an user function</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">DoUserFunction</span><span class="p">(</span><span class="n">callbackType</span><span class="p">);</span>
+
+    <span class="c1">// Method to stop the user function</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">StopUserFunction</span><span class="p">();</span>
+
+    <span class="c1">// Destructor</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">PWM</span><span class="p">();</span>
+
+<span class="p">};</span>
+<span class="cp">#endif // PWM_H
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="pwmcpp">PWM.cpp</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;chrono&gt; // chrono::milliseconds()
+#include &lt;thread&gt; // this_thread::sleep_for()
+#include &lt;exception&gt;
+#include &lt;mutex&gt;
+#include &lt;cstdlib&gt;// system()
+</span>
+<span class="cp">#include "PWM.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">CustomException</span> <span class="o">:</span> <span class="k">public</span> <span class="n">exception</span> 
+<span class="p">{</span>
+  <span class="nl">private:</span>
+    <span class="n">string</span> <span class="n">reason</span><span class="p">;</span>
+  <span class="nl">public:</span>
+    <span class="n">CustomException</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">why</span><span class="p">)</span> <span class="o">:</span> <span class="n">reason</span> <span class="p">(</span><span class="n">why</span><span class="p">)</span> <span class="p">{};</span>
+    <span class="k">virtual</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">what</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span> 
+    <span class="p">{</span>
+      <span class="k">return</span> <span class="n">reason</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// Overload constructor with 2 arguments</span>
+<span class="n">PWM</span><span class="o">::</span><span class="n">PWM</span><span class="p">(</span><span class="kt">int</span> <span class="n">pwmPin</span><span class="p">,</span> <span class="kt">int</span> <span class="n">newPeriod</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">id</span> <span class="o">=</span> <span class="n">pwmPin</span><span class="p">;</span>
+  <span class="n">period</span> <span class="o">=</span> <span class="n">newPeriod</span><span class="p">;</span>
+
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P8_13</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P8.13"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P8_19</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P8.19"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_14</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9.14"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_16</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9.16"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_21</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9.21"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_22</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9.22"</span><span class="p">;</span>
+
+  <span class="k">switch</span> <span class="p">(</span><span class="n">pwmPin</span><span class="p">)</span>
+  <span class="p">{</span>
+  <span class="k">case</span> <span class="n">P8_13</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">EHRPWM2_PATH</span> <span class="o">+</span> <span class="s">"pwmchip6/pwm-6:1/"</span><span class="p">;</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="n">P8_19</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">EHRPWM2_PATH</span> <span class="o">+</span> <span class="s">"pwmchip6/pwm-6:0/"</span><span class="p">;</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="n">P9_14</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">EHRPWM1_PATH</span> <span class="o">+</span> <span class="s">"pwmchip3/pwm-3:0/"</span><span class="p">;</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="n">P9_16</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">EHRPWM1_PATH</span> <span class="o">+</span> <span class="s">"pwmchip3/pwm-3:1/"</span><span class="p">;</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="n">P9_21</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">EHRPWM0_PATH</span> <span class="o">+</span> <span class="s">"pwmchip1/pwm-1:1/"</span><span class="p">;</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="n">P9_22</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">EHRPWM0_PATH</span> <span class="o">+</span> <span class="s">"pwmchip1/pwm-1:0/"</span><span class="p">;</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="nl">default:</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">path</span> <span class="o">=</span> <span class="n">PWM_PATH</span> <span class="o">+</span> <span class="n">name</span><span class="p">;</span>
+
+  <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Trying to enable the PWM pin: "</span><span class="p">,</span><span class="s">"Pink"</span><span class="p">)</span> 
+        <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">idMap</span><span class="p">[</span><span class="n">pwmPin</span><span class="p">],</span> <span class="s">"Pink"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">string</span> <span class="n">commandString</span> <span class="o">=</span> <span class="s">"config-pin "</span> <span class="o">+</span> <span class="n">idMap</span><span class="p">[</span><span class="n">pwmPin</span><span class="p">]</span> <span class="o">+</span> <span class="s">" pwm"</span><span class="p">;</span>
+  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">command</span> <span class="o">=</span> <span class="n">commandString</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+  <span class="n">system</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+
+  <span class="c1">// Set the period for the PWM behavior</span>
+  <span class="n">SetPeriod</span><span class="p">(</span><span class="n">newPeriod</span><span class="p">);</span> 
+
+  <span class="c1">// Enabling the PWM behavior on the pin</span>
+  <span class="n">Enable</span><span class="p">();</span>
+
+  <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Setting the PWM pin with a period of "</span><span class="p">,</span> <span class="s">"Pink"</span><span class="p">)</span>
+        <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">to_string</span><span class="p">(</span><span class="n">GetPeriod</span><span class="p">()),</span> <span class="s">"Pink"</span><span class="p">)</span> 
+        <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"ns was a success!"</span><span class="p">,</span> <span class="s">"Pink"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> 
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method that writes a string value to a file in the path provided
+    @param string path: The system path of the file to be modified
+    @param string feature: The name of file to be written
+    @param int value: The value to be written to in the file
+    @return int: 1 written has succeeded
+*/</span>
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">string</span> <span class="n">path</span><span class="p">,</span> <span class="n">string</span> <span class="n">feature</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> 
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">feature</span><span class="p">;</span>
+
+  <span class="n">ofstream</span> <span class="n">file</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">ios_base</span><span class="o">::</span><span class="n">out</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> 
+  <span class="p">{</span>
+    <span class="n">perror</span><span class="p">((</span><span class="s">"Error while opening file: "</span> <span class="o">+</span> <span class="n">fileName</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+    <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in 'writeFile' method"</span><span class="p">);</span>
+  <span class="p">}</span> 
+  <span class="n">file</span> <span class="o">&lt;&lt;</span> <span class="n">value</span><span class="p">;</span>
+  <span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+  <span class="n">Delayms</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+  
+  <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method to enable the PWM on the pin.
+    It is used in the constructor
+    @return int: 1 set duty cycle has succeeded / throw an exception if not
+*/</span>
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">Enable</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"enable"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span> 
+    <span class="p">{</span>
+      <span class="n">perror</span><span class="p">(</span><span class="s">"Error enabling the PWM on the pin"</span><span class="p">);</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in Enable method"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method to disable the PWM on the pin.
+    It is used in the constructor
+    @return int: 1 set duty cycle has succeeded / throw an exception if not
+*/</span>
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">Disable</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"enable"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span> 
+    <span class="p">{</span>
+      <span class="n">perror</span><span class="p">(</span><span class="s">"Error disabling the PWM on the pin"</span><span class="p">);</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in DisablePWM method"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to get the period 
+    @return int: The pin's period
+*/</span>
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">GetPeriod</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">period</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to get the period 
+    @return int: The pin's duty cycle
+*/</span>
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">GetDutyCycle</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">dutyCycle</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to set the period of the PWM
+    The chosen period is in nanoseconds 
+    @param int: The desired period
+    @return int: 1 set period has succeeded / throw an exception if not
+*/</span>
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">SetPeriod</span><span class="p">(</span><span class="kt">int</span> <span class="n">newPeriod</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">period</span> <span class="o">=</span> <span class="n">newPeriod</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"period"</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span> 
+    <span class="p">{</span>
+      <span class="n">perror</span><span class="p">(</span><span class="s">"Error setting the PWM period for the pin"</span><span class="p">);</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in WritePWMPeriod method"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to set the duty cycle of the PWM
+    @param int: The desired duty cycle in percentage: 0-100
+    @return  int: 1 set duty cycle has succeeded / throw an exception if not
+            int: 0 if the user decides to stop this method
+*/</span>
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="kt">int</span> <span class="n">newDutyCycle</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">stopDutyCycleFlag</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">newDutyCycle</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">newDutyCycle</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">)</span>
+      <span class="n">dutyCycle</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">newDutyCycle</span> <span class="o">/</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">period</span><span class="p">);</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">newDutyCycle</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="n">dutyCycle</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">else</span>
+      <span class="n">dutyCycle</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"duty_cycle"</span><span class="p">,</span> <span class="n">dutyCycle</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span> 
+    <span class="p">{</span>
+      <span class="n">perror</span><span class="p">(</span><span class="s">"Error setting the PWM duty cycle for the pin"</span><span class="p">);</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in WritePWMDutyCycle method"</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to do a delay in milliseconds
+  @param int: duration of the delay
+*/</span>
+<span class="kt">void</span> <span class="n">PWM</span><span class="o">::</span><span class="n">Delayms</span><span class="p">(</span><span class="kt">int</span> <span class="n">millisecondsToSleep</span><span class="p">)</span> 
+<span class="p">{</span>
+  <span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">millisecondsToSleep</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public callback method to do a user customized function when is called
+  @param callbackType: user function pointer to execute 
+  @return int: 1 the user function was called      
+*/</span>
+
+<span class="kt">int</span> <span class="n">PWM</span><span class="o">::</span><span class="n">DoUserFunction</span> <span class="p">(</span><span class="n">callbackType</span> <span class="n">callbackFunction</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"'UserFunction' method has been activated!"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Orange"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="n">functionThread</span> <span class="o">=</span> <span class="kr">thread</span><span class="p">(</span><span class="n">callbackFunction</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to stop the user function execution
+*/</span>
+<span class="kt">void</span> <span class="n">PWM</span><span class="o">::</span><span class="n">StopUserFunction</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">stopDutyCycleFlag</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Destructor</span>
+<span class="n">PWM</span><span class="o">::~</span><span class="n">PWM</span><span class="p">()</span> 
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">functionThread</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+    <span class="n">functionThread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+  <span class="c1">// Turn Off the duty cycle on the pin</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="c1">// Disabling the pwm on the pin</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">Disable</span><span class="p">();</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">Delayms</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+  <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Destroying the GPIO_PIN with path: "</span><span class="p">,</span><span class="s">"Gray"</span><span class="p">)</span>
+        <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"Gray"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Se you in the next post.</p>
+:ET

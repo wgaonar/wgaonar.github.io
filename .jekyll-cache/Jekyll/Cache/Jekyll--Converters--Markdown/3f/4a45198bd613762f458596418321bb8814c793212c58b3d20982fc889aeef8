@@ -1,0 +1,52 @@
+I"�
+<ul>
+  <li><a href="#introducción">Introducción</a>
+    <ul>
+      <li><a href="#partes-impresas-en-3d">Partes Impresas en 3D</a></li>
+      <li><a href="#lista-de-componentes">Lista de componentes</a></li>
+    </ul>
+  </li>
+  <li><a href="#ensamble-de-la-botonera">Ensamble de la botonera</a>
+    <ul>
+      <li><a href="#componentes">Componentes</a></li>
+      <li><a href="#soldadura-de-las-resistencias">Soldadura de las resistencias</a></li>
+      <li><a href="#soldadura-de-los-leds">Soldadura de los Leds</a></li>
+      <li><a href="#soldadura-de-los-botones">Soldadura de los botones</a></li>
+      <li><a href="#soldadura-de-los-pines-de-conexión">Soldadura de los pines de conexión</a></li>
+      <li><a href="#prueba-de-los-leds">Prueba de los Leds</a></li>
+    </ul>
+  </li>
+  <li><a href="#ensamble-de-la-tarjeta-de-control">Ensamble de la tarjeta de control</a>
+    <ul>
+      <li><a href="#componentes-1">Componentes</a></li>
+      <li><a href="#soldadura-de-las-resistencias-1">Soldadura de las resistencias</a></li>
+      <li><a href="#soldadura-del-diodo">Soldadura del diodo</a></li>
+      <li><a href="#soldadura-de-los-condensadores">Soldadura de los condensadores</a></li>
+      <li><a href="#soldadura-del-zócalo-de-18-pines">Soldadura del zócalo de 18 pines</a></li>
+      <li><a href="#soldadura-del-buzzer">Soldadura del buzzer</a></li>
+      <li><a href="#soldadura-de-los-pines-de-conexión-a-la-botonera">Soldadura de los pines de conexión a la botonera</a></li>
+      <li><a href="#soldadura-de-los-pines-para-el-arduino-nano">Soldadura de los pines para el Arduino Nano</a></li>
+      <li><a href="#tarjeta-de-control-terminada">Tarjeta de control terminada</a></li>
+    </ul>
+  </li>
+  <li><a href="#ensamble-del-escornabot">Ensamble del Escornabot</a>
+    <ul>
+      <li><a href="#paso-1-inicio-del-ensamble">Paso 1: Inicio del ensamble</a></li>
+      <li><a href="#paso-2-ensamble-del-cuerpo">Paso 2: Ensamble del cuerpo</a></li>
+      <li><a href="#paso-3-ensamble-de-los-motores">Paso 3: Ensamble de los motores</a></li>
+      <li><a href="#paso-4-preparación-de-las-ruedas">Paso 4: Preparación de las ruedas</a></li>
+      <li><a href="#paso-5-ensamble-de-las-ruedas-al-cuerpo">Paso 5: Ensamble de las ruedas al cuerpo</a></li>
+      <li><a href="#paso-6-soporte-de-la-rueda-de-pivote">Paso 6: Soporte de la rueda de pivote</a></li>
+      <li><a href="#paso-7-conexión-de-la-botonera-y-la-tarjeta-de-control">Paso 7: Conexión de la botonera y la tarjeta de control</a></li>
+      <li><a href="#paso-9-colocación-de-la-canica-pivote">Paso 9: Colocación de la canica pivote</a></li>
+      <li><a href="#paso-11-vista-en-360º-del-ensamble-terminado">Paso 11: Vista en 360º del ensamble terminado</a></li>
+    </ul>
+  </li>
+  <li><a href="#puesta-en-marcha">Puesta en marcha</a>
+    <ul>
+      <li><a href="#carga-del-firmware">Carga del firmware</a></li>
+      <li><a href="#prueba-de-funcionamiento">Prueba de funcionamiento</a></li>
+    </ul>
+  </li>
+</ul>
+:ET

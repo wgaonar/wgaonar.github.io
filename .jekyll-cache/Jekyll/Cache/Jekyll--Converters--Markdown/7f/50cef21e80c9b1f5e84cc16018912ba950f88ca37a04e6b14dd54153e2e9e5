@@ -1,0 +1,3 @@
+I"Á<p>In this post, I will resume the applications of LEDs and Buttons using the methods described in the last posts. In this case, one LED will be blinking, the other flashing, another will be doing a heartbeat pattern. At the same time, two buttons will be pending for a press for the user and If it occurs, two LEDs will be turned On. All these processes will be executed for 10 seconds, which are timing within
+the main routine of the program.</p>
+:ET

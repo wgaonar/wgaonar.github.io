@@ -1,0 +1,2 @@
+I"<p>In this post, I show how to control a pair of DC Motors to move forward, backward, and turn left or right. I am using the BeagleBone and the driver <a href="https://www.sparkfun.com/datasheets/Robotics/L298_H_Bridge.pdf">L298N</a> which can drive two DC motors. In practice, this driver can be found in a popular red-colored module that has been designed to make it easy to play and interact with DC motors as this <a href="https://lastminuteengineers.com/l298n-dc-stepper-driver-arduino-tutorial/">tutorial</a> shows.</p>
+:ET

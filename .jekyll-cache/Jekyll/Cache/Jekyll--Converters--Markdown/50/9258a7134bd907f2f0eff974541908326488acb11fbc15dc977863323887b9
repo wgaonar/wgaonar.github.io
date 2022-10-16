@@ -1,0 +1,2 @@
+I"£<p>In this post, I show how to control a pair of DC Motors forward and backward. I am using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. The remarkable aspect is the use of some class functions to drive the motors simultaneously in the same rotation direction.</p>
+:ET

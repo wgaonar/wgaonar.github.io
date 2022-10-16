@@ -1,0 +1,130 @@
+I"‹ <p>In this post I will show you how to turn a led On and Off using the C++ library described in the post <a href="/Post10-BeagleBone_GPIOClass/"> Beaglebone and C++</a> to access and control the general purpose digital pins (GPIO) pins of the BeagleBone.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone
+works at <font color="red">3.3V</font> and not 5V like microcontrollers 
+as Arduino. It is so muy important to avoid damage to the board. The components are:</p>
+<ul>
+  <li>1 Red Led of 3mm</li>
+  <li>1 Resistor of 1 KÎ©</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post11/Circuit.png" alt="Circuit.jpeg" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to turn a Led On
+  </figcaption>
+</figure>
+
+<h2 id="coding">Coding</h2>
+
+<p>I coded some lines and have used functions available in GPIO.h header file:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">digitalWrite()</code></li>
+  <li><code class="language-plaintext highlighter-rouge">digitalRead()</code></li>
+  <li><code class="language-plaintext highlighter-rouge">delayms()</code></li>
+</ul>
+
+<p>The first part of the code defines the pin to be used as an output, 
+in this case, the P8_12:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">GPIO</span> <span class="nf">ledPin</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>In the second part of the code, a for loop is used to turn on and off the 
+Led 10 times with an interval of 1000 ms between each on and off cycles, i.e., 
+to make a blinking pattern on the Led:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>   
+<span class="p">{</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Blinking "</span> <span class="o">&lt;&lt;</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="s">" times out of "</span> <span class="o">&lt;&lt;</span> <span class="mi">10</span> <span class="o">&lt;&lt;</span>  <span class="n">endl</span><span class="p">;</span>
+  <span class="n">ledPin</span><span class="p">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+  <span class="n">ledPin</span><span class="p">.</span><span class="n">delayms</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+  <span class="n">ledPin</span><span class="p">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+  <span class="n">ledPin</span><span class="p">.</span><span class="n">delayms</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="listing_11">Listing_1.1</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="cm">/* Listing_1.1: ledOn.cpp */</span>
+<span class="cp">#include &lt;iostream&gt;
+#include "GPIO.h"
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">GPIO</span> <span class="n">ledPin</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>   
+  <span class="p">{</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Blinking "</span> <span class="o">&lt;&lt;</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="s">" times out of "</span> <span class="o">&lt;&lt;</span> <span class="mi">10</span> <span class="o">&lt;&lt;</span>  <span class="n">endl</span><span class="p">;</span>
+    <span class="n">ledPin</span><span class="p">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">ledPin</span><span class="p">.</span><span class="n">delayms</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+    <span class="n">ledPin</span><span class="p">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">ledPin</span><span class="p">.</span><span class="n">delayms</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="execution-of-the-program">Execution of the program</h2>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post11/VideoConsoleCover.jpeg">
+    <source src="../assets/images/Post11/VideoConsole.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Console output of the program.
+  </figcaption>
+</figure>
+
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post11/VideoCircuitCover.jpeg">
+    <source src="../assets/images/Post11/VideoCircuit.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Turning a Led On and Off each 1000 milliseconds.
+  </figcaption>
+</figure>
+
+<p>Se you in the next post.</p>
+:ET

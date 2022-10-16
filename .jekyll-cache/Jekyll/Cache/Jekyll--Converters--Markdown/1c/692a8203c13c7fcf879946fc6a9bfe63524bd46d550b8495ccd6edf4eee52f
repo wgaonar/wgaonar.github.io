@@ -1,0 +1,4 @@
+I"N<p>In this post, I show how to drive a DC Motor from the keyboard using the driver <a href="https://www.sparkfun.com/datasheets/Robotics/L298_H_Bridge.pdf">L298N</a> which can drive two DC motors. In practice, this driver can be found in a popular red-colored module that has been designed to make it easy to play and interact with DC motors as this <a href="https://lastminuteengineers.com/l298n-dc-stepper-driver-arduino-tutorial/">tutorial </a> shows.</p>
+
+<p>In the <a href="/Post49-BeagleBone_L298N_Drive/">last entry</a>, you can read about how to drive a motor with this driver.</p>
+:ET

@@ -1,37 +1,31 @@
 ---
+id: 126
+title: About
+date: 2019-04-16T04:10:18+07:00
+author: odeng
 layout: page
-title: My Jekyll blog
+guid: http://www.sinaungoding.com/wordpress/?page_id=126
 permalink: /about
-comments: true
+wp_last_modified_info:
+  - June 20, 2019 @ 6:50 am
+wplmi_shortcode:
+  - '[lmt-post-modified-info]'
+site-sidebar-layout:
+  - default
+site-content-layout:
+  - default
+theme-transparent-header-meta:
+  - default
 ---
-
-<div class="row justify-content-between">
-<div class="col-md-8 pr-5">
-
-<p>This website is dedicated to digital technology where I will collect the programs, projects and mechatronics artifacts that I design. This website is built with Jekyll and <a target="_blank" href="https://wowthemesnet.github.io/mediumish-theme-jekyll/index.html">Mediumish Template for Jekyll</a>.</p>
-
-<p class="mb-5"><img class="shadow-lg" src="{{site.baseurl}}/assets/images/blog-example.png" alt="blog example" /></p>
-<h4>Documentation about Mediumish template for Jekyll</h4>
-
-<p>Live demo of the Mediumish template website, please go <a href="https://wowthemesnet.github.io/mediumish-theme-jekyll/">here</a>.</p>
-<p>Please, read the docs <a href="https://bootstrapstarter.com/bootstrap-templates/template-mediumish-bootstrap-jekyll/">here</a>.</p>
-
-<h4>Questions or bug reports about Mediumish template?</h4>
-
-<p>Head over the <a href="https://github.com/wowthemesnet/mediumish-theme-jekyll">Github repository</a>!</p>
-
+<div class="wp-block-image">
+  <figure class="alignleft is-resized"><img src="/assets/images/2019/04/30645300-150x150.jpeg" alt="" class="rounded-circle" width="100" height="100" srcset="/assets/images/2019/04/30645300-150x150.jpeg 150w, /assets/images/2019/04/30645300-300x300.jpeg 300w, /assets/images/2019/04/30645300.jpeg 460w" sizes="(max-width: 150px) 100vw, 150px" /></figure>
 </div>
 
-<div class="col-md-4">
+Nama saya adalah Noprianto, pernah bekerja di industri kurang lebih 6 tahun. Sekarang berhijrah ke dunia akademik di Politeknik Negeri Malang. Menyukai dunia pemrograman terutama bahasa pemrograman Java, _computer vision_ dan _machine learning_. Bercita-cita ingin berbagi ilmu ke orang lain dari hasil pengalaman ketika di dunia industri dan pengalaman baru. Demikian profil singkat saya, semoga bermanfaat. 🙂
 
-<div class="sticky-top sticky-top-80">
+##### Contact
 
-<h5>Buy me a coffee, The author of this blog</h5>
-
-<p>Thank you for your support! Your donation helps me to continue with my work and improve it every time. Here is my <a target="_blank" href="https://github.com/wgaonar">GitHub Page <i class="fab fa-github"></i></a>.</p>
-
-<a target="_blank" href="https://www.buymeacoffee.com/wgaonar" class="btn btn-danger">Buy me a coffee</a> 
-
-</div>
-</div>
-</div>
+  * Email: <noprianto@polinema.ac.id>
+  * Github: <https://github.com/0d3ng>
+  * Linkedin: <https://www.linkedin.com/in/nopri-anto-0a9764b6>
+  * Telegram: <a rel="noreferrer noopener" aria-label="@nopriant0 (opens in a new tab)" href="https://t.me/nopriant0" target="_blank">@nopriant0</a>

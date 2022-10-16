@@ -1,0 +1,2 @@
+I"�<p>En este post muestro el circuito, el diagrama de flujo, el código y la implementación de un programa en lenguaje ensamblador en el microcontrolador microcontrolador <a href="http://ww1.microchip.com/downloads/en/devicedoc/41291f.pdf">PIC 16F886</a> para realizar una comparación de números utilizando los bits <strong>Z</strong> y <strong>CARRY</strong> del registro <strong>STATUS</strong>.</p>
+:ET

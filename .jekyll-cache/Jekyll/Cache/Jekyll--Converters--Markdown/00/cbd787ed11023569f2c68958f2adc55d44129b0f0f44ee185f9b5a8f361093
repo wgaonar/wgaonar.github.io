@@ -1,0 +1,480 @@
+I"Wb<p>In this post, I show a LED C++ class implementation which is derived from GPIO class and adds some methods for blink a led.</p>
+
+<h2 id="coding">Coding</h2>
+
+<p>The methods coded to the C++ class <code class="language-plaintext highlighter-rouge">BUTTON</code> are:</p>
+<ul>
+  <li>Private methods:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">void MakeBlink(int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void MakeFlash(int, int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void MakeHeartBeat(int, int)</code></li>
+    </ul>
+  </li>
+  <li>Public methods:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">void TurnOn()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void TurnOff()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void Blink(int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void Flash(int, int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void HeartBeat(int, int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void StopBlink()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void StopFlash()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void StopHeartBeat()</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">TurnOn()</code> method sets the Led to On.
+The <code class="language-plaintext highlighter-rouge">TurnOff()</code> method sets the Led to Off.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">Blink(int)</code> method receives the duration in milliseconds of blinking from the main program. It calls the <code class="language-plaintext highlighter-rouge">MakeBlink(int)</code> method to do the blinking.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">Flash(int, int)</code> method receives two values from the main program, the duration in milliseconds to turn the Led On and Off respectively. It calls the <code class="language-plaintext highlighter-rouge">MakeFlash(int, int)</code> method to do the flashing.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeartBeat(int, int)</code> method receives two values from the main program. The first is the time in milliseconds to turn the Led On and Off two times, and the second is a ratio to keep the Led Off during a certain time. It calls the <code class="language-plaintext highlighter-rouge">MakeHeartBeat(int, int)</code> method to do the heart beat pattern.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">MakeBlink()</code> method contains the routine to do the blinking which uses the <code class="language-plaintext highlighter-rouge">digitalWrite()</code> and <code class="language-plaintext highlighter-rouge">Delayms()</code> methods inherited from the GPIO class.  The most important contribution is about the way that blinking is performed. It uses a <b>thread</b> constructed by means of a function pointer to do the blink pattern. The advantage is that one o more blinking patterns can be done at the same same time in a <strong>parallel way</strong> on different LEDs.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">MakeFlash()</code> method contains the routine to do the flashing. Likewise to the <code class="language-plaintext highlighter-rouge">MakeBlink()</code> method, it uses the <code class="language-plaintext highlighter-rouge">digitalWrite()</code> and <code class="language-plaintext highlighter-rouge">Delayms()</code> methods inherited from the GPIO class and it is performed through a <b>thread</b> constructed by means of a function pointer to do the flash pattern.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">MakeHeartBeat()</code> method contains the routine to do “digital” heart beat beat pattern which consists in turning the Led On and Off two times and keep the Led Off during a time calculated as the multiplication of the time On by this ratio value. Likewise to the <code class="language-plaintext highlighter-rouge">MakeBlink()</code> method, it uses the <code class="language-plaintext highlighter-rouge">digitalWrite()</code> and <code class="language-plaintext highlighter-rouge">Delayms()</code> methods inherited from the GPIO class and it is performed through a <b>thread</b> constructed by means of a function pointer to do the heart beat pattern.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">StopBlink()</code> method lets the user stops the blinking pattern from the main program. This method sets the private boolean variable <code class="language-plaintext highlighter-rouge">stopBlinkFlag</code> to true letting to the <code class="language-plaintext highlighter-rouge">MakeBlink()</code> method completes or finishes the constructed thread.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">StopFlash()</code> method lets the user stops the flash pattern from the main program. This method sets the private boolean variable <code class="language-plaintext highlighter-rouge">stopFlashFlag</code> to true letting to the <code class="language-plaintext highlighter-rouge">MakeFlash()</code> method completes or finishes the constructed thread.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">StopHeartBeat()</code> method lets the user stops the heart beat pattern from the main program. This method sets the private boolean variable <code class="language-plaintext highlighter-rouge">stopHeartBeatFlag</code> to true letting to the <code class="language-plaintext highlighter-rouge">MakeHeartBeat()</code> method completes or finishes the constructed thread.</p>
+
+<h3 id="ledh">LED.h</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+</pre></td><td class="rouge-code"><pre><span class="cp">#ifndef LED_H
+#define LED_H
+</span>
+<span class="cp">#include &lt;thread&gt;
+#include "GPIO.h"
+</span>
+<span class="k">class</span> <span class="nc">LED</span><span class="o">:</span> <span class="k">public</span> <span class="n">GPIO</span> 
+<span class="p">{</span>
+  <span class="nl">private:</span>
+    <span class="kt">bool</span> <span class="n">stopBlinkFlag</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">stopFlashFlag</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">stopHeartBeatFlag</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    
+    <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">blinkThread</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">flashThread</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">heartBeatThread</span><span class="p">;</span>
+    
+    <span class="kt">void</span> <span class="n">MakeBlink</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span> 
+    <span class="kt">void</span> <span class="n">MakeFlash</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">MakeHeartBeat</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+  <span class="nl">public:</span>
+    <span class="c1">// Overload constructor</span>
+    <span class="n">LED</span> <span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Method to turn on the Led</span>
+    <span class="kt">void</span> <span class="n">TurnOn</span><span class="p">();</span>
+
+    <span class="c1">// Method to turn off the Led</span>
+    <span class="kt">void</span> <span class="n">TurnOff</span><span class="p">();</span>
+
+    <span class="c1">// Method for doing a blinking pattern</span>
+    <span class="kt">void</span> <span class="n">Blink</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Method for doing a flashing pattern</span>
+    <span class="kt">void</span> <span class="n">Flash</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Method for doing a digital heart beat pattern</span>
+    <span class="kt">void</span> <span class="n">HeartBeat</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Method for stopping a blinking</span>
+    <span class="kt">void</span> <span class="n">StopBlink</span><span class="p">();</span>
+
+    <span class="c1">// Method for stopping a flashing</span>
+    <span class="kt">void</span> <span class="n">StopFlash</span><span class="p">();</span>
+    
+    <span class="c1">// Method for stopping a digital heart beat</span>
+    <span class="kt">void</span> <span class="n">StopHeartBeat</span><span class="p">();</span>
+    
+    <span class="c1">// Destructor</span>
+    <span class="o">~</span><span class="n">LED</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cp">#endif // LED_H
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="ledcpp">LED.cpp</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;iostream&gt;
+#include &lt;chrono&gt;
+#include &lt;thread&gt;
+</span>
+<span class="cp">#include "LED.h"
+</span>
+<span class="c1">// Overload constructor</span>
+<span class="n">LED</span><span class="o">::</span><span class="n">LED</span><span class="p">(</span><span class="kt">int</span> <span class="n">newId</span><span class="p">)</span> <span class="o">:</span> <span class="n">GPIO</span><span class="p">(</span><span class="n">newId</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="cm">/*
+  Public method to turn on the Led attached to the pin 
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">TurnOn</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to turn on the Led attached to the pin 
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">TurnOff</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to make a blink on the pin 
+  @param int: The desired duration in milliseconds
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">Blink</span><span class="p">(</span><span class="kt">int</span> <span class="n">duration</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span><span class="p">;</span> 
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Blinking has been activated with duration of: "</span><span class="p">;</span>
+  <span class="n">message</span> <span class="o">+=</span> <span class="n">to_string</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span> <span class="o">+</span> <span class="s">"ms on pin: "</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+  
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Pink"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> 
+  <span class="n">blinkThread</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">LED</span><span class="o">::</span><span class="n">MakeBlink</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="n">duration</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Private method that contains the routine to blink 
+  @param int: The desired duration in milliseconds
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">MakeBlink</span><span class="p">(</span><span class="kt">int</span> <span class="n">duration</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">stopBlinkFlag</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="n">duration</span><span class="p">);</span>
+    <span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="n">duration</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to stop the blinking on the pin 
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">StopBlink</span> <span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">stopBlinkFlag</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to make a flash on the pin 
+  @param int: The desired time ON in milliseconds
+  @param int: The desired time OFF in milliseconds
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">Flash</span><span class="p">(</span><span class="kt">int</span> <span class="n">timeOn</span><span class="p">,</span> <span class="kt">int</span> <span class="n">timeOff</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> 
+  <span class="p">{</span>
+    <span class="s">"Flashing has been activated time on: "</span>
+    <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">timeOn</span><span class="p">)</span> <span class="o">+</span> <span class="s">"ms and time off: "</span> 
+    <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">timeOff</span><span class="p">)</span> <span class="o">+</span> <span class="s">"ms on pin: "</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+  <span class="p">};</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Pink"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> 
+  <span class="n">flashThread</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">LED</span><span class="o">::</span><span class="n">MakeFlash</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="n">timeOn</span><span class="p">,</span> <span class="n">timeOff</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Private method that contains the routine to flash
+  @param int: The desired time ON in milliseconds
+  @param int: The desired time OFF in milliseconds
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">MakeFlash</span><span class="p">(</span><span class="kt">int</span> <span class="n">timeOn</span><span class="p">,</span> <span class="kt">int</span> <span class="n">timeOff</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">stopFlashFlag</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="n">timeOn</span><span class="p">);</span>
+    <span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="n">timeOff</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to stop the flash on the pin 
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">StopFlash</span> <span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">stopFlashFlag</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to make a digital heart beat on the pin 
+    @param int: The desired time On of the pulse in milliseconds
+    @param int: The desired ratio between the pulses and the pause in the pattern
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">HeartBeat</span><span class="p">(</span><span class="kt">int</span> <span class="n">timeOn</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ratio</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> 
+  <span class="p">{</span>
+    <span class="s">"Heart beat has been activated with a time ON of: "</span>
+    <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">timeOn</span><span class="p">)</span> <span class="o">+</span> <span class="s">"ms on pin: "</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+    <span class="o">+</span> <span class="s">" with a ratio pulse/pause of: "</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span>
+  <span class="p">};</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Pink"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> 
+  <span class="n">heartBeatThread</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">LED</span><span class="o">::</span><span class="n">MakeHeartBeat</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="n">timeOn</span><span class="p">,</span> <span class="n">ratio</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method that contains the routine to do the digital heart beat 
+    @param int: The desired time On of the pulse in milliseconds
+    @param int: The desired ratio between the pulses and the pause in the pattern
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">MakeHeartBeat</span><span class="p">(</span><span class="kt">int</span> <span class="n">timeOn</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ratio</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">stopHeartBeatFlag</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+      <span class="n">Delayms</span><span class="p">(</span><span class="n">timeOn</span><span class="p">);</span>
+      <span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+      <span class="n">Delayms</span><span class="p">(</span><span class="n">timeOn</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="n">timeOn</span><span class="o">*</span><span class="n">ratio</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to stop the digital heart beat on the pin 
+*/</span>
+<span class="kt">void</span> <span class="n">LED</span><span class="o">::</span><span class="n">StopHeartBeat</span> <span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">stopHeartBeatFlag</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Destructor</span>
+<span class="n">LED</span><span class="o">::~</span><span class="n">LED</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">blinkThread</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+    <span class="n">blinkThread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">flashThread</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+    <span class="n">flashThread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">heartBeatThread</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+    <span class="n">heartBeatThread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Se you in the next post.</p>
+:ET

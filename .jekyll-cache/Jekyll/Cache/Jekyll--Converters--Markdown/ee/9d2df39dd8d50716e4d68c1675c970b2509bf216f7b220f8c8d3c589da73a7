@@ -1,0 +1,168 @@
+I"�)<p>En este post muestro cómo configurar el <a href="https://www.seeedstudio.com/Motor-Bridge-Cape-p-2569.html">Motor Cape</a> de <a href="https://www.seeedstudio.com">Seeed Studio</a> para realizar el control de motores de corriente continua (motores DC), servomotores y motores paso a paso con nuestra BeagleBone. Específicamente, se pueden manejar hasta 4 motores DC y 6 servomotores simultáneamente ó hasta 2 motores paso a paso y 6 servomotores, ó una combinación de 1 motor paso a paso, 2 motores Dc y 6 servomotores en una forma simultánea.</p>
+
+<p>En este caso trabajo con la <a href="https://www.seeedstudio.com/SeeedStudio-BeagleBone-Green-Wireless-p-2650.html">BeagleBone Green Wireless</a> (BBGW). Sin embargo, la Motor Cape es compatible con el ecosistema de boards de la familia <a href="https://Beagleboard.org">Beagleboard.org</a></p>
+
+<p>El objetivo es poder controlar un motor DC de forma precisa y elegante con esta bellísima <em>Motor Cape</em>.</p>
+
+<h2>Conectar la Motor Cape a la BBGW</h2>
+<p>Antes que nada, tenemos que conectar la MotorCape a la BBGW. Para ello hay que insertar los pines de la Motor Cape en los conectores de la BBGW cuidando la orientación y que cada uno de los pines quede correctamente insertado. A manera de guía, en las siguientes imágenes se pueden observar diferentes vistas de cómo debe quedar conectada.</p>
+
+<center>
+  <figure>
+    <img width="480" src="../assets/images/Post05/fitMotorCape.png" alt="Conexión de la Motor Cape a la BBGW" />
+    <figcaption>
+      Figura 1: Conexión de la Motor Cape a la BBGW.
+    </figcaption>
+  </figure>
+</center>
+
+<h2>Instalación del Driver de la Motor Cape</h2>
+
+<p>El primer paso, como es costumbre, consiste en actualizar el software en nuestra BBGW</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>sudo apt-get update &amp;&amp; apt-get upgrade
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>El segundo paso consiste en instalar algunos pre-requisitos para <code class="language-plaintext highlighter-rouge">Python</code>, sí es que no lo hemos hecho anteriormente.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>sudo apt-get install build-essential python python-all-dev
+sudo apt-get install python-pip python-numpy python-smbus
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Si no tenemos instalada la librería Adafruit_GPIO para Python, procederemos a instalarla desde las fuentes. Creamos una carpeta denominada: <code class="language-plaintext highlighter-rouge">updates</code>, sí es que no la hemos creado ya!. Esta carpete será el lugar donde se guarde todo el software de terceros que en un futuro descarguemos:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>mkdir updates &amp;&amp; cd updates
+git clone https://github.com/adafruit/Adafruit_Python_GPIO.git
+cd Adafruit_Python_GPIO
+sudo python setup.py install
+cd ..
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Instalar el <code class="language-plaintext highlighter-rouge">Firmware</code> del motor cape el cual se encuentra en el repositorio: <a href="https://github.com/Seeed-Studio/MotorBridgeCapeFirmware">GitHub-MotorBridgeCapeFirmware</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>git clone https://github.com/Seeed-Studio/MotorBridgeCapeFirmware
+cd MotorBridgeCapeFirmware/
+make flash
+cd ..
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>En caso de que se llegue a presentar el error de comunicación del tipo: <em>serial.serialutil.SerialException</em> como el que se muestra en la siguiente imagen, es necesario <strong>habilitar el puerto serial 2</strong> de la BBGW mediante la edición del archivo:</p>
+
+<center>
+  <figure>
+    <img src="../assets/images/Post05/errorSerial000.png" alt="error del puerto serial" />
+    <figcaption>
+      Figura 2: Error presentado por NO estar habilitado el puerto serie 2 de la BBGW.
+    </figcaption>
+  </figure>
+</center>
+
+<p>Para solucionar esto basta con adicionar la línea de código: <em>cape_enable=bone_capemgr.enable_partno=BB-UART2</em> al archivo <code class="language-plaintext highlighter-rouge">/boot/uEnv.txt</code>.</p>
+
+<p>Para ello podemos hacer uso del editor de texto <code class="language-plaintext highlighter-rouge">nano</code>, el cual corre en la terminal, para adicionar la línea anteriormente mencionada. Para abrir nano, basta con la ejecución de la siguiente instrucción:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>sudo nano /boot/uEnv.txt
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Una vez que hayamos adicionado la línea, el aspecto final del archivo <code class="language-plaintext highlighter-rouge">/boot/uEnv.txt</code> debe ser el siguiente:</p>
+
+<center>
+  <figure>
+    <img src="../assets/images/Post05/uEnvEnableSerial.png" alt="archivo uEnv editado" />
+    <figcaption>
+      Figura 3: Archivo /boot/uEnv.txt editado.
+    </figcaption>
+  </figure>
+</center>
+
+<p>Posteriormente, es necesario reiniciar nuestra BBGW y realizar nuevamente el proceso de instalación del driver</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>sudo reboot
+
+cd updates/MotorBridgeCapeFirmware/
+make flash
+cd ..
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Sí no se presentó el error de comunicación ó una vez editado el archivo <code class="language-plaintext highlighter-rouge">/boot/uEnv.txt</code> y reiniciada la <code class="language-plaintext highlighter-rouge">BBGW</code>; la salida en la terminal al teclear el comando: <code class="language-plaintext highlighter-rouge">make flash</code> debe ser el mensaje: <code class="language-plaintext highlighter-rouge">Verification OK</code></p>
+
+<p>Para verificar que nos podemos comunicar con la Motor Cape, basta con ejecutar el siguiente comando, el cual nos dará como salida la dirección Hexadecimal que atiene asignada la Motor Cape, la cual por defecto es: <em>4b</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>i2cdetect -y -r 2
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<center>
+  <figure>
+    <img src="../assets/images/Post05/i2cMotorCapeDetection.png" alt="detección del Motor Cape" />
+    <figcaption>
+      Figura 4: Detección de la Motor Cape a través del protocolo i2c.
+    </figcaption>
+  </figure>
+</center>
+
+<p>En caso de que se presente un error diferente, podemos consular el <a href="https://www.seeed.cc/search/Motor%20Cape.html">forum sobre el Motor Cape</a> de Seeed-Studio</p>
+
+<h2>Prueba del Motor Cape</h2>
+
+<p>Una vez instalado el driver del Motor Cape, el siguiente paso es instalar las librerías para el control de motores. Para ello Seeed -Studio nos ofrece el siguiente repositorio en <a href="https://github.com/Seeed-Studio/MotorBridgeCapeforBBG_BBB">GitHub-MotorBridgeCapeforBBG_BBB</a> el cual debemos clonar a través del siguiente comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>git clone https://github.com/Seeed-Studio/MotorBridgeCapeforBBG_BBB
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Una vez clonado el repositorio vamos a utilizar la librería para activar un motor DC. Para ello, tecleamos los siguientes comandos en la terminal:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>cd MotorBridgeCapeforBBG_BBB
+cp BBG_MotorBridgeCape/MotorBridge.py tests/
+cd tests
+python DCMotorTest.py
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Se puede dar el caso de que se presente el siguiente error:</p>
+
+<center>
+  <figure>
+    <img src="../assets/images/Post05/i2cMotorCapeDirectionError.png" alt="detección del Motor Cape" />
+    <figcaption>
+      Figura 5: Error presentado por NO estar especificado el puerto serie 2 en el archivo MotorBridge.py.
+    </figcaption>
+  </figure>
+</center>
+
+<p>Este error es debido a que falta especificar en el archivo: <code class="language-plaintext highlighter-rouge">MotorBridge.py</code> el número de puerto serie al que accedemos para comunicarnos con la Motor Cape, que en este caso  corresponde al <strong>2</strong>. Por lo tanto, para solucionarlo basta con modificar en este archivo la línea de código <em>MotorBridge = Adafruit_I2C(0x4b)</em> a:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>MotorBridge = Adafruit_I2C(0x4b,2)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>En seguida procedemos a probar nuevamente el programa de prueba de motores DC y debemos observar los leds de color rojo y azul del motor 3 pulsado alternadamente. Esto significa que el driver de nuestra Motor Cape ha sido instalado correctamente y que está lista para ser usada.</p>
+
+<center>
+  <video width="100%" controls="" poster="../assets/images/Post05/snapShotVideo.png">
+  <source src="../assets/images/Post05/motorDriveTest.webm" type="video/mp4" />
+  </video>
+</center>
+:ET

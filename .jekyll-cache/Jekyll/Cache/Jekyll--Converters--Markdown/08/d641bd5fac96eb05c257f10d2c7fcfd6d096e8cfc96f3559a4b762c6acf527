@@ -1,0 +1,2 @@
+I"/<p>In this post, I will show you how to make a blinking on a pair of LEDs. I will be using the LED C++ Class described in the post <a href="/Post13-BeagleBone_LEDClass/"> Implementation of the LED Class for BeagleBone</a> to use methods for controlling LEDs attached to GPIO pins in the BeagleBone.</p>
+:ET

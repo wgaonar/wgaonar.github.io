@@ -1,0 +1,928 @@
+I"J�<p>This post will be the starting point about how to program the BeagleBone in C++.
+Here, I show the code of a library to access and control the general purpose 
+digital pins (GPIO) pins of the BeagleBone.</p>
+
+<p>So the time before, I searched for a C++ library but, I did not find one. I have read
+the book:  <a href="http://exploringbeaglebone.com/">“Exploring BeagleBone”</a> 
+by Derek Molloy and I can say that this is an excellent source of information for 
+doing great things with the Beagles. It contains a C++ library to control the pins 
+but it was so complex for my prior C++ level of knowledge. Then I decided to learn 
+more about this programming language and adapt or make my own C++ Library based on 
+the work by Professor Molloy. This post is the beginning of others, I hope.</p>
+
+<h2 id="coding">Coding</h2>
+<h3>Color text in the terminal</h3>
+
+<p>First of all, I ever liked to see the world in colors, and the programming does not
+have to be the exception. For this reason I coded a file with an overloaded function
+called: <span style="color:firebrick;font-weight: bold;">RainbowText()</span> 
+to colorize text in the terminal. The header and the code file are shown here:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="cp">#ifndef RAINBOWCOLORS_H
+#define RAINBOWCOLORS_H
+</span>
+<span class="cp">#include &lt;string&gt;
+#include &lt;map&gt;
+</span>
+<span class="cm">/*
+General format to color the text in the terminal:
+-&gt; "\033[{format_attibute};{foreground_color};{background_color}m {TEXT} \033[{reset_format_attribute} m" 
+*/</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span>  <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span>  <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span>  <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span>
+
+<span class="cp">#endif  // RAINBOWCOLORS_H
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3>RAINBOWCOLORS.h</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="cp">#ifndef RAINBOWCOLORS_H
+#define RAINBOWCOLORS_H
+</span>
+<span class="cp">#include &lt;string&gt;
+#include &lt;map&gt;
+</span>
+<span class="cm">/*
+General format to color the text in the terminal:
+-&gt; "\033[{format_attibute};{foreground_color};{background_color}m {TEXT} \033[{reset_format_attribute} m" 
+*/</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span>  <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span>  <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span>  <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span>
+
+<span class="cp">#endif  // RAINBOWCOLORS_H
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4>RAINBOWCOLORS.cpp</h4>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;string&gt;
+#include &lt;map&gt;
+#include "RAINBOWCOLORS.h"
+</span>
+<span class="n">std</span><span class="o">::</span><span class="n">map</span> <span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">mapForegroundColor</span><span class="o">=</span> 
+<span class="p">{</span>
+  <span class="p">{</span> <span class="s">"Red"</span><span class="p">,</span> <span class="s">"38;5;160"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Orange"</span><span class="p">,</span> <span class="s">"38;5;202"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Yellow"</span><span class="p">,</span> <span class="s">"38;5;11"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Green"</span><span class="p">,</span> <span class="s">"38;5;76"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Blue"</span><span class="p">,</span> <span class="s">"38;5;20"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Indigo"</span><span class="p">,</span> <span class="s">"38;5;18"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Violet"</span><span class="p">,</span> <span class="s">"38;5;128"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Pink"</span><span class="p">,</span> <span class="s">"38;5;161"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Black"</span><span class="p">,</span> <span class="s">"38;5;0"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Gray"</span><span class="p">,</span> <span class="s">"38;5;246"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"38;5;15"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"39"</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">map</span> <span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">mapBackgroundColor</span> <span class="o">=</span> 
+<span class="p">{</span>
+  <span class="p">{</span> <span class="s">"Red"</span><span class="p">,</span> <span class="s">"48;5;160"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Orange"</span><span class="p">,</span> <span class="s">"48;5;202"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Yellow"</span><span class="p">,</span> <span class="s">"48;5;11"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Green"</span><span class="p">,</span> <span class="s">"48;5;76"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Blue"</span><span class="p">,</span> <span class="s">"48;5;20"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Indigo"</span><span class="p">,</span> <span class="s">"48;5;18"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Violet"</span><span class="p">,</span> <span class="s">"48;5;128"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Pink"</span><span class="p">,</span> <span class="s">"48;5;161"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Black"</span><span class="p">,</span> <span class="s">"48;5;0"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Gray"</span><span class="p">,</span> <span class="s">"48;5;246"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"48;5;15"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"49"</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">map</span> <span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">mapSetFormat</span> <span class="o">=</span>
+<span class="p">{</span>
+  <span class="p">{</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"0"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Bold"</span><span class="p">,</span> <span class="s">"1"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Underlined"</span><span class="p">,</span> <span class="s">"4"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Blink"</span><span class="p">,</span> <span class="s">"5"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Reverse"</span><span class="p">,</span> <span class="s">"7"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"Hidden"</span><span class="p">,</span> <span class="s">"8"</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span> <span class="p">(</span>   <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">src</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">foregroundColor</span> <span class="o">=</span> <span class="s">"Default"</span>
+                        <span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">pairFound</span> <span class="o">=</span> <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">foregroundColor</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pairFound</span> <span class="o">!=</span> <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+      <span class="n">foregroundColor</span> <span class="o">=</span> <span class="n">pairFound</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+  <span class="k">else</span>
+      <span class="n">foregroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">backgroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">format</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span> <span class="n">escCode</span> <span class="o">=</span> <span class="s">"</span><span class="se">\033</span><span class="s">"</span><span class="p">;</span>
+  
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">formattedText</span> <span class="o">=</span> <span class="n">escCode</span>  <span class="o">+</span> <span class="s">"["</span> <span class="o">+</span>
+                <span class="n">mapSetFormat</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">format</span><span class="p">)</span> <span class="o">+</span> <span class="s">";"</span> <span class="o">+</span>
+                <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">foregroundColor</span><span class="p">)</span> <span class="o">+</span> <span class="s">";"</span> <span class="o">+</span>
+                <span class="n">mapBackgroundColor</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">backgroundColor</span><span class="p">)</span> <span class="o">+</span> <span class="s">"m"</span> <span class="o">+</span>
+                <span class="n">src</span> <span class="o">+</span> <span class="n">escCode</span> <span class="o">+</span> <span class="s">"[0m"</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">formattedText</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span> <span class="p">(</span>   <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">src</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">foregroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">backgroundColor</span> <span class="o">=</span> <span class="s">"Default"</span>
+                        <span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">pairFound</span> <span class="o">=</span> <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">foregroundColor</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pairFound</span> <span class="o">!=</span> <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+      <span class="n">foregroundColor</span> <span class="o">=</span> <span class="n">pairFound</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+  <span class="k">else</span>
+      <span class="n">foregroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+
+  <span class="n">pairFound</span> <span class="o">=</span> <span class="n">mapBackgroundColor</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">backgroundColor</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pairFound</span> <span class="o">!=</span> <span class="n">mapBackgroundColor</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+      <span class="n">backgroundColor</span> <span class="o">=</span> <span class="n">pairFound</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+  <span class="k">else</span>
+      <span class="n">backgroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+      
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">format</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span> <span class="n">escCode</span> <span class="o">=</span> <span class="s">"</span><span class="se">\033</span><span class="s">"</span><span class="p">;</span>
+  
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">formattedText</span> <span class="o">=</span> <span class="n">escCode</span>  <span class="o">+</span> <span class="s">"["</span> <span class="o">+</span>
+                <span class="n">mapSetFormat</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">format</span><span class="p">)</span> <span class="o">+</span> <span class="s">";"</span> <span class="o">+</span>
+                <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">foregroundColor</span><span class="p">)</span> <span class="o">+</span> <span class="s">";"</span> <span class="o">+</span>
+                <span class="n">mapBackgroundColor</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">backgroundColor</span><span class="p">)</span> <span class="o">+</span> <span class="s">"m"</span> <span class="o">+</span>
+                <span class="n">src</span> <span class="o">+</span> <span class="n">escCode</span> <span class="o">+</span> <span class="s">"[0m"</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">formattedText</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="nf">RainbowText</span> <span class="p">(</span>   <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">src</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">foregroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">backgroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">format</span> <span class="o">=</span> <span class="s">"Default"</span>
+                        <span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">pairFound</span> <span class="o">=</span> <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">foregroundColor</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pairFound</span> <span class="o">!=</span> <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+      <span class="n">foregroundColor</span> <span class="o">=</span> <span class="n">pairFound</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+  <span class="k">else</span>
+      <span class="n">foregroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+
+  <span class="n">pairFound</span> <span class="o">=</span> <span class="n">mapBackgroundColor</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">backgroundColor</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pairFound</span> <span class="o">!=</span> <span class="n">mapBackgroundColor</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+      <span class="n">backgroundColor</span> <span class="o">=</span> <span class="n">pairFound</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+  <span class="k">else</span>
+      <span class="n">backgroundColor</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+
+  <span class="n">pairFound</span> <span class="o">=</span> <span class="n">mapSetFormat</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">format</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pairFound</span> <span class="o">!=</span> <span class="n">mapSetFormat</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+      <span class="n">format</span> <span class="o">=</span> <span class="n">pairFound</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+  <span class="k">else</span>
+      <span class="n">format</span> <span class="o">=</span> <span class="s">"Default"</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span> <span class="n">escCode</span> <span class="o">=</span> <span class="s">"</span><span class="se">\033</span><span class="s">"</span><span class="p">;</span>
+  
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">formattedText</span> <span class="o">=</span> <span class="n">escCode</span>  <span class="o">+</span> <span class="s">"["</span> <span class="o">+</span>
+                <span class="n">mapSetFormat</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">format</span><span class="p">)</span> <span class="o">+</span> <span class="s">";"</span> <span class="o">+</span>
+                <span class="n">mapForegroundColor</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">foregroundColor</span><span class="p">)</span> <span class="o">+</span> <span class="s">";"</span> <span class="o">+</span>
+                <span class="n">mapBackgroundColor</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">backgroundColor</span><span class="p">)</span> <span class="o">+</span> <span class="s">"m"</span> <span class="o">+</span>
+                <span class="n">src</span> <span class="o">+</span> <span class="n">escCode</span> <span class="o">+</span> <span class="s">"[0m"</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">formattedText</span><span class="p">;</span>
+<span class="p">}</span>  
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="write-and-read-to-and-from-the-digital-pins">Write and Read to and from the digital pins</h2>
+<p>
+  The next step is access to the digital pins to read and write. It can be done by 
+  reading and writing files in "/sys/class/gpio" path in the BeagleBone to set the 
+  mode and then read and write the digital pin's state.
+</p>
+
+<p>
+  I wrote some functions to set up the pin's state:
+  <ul>
+    <li>WriteFile()</li>
+    <li>ReadFile()</li>
+    <li>ExportGPIO()</li>
+    <li>UnexportGPIO()</li>
+    <li>SetMode()</li>
+  </ul>
+  Besides, I wrote other functions read and write the pin's state:
+  <ul>
+    <li>int DigitalWrite(int)</li>
+    <li>int DigitalRead()</li>
+    <li>Delayms(int)</li>
+  </ul>
+</p>
+
+<p>These functions are coded in the GPIO.h and GPIO.cpp files, which are shown here:</p>
+
+<h3>GPIO.h</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+</pre></td><td class="rouge-code"><pre><span class="cp">#ifndef GPIO_H
+#define GPIO_H
+</span>
+<span class="cp">#include &lt;string&gt;
+#include &lt;thread&gt;
+#include "RAINBOWCOLORS.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">const</span> <span class="n">string</span> <span class="nf">GPIO_PATH</span><span class="p">(</span><span class="s">"/sys/class/gpio/"</span><span class="p">);</span>
+
+<span class="cm">/* The gpio number of the pin*/</span>
+<span class="k">enum</span> <span class="n">ID</span> <span class="p">{</span>
+   <span class="n">P8_08</span> <span class="o">=</span> <span class="mi">67</span><span class="p">,</span>
+   <span class="n">P8_10</span> <span class="o">=</span> <span class="mi">68</span><span class="p">,</span>
+   <span class="n">P8_11</span> <span class="o">=</span> <span class="mi">45</span><span class="p">,</span>
+   <span class="n">P8_12</span> <span class="o">=</span> <span class="mi">44</span><span class="p">,</span>
+   <span class="n">P8_14</span> <span class="o">=</span> <span class="mi">26</span><span class="p">,</span>
+   <span class="n">P8_16</span> <span class="o">=</span> <span class="mi">46</span><span class="p">,</span>
+   <span class="n">P8_17</span> <span class="o">=</span> <span class="mi">27</span><span class="p">,</span>
+   <span class="n">P8_18</span> <span class="o">=</span> <span class="mi">65</span><span class="p">,</span>
+   <span class="n">P8_19</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span>
+   <span class="n">P8_20</span> <span class="o">=</span> <span class="mi">63</span><span class="p">,</span>
+   <span class="n">P8_26</span> <span class="o">=</span> <span class="mi">61</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="cm">/* The mode e.g. 0/1 for OUTPUT/INPUT */</span>
+<span class="k">enum</span> <span class="n">MODE</span> <span class="p">{</span>
+   <span class="n">OUTPUT</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="n">INPUT</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="cm">/* The value e.g. 0/1 for LOW/HIGH */</span>
+<span class="k">enum</span> <span class="n">VALUE</span> <span class="p">{</span>
+   <span class="n">LOW</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="n">HIGH</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="cm">/* The value e.g. 0/1 for LOW/HIGH */</span>
+<span class="k">enum</span> <span class="n">EDGE</span> <span class="p">{</span>
+   <span class="n">RISING</span><span class="p">,</span>
+   <span class="n">FALLING</span><span class="p">,</span>
+   <span class="n">BOTH</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">GPIO</span>  
+<span class="p">{</span>
+  <span class="nl">protected:</span>
+    <span class="kt">int</span> <span class="n">id</span><span class="p">;</span>        <span class="cm">/* The GPIO number of the object */</span>
+    <span class="kt">int</span> <span class="n">mode</span><span class="p">;</span>      <span class="cm">/* The GPIO mode e.g. 0/1 for OUTPUT/INPUT */</span>
+    <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>     <span class="cm">/* The GPIO value e.g. 0/1 for LOW/HIGH */</span>
+    <span class="n">string</span> <span class="n">name</span><span class="p">;</span>   <span class="cm">/* The name of the GPIO e.g. gpio44 */</span>
+    <span class="n">string</span> <span class="n">path</span><span class="p">;</span>   <span class="cm">/* The full path to the GPIO e.g. /sys/class/gpio/gpio44 */</span>
+    
+    <span class="c1">// Helper methods</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">WriteFile</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">string</span><span class="p">);</span>
+    <span class="k">virtual</span> <span class="n">string</span> <span class="n">ReadFile</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">string</span><span class="p">);</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">ExportGPIO</span><span class="p">();</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">UnexportGPIO</span><span class="p">();</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">SetMode</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+   
+  <span class="nl">public:</span>
+    <span class="c1">// Overload constructor</span>
+    <span class="n">GPIO</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Interface method to set the GPIO pin state</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">DigitalWrite</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Interface method to get the GPIO pin state</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">DigitalRead</span><span class="p">();</span>
+
+    <span class="c1">// Delay method in milliseconds</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Delayms</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Destructor</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">GPIO</span> <span class="p">();</span>    
+<span class="p">};</span>
+
+<span class="cp">#endif // GPIO_H
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3>GPIO.cpp</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;chrono&gt; // chrono::milliseconds()
+#include &lt;thread&gt; // this_thread::sleep_for()
+#include &lt;exception&gt;
+#include &lt;mutex&gt;
+</span>
+<span class="cp">#include "GPIO.h"
+#include "RAINBOWCOLORS.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">CustomException</span> <span class="o">:</span> <span class="k">public</span> <span class="n">exception</span> 
+<span class="p">{</span>
+    <span class="nl">private:</span>
+      <span class="n">string</span> <span class="n">reason</span><span class="p">;</span>
+    <span class="nl">public:</span>
+      <span class="n">CustomException</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">why</span><span class="p">)</span> <span class="o">:</span> <span class="n">reason</span> <span class="p">(</span><span class="n">why</span><span class="p">)</span> <span class="p">{};</span>
+      <span class="k">virtual</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">what</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span> 
+      <span class="p">{</span>
+          <span class="k">return</span> <span class="n">reason</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+      <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// Constructor</span>
+<span class="n">GPIO</span><span class="o">::</span><span class="n">GPIO</span> <span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">;</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">=</span> <span class="s">"gpio"</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">path</span> <span class="o">=</span> <span class="n">GPIO_PATH</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"/"</span><span class="p">;</span>
+    
+    <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Trying to set up the GPIO pin: "</span><span class="p">,</span><span class="s">"Gray"</span><span class="p">)</span> 
+          <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">),</span> <span class="s">"Gray"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="n">UnexportGPIO</span><span class="p">();</span>
+    <span class="n">ExportGPIO</span><span class="p">();</span>
+    <span class="n">SetMode</span><span class="p">(</span><span class="n">mode</span><span class="p">);</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Setting the GPIO pin was a success!"</span><span class="p">,</span> <span class="s">"Green"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method that writes a string value to a file in the path provided
+    @param String path: The system path of the file to be modified
+    @param String feature: The name of file to be written
+    @param string value: The value to be written to in the file
+    @return int: 0 written has succeeded
+*/</span>
+<span class="kt">int</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">string</span> <span class="n">path</span><span class="p">,</span> <span class="n">string</span> <span class="n">feature</span><span class="p">,</span> <span class="n">string</span> <span class="n">value</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="n">string</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">feature</span><span class="p">;</span>
+
+    <span class="n">ofstream</span> <span class="n">file</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">ios_base</span><span class="o">::</span><span class="n">out</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> 
+    <span class="p">{</span>
+      <span class="n">perror</span><span class="p">((</span><span class="s">"Error while opening file: "</span> <span class="o">+</span> <span class="n">fileName</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in 'WriteFile' method"</span><span class="p">);</span>
+    <span class="p">}</span> 
+    <span class="n">file</span> <span class="o">&lt;&lt;</span> <span class="n">value</span><span class="p">;</span>
+    <span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span> 
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method that read a file in the path provided
+    @param String path: The sysfs path of the file to be modified
+    @param String feature: The file to be written to in that path
+    @param string value: The value to be written to in the file
+    @return int: 0 written has succeeded / -1 written has failed 
+*/</span>
+<span class="n">string</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">ReadFile</span><span class="p">(</span><span class="n">string</span> <span class="n">path</span><span class="p">,</span> <span class="n">string</span> <span class="n">feature</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="n">string</span> <span class="n">fileName</span><span class="p">;</span>
+    <span class="n">fileName</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">feature</span><span class="p">;</span>
+    <span class="n">ifstream</span> <span class="n">file</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">ios_base</span><span class="o">::</span><span class="n">in</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">perror</span><span class="p">((</span><span class="s">"Error while opening file: "</span> <span class="o">+</span> <span class="n">fileName</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in 'ReadFile' method"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">string</span> <span class="n">value</span><span class="p">;</span>
+    <span class="n">getline</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">value</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">bad</span><span class="p">())</span>
+      <span class="n">perror</span><span class="p">((</span><span class="s">"Error while reading file: "</span> <span class="o">+</span> <span class="n">fileName</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+    <span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method to export the GPIO pin
+    @return int: 0 export has succeeded / -1 export has failed 
+*/</span>
+<span class="kt">int</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">ExportGPIO</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">GPIO_PATH</span><span class="p">,</span> <span class="s">"export"</span><span class="p">,</span> <span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error to export the pin"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method to unexport the GPIO pin
+    @return int: 0 unexport has succeeded / -1 unexport has failed 
+*/</span>
+<span class="kt">int</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">UnexportGPIO</span><span class="p">()</span> 
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">GPIO_PATH</span><span class="p">,</span> <span class="s">"unexport"</span><span class="p">,</span> <span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error to unexport the pin"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Private method that set the pin Mode
+    @param int: The desired mode 0/1 for OUTPUT/INPUT
+    @return int: 0 set Mode has succeeded / -1 set Mode has failed 
+*/</span>
+<span class="kt">int</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">SetMode</span><span class="p">(</span><span class="kt">int</span> <span class="n">mode</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">mode</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="k">case</span> <span class="n">OUTPUT</span><span class="p">:</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"direction"</span><span class="p">,</span> <span class="s">"out"</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> 
+            <span class="k">throw</span> <span class="s">"Error to set the pin direction as OUTPUT"</span><span class="p">;</span>
+          <span class="k">else</span>
+            <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Set the pin direction as DIGITAL OUTPUT"</span><span class="p">,</span> <span class="s">"Orange"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+          <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="n">INPUT</span><span class="p">:</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"direction"</span><span class="p">,</span> <span class="s">"in"</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> 
+            <span class="k">throw</span> <span class="s">"Error to set the pin direction as INPUT"</span><span class="p">;</span>
+          <span class="k">else</span>
+            <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Set the pin direction as DIGITAL INPUT"</span><span class="p">,</span> <span class="s">"Yellow"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+          <span class="k">break</span><span class="p">;</span>   
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to set/clear the pin value
+    @param int: The desired value 1 for HIGH and 0 for low
+    @return int: 0 set value has succeeded / -1 set value has failed 
+*/</span>
+<span class="kt">int</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="kt">int</span> <span class="n">newValue</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">newValue</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="k">case</span> <span class="n">HIGH</span><span class="p">:</span>
+          <span class="c1">//cout &lt;&lt; "Setting the pin value as: " &lt;&lt; "HIGH" &lt;&lt; endl;</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">path</span><span class="p">,</span> <span class="s">"value"</span><span class="p">,</span> <span class="s">"1"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+          <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="n">LOW</span><span class="p">:</span>
+          <span class="c1">//cout &lt;&lt; "Setting the pin value as: " &lt;&lt; "LOW" &lt;&lt; endl;</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">WriteFile</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">path</span><span class="p">,</span> <span class="s">"value"</span><span class="p">,</span> <span class="s">"0"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+          <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>   
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to get the pin value
+    @return GPIO::VALUE: The value of the pin LOW/HIGH
+*/</span>
+<span class="kt">int</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">DigitalRead</span><span class="p">()</span> 
+<span class="p">{</span>
+    <span class="n">string</span> <span class="n">value</span> <span class="o">=</span> <span class="n">ReadFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"value"</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="s">"0"</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">LOW</span><span class="p">;</span>
+    <span class="k">else</span>
+      <span class="k">return</span> <span class="n">HIGH</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to do a delay in milliseconds
+    @param int: duration of the delay
+*/</span>
+<span class="kt">void</span> <span class="n">GPIO</span><span class="o">::</span><span class="n">Delayms</span><span class="p">(</span><span class="kt">int</span> <span class="n">millisecondsToSleep</span><span class="p">)</span> 
+<span class="p">{</span>
+    <span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">millisecondsToSleep</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// Destructor</span>
+<span class="n">GPIO</span><span class="o">::~</span><span class="n">GPIO</span><span class="p">()</span> 
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">mode</span> <span class="o">==</span> <span class="n">OUTPUT</span><span class="p">)</span>
+      <span class="k">this</span><span class="o">-&gt;</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+  
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">UnexportGPIO</span><span class="p">();</span>
+    <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Destroying the GPIO_PIN with path: "</span><span class="p">,</span><span class="s">"Gray"</span><span class="p">)</span>
+          <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"Gray"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Se you in the next post.</p>
+:ET

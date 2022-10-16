@@ -1,0 +1,2 @@
+I"·<p>In this post, I show how to use a median filter for measuring the distance with the cheap ultrasonic sensor HC_SR04. This class is part of a whole library that can be found  <a href="https://github.com/wgaonar/BeagleCPP">here</a>. As a reference, an excellent article about how to implement a median filter on Arduino can be found <a href="https://www.luisllamas.es/arduino-filtro-mediana-rapido/">here</a> in the Luis Llamas Blog.</p>
+:ET

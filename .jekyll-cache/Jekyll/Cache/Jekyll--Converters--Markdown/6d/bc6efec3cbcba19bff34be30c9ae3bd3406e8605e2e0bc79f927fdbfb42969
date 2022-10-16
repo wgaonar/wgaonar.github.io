@@ -1,0 +1,2 @@
+I"û<p>In this post, I show a Button C++ class implementation in order to read an attached button to a GPIO pin in the BeagleBone Black. The public methods written in the C++ class <code class="language-plaintext highlighter-rouge">BUTTON</code> are:</p>
+:ET

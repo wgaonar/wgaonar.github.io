@@ -1,0 +1,2 @@
+I"½<p>In this post, I show how to blink in order six LEDs in the BeagleBone Black using Delays routines. This is done with the <code class="language-plaintext highlighter-rouge">DelayMilliseconds</code> function which uses the <code class="language-plaintext highlighter-rouge">C++</code> <code class="language-plaintext highlighter-rouge">sleep_for</code> method for <font color="red">blocking</font> the program while the delay is executing.</p>
+:ET

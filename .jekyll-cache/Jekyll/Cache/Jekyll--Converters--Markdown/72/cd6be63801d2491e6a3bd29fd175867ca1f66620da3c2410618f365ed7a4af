@@ -1,0 +1,2 @@
+I"ë<p>In this post, I show how to include the air temperature in the calculus of the speed sound and include an offset value for the distance reported by the sensor. This value can be useful for example when the sensor is placed not at the edge of a robot and the measurements have to be subtracted to reference these at the robotâ€™s boundary avoiding an undesired collision. This class is part of a whole library that can be found <a href="https://github.com/wgaonar/BeagleCPP">here</a>.</p>
+:ET

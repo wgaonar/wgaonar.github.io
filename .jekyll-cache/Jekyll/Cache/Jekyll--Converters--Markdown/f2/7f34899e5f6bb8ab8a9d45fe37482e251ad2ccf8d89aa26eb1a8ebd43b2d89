@@ -1,0 +1,2 @@
+I"�<p>In this post, I show a PWM C++ class implementation. Remembering the PWM is a technique that lets us emulate an analog signal in a digital pin. This is done by changing the time that a signal is On in a fixed period of time. The ratio between the time ON and OFF is named duty cycle. The more duty cycle, the more is the “analog” average voltage measured on the digital pin.</p>
+:ET

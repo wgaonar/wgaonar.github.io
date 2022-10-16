@@ -1,0 +1,557 @@
+I"�n<p>In this post, I show how to blink a LED with using Delays routines. This is done through the implementation of some functions that retrieve the time and duration of time marks in <code class="language-plaintext highlighter-rouge">C++</code>. These functions are like the <code class="language-plaintext highlighter-rouge">millis()</code> and <code class="language-plaintext highlighter-rouge">micros()</code> in Arduino. In a <a href="/Post11-BeagleBone_LedOn/"> previous post </a> I showed how to make a blink on la LED using Delays, in contrast, in this post I show how to use the new functions to signal time events without the need to freeze the BeagleBone while it is doing the delay.</p>
+
+<p>## Circuit and components</p>
+
+<p>The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone works at <font color="red">3.3V</font> and not 5V like microcontrollers as Arduino. It is so important to avoid damage to the board, especially when you are working with buttons or digital inputs in general.</p>
+
+<p>The components are:</p>
+<ul>
+  <li>1 Resistor of 1KΩ</li>
+  <li>1 LED of 3mm</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post32/Circuit_bb.png" alt="Circuit.jpg" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to make a delay on la LED with Millis() / Micros() / Nanos() function.
+  </figcaption>
+</figure>
+
+<h2 id="coding">Coding</h2>
+
+<p>The function <code class="language-plaintext highlighter-rouge">Millis()</code> is defined. This takes the Coordinated Universal Time (UTC) and then the actual time. After that, the <code class="language-plaintext highlighter-rouge">elapsedTime</code> object is declared and initialized as de difference between the actual time and the initial UTC time in the BeagleBone, i.e., the interval of time between the actual time and the time since 00:00:00 UTC, Thursday, 1 January 1970. This is an object of a <code class="language-plaintext highlighter-rouge">duration</code> class from which the <code class="language-plaintext highlighter-rouge">count()</code> member can be used to obtain the time in milliseconds.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">Millis</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// Retrieve the  Unix Time (UTC), Thursday, 1 January 1970.</span>
+  <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span> <span class="n">UTCTime</span> <span class="o">=</span> <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span><span class="p">{};</span>
+
+  <span class="c1">// Retrieve the actual time</span>
+  <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span> <span class="n">actualTime</span> <span class="o">=</span> <span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+
+  <span class="n">duration</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">elapsedTime</span> <span class="o">=</span> <span class="n">actualTime</span> <span class="o">-</span> <span class="n">UTCTime</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">milliseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">elapsedTime</span><span class="p">).</span><span class="n">count</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>In the same way, the <code class="language-plaintext highlighter-rouge">Micros()</code> the <code class="language-plaintext highlighter-rouge">Nanos()</code> functions are defined to signal time events in milliseconds and nanoseconds, respectively.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">Micros</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// Retrieve the  Unix Time (UTC), Thursday, 1 January 1970.</span>
+  <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span> <span class="n">UTCTime</span> <span class="o">=</span> <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span><span class="p">{};</span>
+
+  <span class="c1">// Retrieve the actual time</span>
+  <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span> <span class="n">actualTime</span> <span class="o">=</span> <span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+
+  <span class="n">duration</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">elapsedTime</span> <span class="o">=</span> <span class="n">actualTime</span> <span class="o">-</span> <span class="n">UTCTime</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">elapsedTime</span><span class="p">).</span><span class="n">count</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">Nanos</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// Retrieve the  Unix Time (UTC), Thursday, 1 January 1970.</span>
+  <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span> <span class="n">UTCTime</span> <span class="o">=</span> <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span><span class="p">{};</span>
+
+  <span class="c1">// Retrieve the actual time</span>
+  <span class="n">time_point</span><span class="o">&lt;</span><span class="n">system_clock</span><span class="o">&gt;</span> <span class="n">actualTime</span> <span class="o">=</span> <span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+
+  <span class="n">duration</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">elapsedTime</span> <span class="o">=</span> <span class="n">actualTime</span> <span class="o">-</span> <span class="n">UTCTime</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">nanoseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">elapsedTime</span><span class="p">).</span><span class="n">count</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The complete codes for the application of this functions are shown in the next listings together with its corresponding execution videos.</p>
+
+<h3 id="listing_14">Listing_1.4</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+</pre></td><td class="rouge-code"><pre><span class="cm">/************************************************************************
+Listing_1.4.cpp
+@wgaonar
+28/03/2021
+https://github.com/wgaonar/BeagleCPP
+
+Blink a LED in milliseconds without Delayms()
+
+Class: GPIO
+************************************************************************/</span>
+<span class="cp">#include &lt;iostream&gt;
+#include "../../Sources/GPIO.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="n">GPIO</span> <span class="n">ledPin</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+
+  <span class="n">STATE</span> <span class="n">ledState</span> <span class="o">=</span> <span class="n">LOW</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">previousMillis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// will store last time LED was updated</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">interval</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>       <span class="c1">// interval at which to blink (milliseconds)</span>
+
+  <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="c1">// Get the actual time</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">currentMillis</span> <span class="o">=</span> <span class="n">Millis</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="n">currentMillis</span> <span class="o">-</span> <span class="n">previousMillis</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">interval</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="c1">// save the last time you blinked the LED</span>
+      <span class="n">previousMillis</span> <span class="o">=</span> <span class="n">currentMillis</span><span class="p">;</span>
+
+      <span class="c1">// if the LED is off turn it on and vice-versa:</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">ledState</span> <span class="o">==</span> <span class="n">LOW</span><span class="p">)</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">HIGH</span><span class="p">;</span>
+      <span class="k">else</span>
+      <span class="p">{</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">LOW</span><span class="p">;</span>
+        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Blinking "</span> <span class="o">&lt;&lt;</span> <span class="n">count</span> <span class="o">&lt;&lt;</span> <span class="s">" times of 10</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="c1">// set the LED with the ledState of the variable:</span>
+      <span class="n">ledPin</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">ledState</span><span class="p">);</span>
+    <span class="p">}</span>  
+  <span class="p">}</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program">Execution of the program:</h3>
+
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post32/VideoCover-Listing_1.4.png">
+    <source src="../assets/images/Post32/Listing_1.4.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<h3 id="listing_15">Listing_1.5</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+</pre></td><td class="rouge-code"><pre><span class="cm">/************************************************************************
+Listing_1.5.cpp
+@wgaonar
+28/03/2021
+https://github.com/wgaonar/BeagleCPP
+
+Blink a LED in microseconds without Delayus()
+
+Class: GPIO
+************************************************************************/</span>
+<span class="cp">#include &lt;iostream&gt;
+#include "../../Sources/GPIO.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="n">GPIO</span> <span class="n">ledPin</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+
+  <span class="n">STATE</span> <span class="n">ledState</span> <span class="o">=</span> <span class="n">LOW</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">previousMicros</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// will store last time LED was updated</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">interval</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">;</span>     <span class="c1">// interval at which to blink (microseconds)</span>
+
+  <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="c1">// Get the actual time</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">currentMicros</span> <span class="o">=</span> <span class="n">Micros</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="n">currentMicros</span> <span class="o">-</span> <span class="n">previousMicros</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">interval</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="c1">// save the last time you blinked the LED</span>
+      <span class="n">previousMicros</span> <span class="o">=</span> <span class="n">currentMicros</span><span class="p">;</span>
+
+      <span class="c1">// if the LED is off turn it on and vice-versa:</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">ledState</span> <span class="o">==</span> <span class="n">LOW</span><span class="p">)</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">HIGH</span><span class="p">;</span>
+      <span class="k">else</span>
+      <span class="p">{</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">LOW</span><span class="p">;</span>
+        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Blinking "</span> <span class="o">&lt;&lt;</span> <span class="n">count</span> <span class="o">&lt;&lt;</span> <span class="s">" times of 10</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="c1">// set the LED with the ledState of the variable:</span>
+      <span class="n">ledPin</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">ledState</span><span class="p">);</span>
+    <span class="p">}</span>  
+  <span class="p">}</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program-1">Execution of the program:</h3>
+
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post32/VideoCover-Listing_1.5.png">
+    <source src="../assets/images/Post32/Listing_1.5.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<h3 id="listing_16">Listing_1.6</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+</pre></td><td class="rouge-code"><pre><span class="cm">/************************************************************************
+Listing_1.6.cpp
+@wgaonar
+28/03/2021
+https://github.com/wgaonar/BeagleCPP
+
+Blink a LED in nanoseconds  
+
+Class: GPIO
+************************************************************************/</span>
+<span class="cp">#include &lt;iostream&gt;
+#include "../../Sources/GPIO.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="n">GPIO</span> <span class="n">ledPin</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+
+  <span class="n">STATE</span> <span class="n">ledState</span> <span class="o">=</span> <span class="n">LOW</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">previousNanos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// will store last time LED was updated</span>
+  <span class="kt">int</span> <span class="n">interval</span> <span class="o">=</span> <span class="mi">1000000000</span><span class="p">;</span>        <span class="c1">// interval at which to blink (nanoseconds)</span>
+
+  <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// First while loop with a 1000000000ns (1s) for a delay</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="c1">// Get the actual time</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">currentNanos</span> <span class="o">=</span> <span class="n">Nanos</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="n">currentNanos</span> <span class="o">-</span> <span class="n">previousNanos</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">interval</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="c1">// save the last time you blinked the LED</span>
+      <span class="n">previousNanos</span> <span class="o">=</span> <span class="n">currentNanos</span><span class="p">;</span>
+
+      <span class="c1">// if the LED is off turn it on and vice-versa:</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">ledState</span> <span class="o">==</span> <span class="n">LOW</span><span class="p">)</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">HIGH</span><span class="p">;</span>
+      <span class="k">else</span>
+      <span class="p">{</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">LOW</span><span class="p">;</span>
+        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Blinking "</span> <span class="o">&lt;&lt;</span> <span class="n">count</span> <span class="o">&lt;&lt;</span> <span class="s">" times of 10</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="c1">// set the LED with the ledState of the variable:</span>
+      <span class="n">ledPin</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">ledState</span><span class="p">);</span>
+    <span class="p">}</span>  
+  <span class="p">}</span>
+
+  <span class="c1">// seconde while loop for a 100ns</span>
+  <span class="n">interval</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+  <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="c1">// Get the actual time</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">currentNanos</span> <span class="o">=</span> <span class="n">Nanos</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="n">currentNanos</span> <span class="o">-</span> <span class="n">previousNanos</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">interval</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="c1">// save the last time you blinked the LED</span>
+      <span class="n">previousNanos</span> <span class="o">=</span> <span class="n">currentNanos</span><span class="p">;</span>
+
+      <span class="c1">// if the LED is off turn it on and vice-versa:</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">ledState</span> <span class="o">==</span> <span class="n">LOW</span><span class="p">)</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">HIGH</span><span class="p">;</span>
+      <span class="k">else</span>
+      <span class="p">{</span> 
+        <span class="n">ledState</span> <span class="o">=</span> <span class="n">LOW</span><span class="p">;</span>
+        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Blinking "</span> <span class="o">&lt;&lt;</span> <span class="n">count</span> <span class="o">&lt;&lt;</span> <span class="s">" times of 1000</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="c1">// set the LED with the ledState of the variable:</span>
+      <span class="n">ledPin</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">ledState</span><span class="p">);</span>
+    <span class="p">}</span>  
+  <span class="p">}</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program-2">Execution of the program:</h3>
+
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post32/VideoCover-Listing_1.6.png">
+    <source src="../assets/images/Post32/Listing_1.6.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<p>Se you in the next post.</p>
+:ET

@@ -1,0 +1,2 @@
+I"9<p>In this post, I start applying the PWM technique to do a light pulse effect on a LED. This is inspired by the work by Sparkfun titled <a href="https://www.sparkfun.com/tutorials/329">Pulse a LED</a>, where the brightness of a LED is changed using a sine wave, instead of a classic ramp or linear function.</p>
+:ET

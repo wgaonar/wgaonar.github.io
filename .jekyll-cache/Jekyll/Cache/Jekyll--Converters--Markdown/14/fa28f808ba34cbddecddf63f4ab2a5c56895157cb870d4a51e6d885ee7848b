@@ -1,0 +1,673 @@
+I"�<p>In this post, I show an analog to digital converter (ADC) C++ class implementation. Remembering that the BeagleBone has 7 analog inputs and ADC of 12 bits that lets to de user to represent an analog signal within a range of 4096 values. It is important to remember that the reference for analog voltage is <font color="red">1.8V</font>. If the user provides a greater voltage, the BeagleBone could be damaged.</p>
+
+<p>The BeagleBone has seven pins than can be dedicated to the ADC.  These are:</p>
+<ul>
+  <li>P9_33</li>
+  <li>P9_35</li>
+  <li>P9_36</li>
+  <li>P9_37</li>
+  <li>P9_38</li>
+  <li>P9_39</li>
+  <li>P9_40</li>
+</ul>
+
+<h2 id="coding">Coding</h2>
+
+<p>The methods coded to the C++ class `ACD are:</p>
+<ul>
+  <li>Private methods:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">int ReadFile(std::string)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">MakeReadADCContinuousSampling(int &amp;, int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">MakeReadVoltageContinuousSampling(float &amp;, int)</code></li>
+    </ul>
+  </li>
+  <li>Public methods:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">int ReadADC()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">float ReadVoltage()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void ReadADCContinuousSampling(int &amp;, int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void ReadVoltageContinuousSampling(float &amp;, int)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void DoUserFunction(callbackType)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void StopReadADCContinuousSampling()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void StopReadVoltageContinuousSampling()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void StopUserFunction()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">void Delayms(int);</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">int ReadFile(std::string)</code> method accesses to the file system path that has the values of the ADC module the PWM behavior on the pins at <strong>“/sys/bus/iio/devices/iio:device0/”</strong> and it returns the raw value ADC on pin, i.e. a <code class="language-plaintext highlighter-rouge">int</code> value between <font color="red">0 - 4095</font>.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">MakeReadVoltageContinuousSampling(float &amp;, int)</code> method, when is activated, runs on a thread to read the analog voltage on the pin and pass this value through a reference variable to the main program.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">MakeReadADCContinuousSampling(int &amp;, int)</code> method, when is activated, runs on a thread to read the ADC value on the pin and pass this value through a reference variable to the main program.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">int ReadADC()</code> method reads the corresponding system file and returns the read ADC value on the pin.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">float ReadVoltage()</code> method reads the corresponding system file and returns the ADC value on the pin converted to voltage ina a range between 0 - 1.8V.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">void ReadADCContinuousSampling(int &amp;, int)</code> method, can be invoked from the main program to do a continuous sampling on the ADC value. It calls the private <span class="coding">MakeReadADCContinuousSampling(int &amp;, int)` method to do this.</span></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">void ReadVoltageContinuousSampling(int &amp;, int)</code> method, can be invoked from the main program to do a continuous sampling on the pin’s voltage. It calls the private <span class="coding">MakeReadVoltageContinuousSampling(int &amp;, int)` method to do this.</span></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">DoUserFunction(callbackType)</code> method, receives a user function thought a function pointer from the main program to do something in background through the execution of a thread.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">StopReadADCContinuousSampling()</code> method finishes the execution of the thread called by the <code class="language-plaintext highlighter-rouge">void ReadADCContinuousSampling(int &amp;, int)</code> method.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">StopReadVoltageContinuousSampling()</code> method finishes the execution of the thread called by the <code class="language-plaintext highlighter-rouge">void ReadVoltageContinuousSampling(int &amp;, int)</code> method.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">StopUserFunction()</code> method finishes the execution of the thread called by the user defined function <code class="language-plaintext highlighter-rouge">void DoUserFunction(callbackType)</code> method.</p>
+
+<h2 id="class-code">Class code</h2>
+
+<h3 id="adch">ADC.h</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+</pre></td><td class="rouge-code"><pre><span class="cp">#ifndef ADC_H
+#define ADC_H
+</span>
+<span class="cp">#include &lt;string&gt;
+#include &lt;thread&gt;
+#include "RAINBOWCOLORS.h"
+</span>
+<span class="cm">/* 
+  Declare a type for a function pointer
+  It is the construct for: using function_type = int (*) ()
+    function_type:  the function name
+    int: return type  
+    (*): the dereference operator due to the address of the function name
+    (): the arguments of the function, in this case void
+  Stores the address of a function 
+*/</span>
+<span class="k">using</span> <span class="n">callbackType</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="p">)();</span>
+
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">ADC_PATH</span> <span class="o">=</span> <span class="s">"/sys/bus/iio/devices/iio:device0/"</span><span class="p">;</span>
+
+<span class="cm">/* The pwm class internal number of the pin*/</span>
+<span class="k">enum</span> <span class="n">ID</span> <span class="p">{</span>
+  <span class="n">P9_39</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="n">P9_40</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+  <span class="n">P9_37</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="n">P9_38</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="n">P9_33</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+  <span class="n">P9_36</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+  <span class="n">P9_35</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ADC</span>
+<span class="p">{</span>
+  <span class="nl">private:</span>
+    <span class="kt">int</span> <span class="n">id</span><span class="p">;</span> <span class="cm">/* The ADC number of the object */</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">idMap</span><span class="p">[</span><span class="mi">7</span><span class="p">];</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">path</span><span class="p">;</span> <span class="cm">/* The full path to the ADC e.g. /sys/bus/iio/devices/iio:device0/in_voltage0_raw */</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span> <span class="cm">/* The name of the ADC e.g. in_voltage0_raw */</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">message</span><span class="p">;</span> <span class="cm">/* The variable to output messages on the terminal*/</span>
+
+    <span class="kt">bool</span> <span class="n">stopReadADCFlag</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">stopReadVoltageFlag</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">ReadADCThread</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">ReadVoltageThread</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">functionThread</span><span class="p">;</span>
+
+    <span class="kt">void</span> <span class="n">MakeReadADCContinuousSampling</span><span class="p">(</span><span class="kt">int</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">MakeReadVoltageContinuousSampling</span><span class="p">(</span><span class="kt">float</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+    
+    <span class="c1">// Method to read files</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">ReadFile</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">);</span>
+
+  <span class="nl">public:</span>
+
+    <span class="c1">// Default constructor</span>
+    <span class="n">ADC</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Interface method to get one ADC value</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">ReadADC</span><span class="p">();</span>
+
+    <span class="c1">// Interface method to get the voltage on the pin</span>
+    <span class="k">virtual</span> <span class="kt">float</span> <span class="n">ReadVoltage</span><span class="p">();</span>
+
+    <span class="c1">// Interface method for reading the ADC value continuously on the pin</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">ReadADCContinuousSampling</span><span class="p">(</span><span class="kt">int</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Interface method for reading the Voltage continuously on the pin</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">ReadVoltageContinuousSampling</span><span class="p">(</span><span class="kt">float</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+    
+    <span class="c1">// Method to do execute an user function</span>
+    <span class="k">virtual</span> <span class="kt">int</span> <span class="n">DoUserFunction</span><span class="p">(</span><span class="n">callbackType</span><span class="p">);</span>
+
+    <span class="c1">// Method to stop the ADC continuous sampling </span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">StopReadADCContinuousSampling</span><span class="p">();</span>
+
+    <span class="c1">// Method to stop the voltage continuous sampling</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">StopReadVoltageContinuousSampling</span><span class="p">();</span>
+    
+    <span class="c1">// Method to stop the user function</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">StopUserFunction</span><span class="p">();</span>
+
+    <span class="c1">// Delay method in milliseconds</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Delayms</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+    <span class="c1">// Destructor</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">ADC</span><span class="p">();</span>
+<span class="p">};</span>
+<span class="cp">#endif // ADC_H
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="adccpp">ADC.cpp</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;chrono&gt; // chrono::milliseconds()
+#include &lt;thread&gt; // this_thread::sleep_for()
+#include &lt;exception&gt;
+#include &lt;mutex&gt;
+</span>
+<span class="cp">#include "ADC.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">CustomException</span> <span class="o">:</span> <span class="k">public</span> <span class="n">exception</span> 
+<span class="p">{</span>
+  <span class="nl">private:</span>
+    <span class="n">string</span> <span class="n">reason</span><span class="p">;</span>
+  <span class="nl">public:</span>
+    <span class="n">CustomException</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">why</span><span class="p">)</span> <span class="o">:</span> <span class="n">reason</span> <span class="p">(</span><span class="n">why</span><span class="p">)</span> <span class="p">{};</span>
+    <span class="k">virtual</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">what</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span> 
+    <span class="p">{</span>
+      <span class="k">return</span> <span class="n">reason</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// Overload constructor with 2 arguments</span>
+<span class="n">ADC</span><span class="o">::</span><span class="n">ADC</span><span class="p">(</span><span class="kt">int</span> <span class="n">adcPin</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">id</span> <span class="o">=</span> <span class="n">adcPin</span><span class="p">;</span>
+
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_39</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9_39"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_40</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9_40"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_37</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9_37"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_38</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9_38"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_33</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9_33"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_36</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9_36"</span><span class="p">;</span>
+  <span class="n">idMap</span><span class="p">[</span><span class="n">P9_35</span><span class="p">]</span> <span class="o">=</span> <span class="s">"P9_35"</span><span class="p">;</span>
+
+  <span class="n">name</span> <span class="o">=</span> <span class="s">"in_voltage"</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">"_raw"</span><span class="p">;</span>
+  <span class="n">path</span> <span class="o">=</span> <span class="n">ADC_PATH</span> <span class="o">+</span> <span class="n">name</span><span class="p">;</span>
+
+  <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Trying to enable the ADC on pin: "</span><span class="p">,</span><span class="s">"Violet"</span><span class="p">)</span> 
+        <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">idMap</span><span class="p">[</span><span class="n">id</span><span class="p">],</span> <span class="s">"Violet"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="kt">int</span> <span class="n">ADCValue</span> <span class="o">=</span> <span class="n">ReadADC</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ADCValue</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">ADCValue</span> <span class="o">&lt;=</span> <span class="mi">4095</span><span class="p">)</span>
+    <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Setting the ADC pin was a success!"</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> 
+<span class="p">}</span>
+
+<span class="cm">/*
+  Private method that read a file in the path provided
+  @param String path: The sysfs path of the file to be read
+  @return int: the read value 
+*/</span>
+<span class="kt">int</span> <span class="n">ADC</span><span class="o">::</span><span class="n">ReadFile</span><span class="p">(</span><span class="n">string</span> <span class="n">newPath</span><span class="p">)</span> 
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">fileName</span><span class="p">;</span>
+  <span class="n">fileName</span> <span class="o">=</span> <span class="n">path</span><span class="p">;</span>
+  <span class="n">ifstream</span> <span class="n">file</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">ios_base</span><span class="o">::</span><span class="n">in</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">((</span><span class="s">"Error while opening file: "</span> <span class="o">+</span> <span class="n">fileName</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+    <span class="k">throw</span> <span class="n">CustomException</span><span class="p">(</span><span class="s">"Error in 'ReadFile' method"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="n">string</span> <span class="n">value</span><span class="p">;</span>
+  <span class="n">getline</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">value</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">bad</span><span class="p">())</span>
+    <span class="n">perror</span><span class="p">((</span><span class="s">"Error while reading file: "</span> <span class="o">+</span> <span class="n">fileName</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+  <span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="n">stoi</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to get the ADC value on pin 
+    @return int: The pin's value between 0 - 4095
+*/</span>
+<span class="kt">int</span> <span class="n">ADC</span><span class="o">::</span><span class="n">ReadADC</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">ReadFile</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to get the voltage on the pin 
+    @return float: The pin's value between 0 - 1.8
+*/</span>
+<span class="kt">float</span> <span class="n">ADC</span><span class="o">::</span><span class="n">ReadVoltage</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span> <span class="n">ReadFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.8</span> <span class="o">/</span> <span class="mi">4095</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to get continuously the ADC value on pin 
+  @param int: Reference output for the ADC value between 0 - 4095
+  @param int: The time interval between each sample
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">ReadADCContinuousSampling</span><span class="p">(</span><span class="kt">int</span> <span class="o">&amp;</span><span class="n">adcValueOut</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sampleTime</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Read ADC input has been activated"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="n">ReadADCThread</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ADC</span><span class="o">::</span><span class="n">MakeReadADCContinuousSampling</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">adcValueOut</span><span class="p">),</span><span class="n">sampleTime</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Private method that contains the routine to make the ADC read 
+  @param int: A reference variable to store The pin's value between 0 - 4095
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">MakeReadADCContinuousSampling</span><span class="p">(</span><span class="kt">int</span> <span class="o">&amp;</span><span class="n">adcValueOut</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sampleTime</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">stopReadADCFlag</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">adcValueOut</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">ReadADC</span><span class="p">();</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">"ADC value on pin "</span> <span class="o">+</span> <span class="n">idMap</span><span class="p">[</span><span class="n">id</span><span class="p">]</span> <span class="o">+</span> <span class="s">": "</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">adcValueOut</span><span class="p">);</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="c1">// cout &lt;&lt; "ADC value on pin " &lt;&lt; idMap[id] &lt;&lt; ": " &lt;&lt; adcValueOut &lt;&lt; endl;</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="n">sampleTime</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to stop reading the ADC 
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">StopReadADCContinuousSampling</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">stopReadADCFlag</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to get continuously the voltage value on pin 
+  @param float: Reference output for the ADC value between 0 - 1.8
+  @param int: The time interval between each sample
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">ReadVoltageContinuousSampling</span><span class="p">(</span><span class="kt">float</span> <span class="o">&amp;</span><span class="n">voltageOut</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sampleTime</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Read voltage has been activated"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="n">ReadVoltageThread</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ADC</span><span class="o">::</span><span class="n">MakeReadVoltageContinuousSampling</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">voltageOut</span><span class="p">),</span><span class="n">sampleTime</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Private method that contains the routine to make the ADC read 
+  @param int: A reference variable to store The pin's value between 0 - 4095
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">MakeReadVoltageContinuousSampling</span><span class="p">(</span><span class="kt">float</span> <span class="o">&amp;</span><span class="n">voltageOut</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sampleTime</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">stopReadVoltageFlag</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">voltageOut</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">ReadVoltage</span><span class="p">();</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">"Voltage on pin "</span> <span class="o">+</span> <span class="n">idMap</span><span class="p">[</span><span class="n">id</span><span class="p">]</span> <span class="o">+</span> <span class="s">": "</span> <span class="o">+</span> <span class="n">to_string</span><span class="p">(</span><span class="n">voltageOut</span><span class="p">);</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="c1">//cout &lt;&lt; "Voltage on pin " &lt;&lt; idMap[id] &lt;&lt; ": " &lt;&lt;  &lt;&lt; endl;</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="n">sampleTime</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to stop reading the voltage 
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">StopReadVoltageContinuousSampling</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">stopReadVoltageFlag</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public callback method to do a user customized function when is called
+  @param callbackType: user function pointer to execute 
+  @return int: 1 the user function was called      
+*/</span>
+
+<span class="kt">int</span> <span class="n">ADC</span><span class="o">::</span><span class="n">DoUserFunction</span> <span class="p">(</span><span class="n">callbackType</span> <span class="n">callbackFunction</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"'UserFunction' method has been activated!"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="n">functionThread</span> <span class="o">=</span> <span class="kr">thread</span><span class="p">(</span><span class="n">callbackFunction</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Public method to stop the user function execution
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">StopUserFunction</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">stopReadADCFlag</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to do a delay in milliseconds
+  @param int: duration of the delay
+*/</span>
+<span class="kt">void</span> <span class="n">ADC</span><span class="o">::</span><span class="n">Delayms</span><span class="p">(</span><span class="kt">int</span> <span class="n">millisecondsToSleep</span><span class="p">)</span> 
+<span class="p">{</span>
+  <span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">millisecondsToSleep</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// Destructor</span>
+<span class="n">ADC</span><span class="o">::~</span><span class="n">ADC</span><span class="p">()</span> 
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ReadADCThread</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+    <span class="n">ReadADCThread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ReadVoltageThread</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+    <span class="n">ReadVoltageThread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">functionThread</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+    <span class="n">functionThread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+  <span class="c1">// Waiting for the last reading on the pin</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">Delayms</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+  <span class="n">cout</span>  <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="s">"Stoping the reading on the ADC PIN: "</span><span class="p">,</span><span class="s">"Violet"</span><span class="p">)</span>
+        <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">idMap</span><span class="p">[</span><span class="n">id</span><span class="p">],</span> <span class="s">"Violet"</span><span class="p">,</span> <span class="s">"Default"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Se you in the next post.</p>
+:ET

@@ -1,0 +1,2 @@
+I"/<p>In this post, I show a simple application to read an analog voltage running in the background with its own thread with the ADC C++ class implementation shown previously in <a href="/Post24-BeagleBone_ADCClass/"> this post</a>. Remembering that the BeagleBone has 7 analog inputs and ADC of 12 bits that let to de user to represent an analog signal within a range of 4096 values. It is important to remember that the reference for analog voltage is <font color="red">1.8V</font>. If the user provides a greater voltage, the BeagleBone could be damaged.</p>
+:ET

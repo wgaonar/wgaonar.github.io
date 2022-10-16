@@ -1,0 +1,2 @@
+I"¿<p>In this post, I show how to read and store the keypad pressed buttons sequence in a vector. In the <a href="/Post47-BeagleBone_KeyPad/">last post</a>, I showed how to read the signal from the keypad <a href="https://www.pcbway.com/project/shareproject/E_KEYPAD_2_2.html">E_KEYPAD_2_2</a> designed by Xabier Rosas. Now, I show how to read and store a movements sequence in a <code class="language-plaintext highlighter-rouge">vector</code>.</p>
+:ET

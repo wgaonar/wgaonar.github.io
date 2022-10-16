@@ -1,0 +1,4 @@
+I"B<p>In this post, I show how to drive a DC Motor with the driver <a href="https://www.sparkfun.com/datasheets/Robotics/L298_H_Bridge.pdf">L298N</a> which can drive two DC motors. In practice, this driver can be found in a popular red-colored module that has been designed to make it easy to play and interact with DC motors as this <a href="https://lastminuteengineers.com/l298n-dc-stepper-driver-arduino-tutorial/">tutorial </a> shows.</p>
+
+<p>This module can drive a couple of DC motors in a range of <font color="red">5V to 35V</font>. On the other hand, this uses 3 pins in a 5V logic to control each motor, 2 pins of these are to set the direction of rotation, and the last one to control the speed through PWM. This class is part of a whole library that can be found  <a href="https://github.com/wgaonar/BeagleCPP">here</a>.</p>
+:ET

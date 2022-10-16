@@ -1,0 +1,2 @@
+I"¡<p>In this post, I show how to control the position of a Servomotor  <a href="http://www.ee.ic.ac.uk/pcheung/teaching/DE1_EE/stores/sg90_datasheet.pdf">SG90</a> using the BeagleBone and the library that I have been written in C++ which you can find it <a href="https://github.com/wgaonar/BeagleCPP">here</a>. The remarkable aspect is the use of the <strong>OOP</strong> paradigm to work with the SG90 servomotor.</p>
+:ET

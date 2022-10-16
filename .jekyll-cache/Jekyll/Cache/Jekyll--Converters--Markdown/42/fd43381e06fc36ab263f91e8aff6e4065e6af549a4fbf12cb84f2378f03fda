@@ -1,0 +1,2 @@
+I"L<p>In this post, I will continue to show you how to read a button with the BeagleBone Black.  In the <a href="/Post17-BeagleBone_ReadAButton-Part-I/"> first entry</a> I showed how to read an input from a button doing <em>POLLING</em> in the code, i.e., checking continuously for the state of the button inside the main program.</p>
+:ET

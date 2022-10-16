@@ -1,0 +1,6 @@
+I"p<p>En este post muestro el circuito, el diagrama de flujo, el código en lenguage 
+ensamblador y la implementación de un programa para que el microcontrolador 
+<a href="http://ww1.microchip.com/downloads/en/devicedoc/41291f.pdf">PIC 16F886</a> 
+realice de forma controlada por el usuario las operaciones 
+lógicas: AND o OR cada una de dos entradas y una salida.</p>
+:ET
