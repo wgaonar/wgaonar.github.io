@@ -1,7 +1,7 @@
 # Site
-name: "wgaonar"
+name: "Wilmer Gaona"
 title: "wgaonar"
-description: "My website about my work with digital technologies"
+description: "A website about my work with digital technologies"
 logo: 'assets/images/logo.png'
 favicon: 'assets/images/logo.png'
 baseurl: ''
@@ -21,7 +21,7 @@ authors:
     email: wgaonar@gmail.com
     web: https://www.wgaonar@github.io
     twitter: https://twitter.com/wgaonar
-    description: "PhD in Scientific Computing. Father. Maker. Teacher. Designer. Developer. Loving of Embedded Systems"
+    description: "PhD in Scientific Computing. Maker. Teacher. Designer. Developer. I Love Embedded Systems"
 
 # Plugins
 plugins:
