@@ -89,7 +89,7 @@ Este robot en su versión *Brivoi Compactus* está basado en el proyecto:
 </p>
 
 <ul>
-  <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/E_KEYPAD/E_KEYPAD_2.20">E-KeyPad V2.2</a></li>
+  <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/E_KEY/E_KEYPAD/E_KEYPAD_2.20">E-KeyPad V2.2</a></li>
   <li><a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/EscornaCPU/1.x/1.20">EscornaCPU V1.2</a></li>
 </ul>
 
