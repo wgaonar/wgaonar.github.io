@@ -1,0 +1,295 @@
+I">A<p>In this post, I show how to read the temperature from the analog sensor LM35. The datasheet can be found <a href="https://www.ti.com/document-viewer/LM35/datasheet">here</a>. This sensor has an output voltage linearly-proportional to the Centigrade temperature of 10mV/°C and, it can measure in a range of -55°C - 150°C attaching a resistor from the output pin to a negative source voltage, but it is common used to using it in a temperature range from 2° to 150°C, due that, the resistor is not necessary.</p>
+
+<p>It is important to remember that the BeagleBone has 7 analog inputs and ADC of 12 bits that let to de user to represent an analog signal within a range of 4096 values. It is important to remember that the reference for analog voltage is <font color="red">1.8V</font>. If the user provides a greater voltage, the BeagleBone could be damaged.</p>
+
+<p>Keeping this in mind, at 150°C this sensor will produce an output voltage of 1.5V, which is inside the range of the ADC. For reference, in <a href="/Post25-BeagleBoneReadADC/">this post</a>, I showed how to use the ADC module in the BeagleBone.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. It consists of an LM35 and the BeagleBone.</p>
+
+<figure style="text-align: center; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post46/Circuit.png" alt="Circuit.png" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to read the temperature with the analog LM35 sensor.
+  </figcaption>
+</figure>
+
+<p>The components are:</p>
+<ul>
+  <li>1 LM35</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<h2 id="coding">Coding</h2>
+
+<p>An <code class="language-plaintext highlighter-rouge">LM35</code> object is declared with global scope to initialize the sensor from which the LM35 sensor will be attached to.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1">// Global ADC pin declaration </span>
+<span class="n">LM35</span> <span class="nf">mySensor</span><span class="p">(</span><span class="n">P9_40</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Three global variables are defined and initialized to stop the reading process and store the temperature in <strong>°C</strong> and <strong>°F</strong>.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="c1">// Global Variables</span>
+<span class="kt">bool</span> <span class="n">stopReadTemperature</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">temperatureCelsius</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">temperatureFahrenheit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>A callback function is used to measure in background the temperature while a <code class="language-plaintext highlighter-rouge">bool</code> variable is false.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">ReadTemperature</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">stopReadTemperature</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span> 
+  <span class="p">{</span>
+    <span class="n">temperatureCelsius</span> <span class="o">=</span> <span class="n">mySensor</span><span class="p">.</span><span class="n">ReadTemperatureCelsius</span><span class="p">();</span>
+    <span class="n">temperatureFahrenheit</span> <span class="o">=</span> <span class="n">mySensor</span><span class="p">.</span><span class="n">ReadTemperatureFahrenheit</span><span class="p">();</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"'y' for exit"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="mi">250</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>The methods to get the temperature are <code class="language-plaintext highlighter-rouge">ReadTemperatureCelsius()</code> and <code class="language-plaintext highlighter-rouge">ReadTemperatureFahrenheit()</code> which get the data from the sensor and return the read value stored in a private member of the class <code class="language-plaintext highlighter-rouge">LM35</code>.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre></td><td class="rouge-code"><pre><span class="cm">/*
+  Public method to get the temperature in °C
+  @return double: the measured temperature (2°C - 150°C)
+*/</span>
+<span class="kt">double</span> <span class="n">LM35</span><span class="o">::</span><span class="n">ReadTemperatureCelsius</span><span class="p">()</span> 
+<span class="p">{</span>
+  <span class="c1">// Get the reading</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">ReadDataFromSensor</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">message</span><span class="p">;</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Temperature: "</span> <span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">temperatureCelsius</span><span class="p">)</span> <span class="o">+</span> <span class="s">" °C</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Neon Green"</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">temperatureCelsius</span><span class="p">;</span> 
+<span class="p">}</span>
+
+<span class="cm">/*
+  Public method to get the temperature in °F
+  @return double: the measured temperature (35.6°F - 302°F)
+*/</span>
+<span class="kt">double</span> <span class="n">LM35</span><span class="o">::</span><span class="n">ReadTemperatureFahrenheit</span><span class="p">()</span> 
+<span class="p">{</span>
+  <span class="c1">// Get the reading</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">ReadDataFromSensor</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">message</span><span class="p">;</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Temperature: "</span> <span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">temperatureFahrenheit</span><span class="p">)</span> <span class="o">+</span> <span class="s">" °F</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Neon Green"</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">temperatureFahrenheit</span><span class="p">;</span> 
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>The core method used to get the data from the sensor is <code class="language-plaintext highlighter-rouge">ReadDataFromSensor()</code> which interacts with the ADC pin directly reading the voltage, mapping it to a °C and °F and, finally store these values in private variables which can be accessed by the <code class="language-plaintext highlighter-rouge">ReadTemperatureCelsius()</code> and <code class="language-plaintext highlighter-rouge">ReadTemperatureFahrenheit()</code> methods.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="cm">/*
+  Private method to read and store the data from the sensor
+*/</span>
+<span class="kt">void</span> <span class="n">LM35</span><span class="o">::</span><span class="n">ReadDataFromSensor</span><span class="p">()</span> 
+<span class="p">{</span>
+  <span class="kt">double</span> <span class="n">voltageFromSensor</span> <span class="o">=</span> <span class="n">ADCPin</span><span class="p">.</span><span class="n">ReadVoltage</span><span class="p">();</span>
+
+  <span class="n">temperatureCelsius</span> <span class="o">=</span> <span class="n">voltageFromSensor</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span>
+  <span class="n">temperatureFahrenheit</span> <span class="o">=</span> <span class="n">temperatureCelsius</span> <span class="o">*</span> <span class="mf">1.8</span> <span class="o">+</span> <span class="mi">32</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The complete code for this implementation is shown in the next listing:</p>
+
+<h3 id="lm35_11cpp">LM35_1.1.cpp</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+</pre></td><td class="rouge-code"><pre><span class="cm">/******************************************************************************
+LM35_1.1.cpp
+@wgaonar
+05/08/2021
+https://github.com/wgaonar/BeagleCPP
+
+Read the temperature each 250 ms until the user enter a keystroke
+
+Class: LM35
+******************************************************************************/</span>
+
+<span class="cp">#include &lt;iostream&gt;
+#include "../../../Sources/LM35.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="c1">// Global ADC pin declaration </span>
+<span class="n">LM35</span> <span class="nf">mySensor</span><span class="p">(</span><span class="n">P9_40</span><span class="p">);</span>
+
+<span class="c1">// Global Variables</span>
+<span class="kt">bool</span> <span class="n">stopReadTemperature</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">temperatureCelsius</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">temperatureFahrenheit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">ReadTemperature</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">stopReadTemperature</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span> 
+  <span class="p">{</span>
+    <span class="n">temperatureCelsius</span> <span class="o">=</span> <span class="n">mySensor</span><span class="p">.</span><span class="n">ReadTemperatureCelsius</span><span class="p">();</span>
+    <span class="n">temperatureFahrenheit</span> <span class="o">=</span> <span class="n">mySensor</span><span class="p">.</span><span class="n">ReadTemperatureFahrenheit</span><span class="p">();</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"'y' for exit"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="mi">250</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="c1">// Call the function to read the temperature</span>
+  <span class="n">mySensor</span><span class="p">.</span><span class="n">DoUserFunction</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ReadTemperature</span><span class="p">);</span>
+
+  <span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span> 
+  <span class="p">{</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">"Do you want to stop the readings on the pin? Enter 'y' for yes: "</span><span class="p">;</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span>  <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    
+    <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">==</span> <span class="sc">'y'</span><span class="p">)</span> 
+      <span class="n">stopReadTemperature</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span><span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program">Execution of the program:</h3>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post46/VideoCover-LM35_1.1.png">
+    <source src="../assets/images/Post46/LM35_1.1.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<p>Se you in the next post.</p>
+:ET

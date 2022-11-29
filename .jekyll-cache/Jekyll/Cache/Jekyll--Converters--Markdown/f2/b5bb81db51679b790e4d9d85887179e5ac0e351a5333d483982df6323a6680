@@ -1,0 +1,231 @@
+I"_4<p>In this post, I show how to blink in order six LEDs in the BeagleBone Black using Delays routines. This is done with the <code class="language-plaintext highlighter-rouge">DelayMilliseconds</code> function which uses the <code class="language-plaintext highlighter-rouge">C++</code> <code class="language-plaintext highlighter-rouge">sleep_for</code> method for <font color="red">blocking</font> the program while the delay is executing.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone works at <font color="red">3.3V</font> and not 5V like microcontrollers as Arduino. It is so important to avoid damage to the board, especially when you are working with buttons or digital inputs in general.</p>
+
+<p>The components are:</p>
+<ul>
+  <li>6 Resistors of 1KΩ</li>
+  <li>6 LEDs</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post31/Circuit_bb.jpg" alt="Circuit.jpg" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to blink six LEDs with DelayMilliseconds() member function.
+  </figcaption>
+</figure>
+
+<h2 id="coding">Coding</h2>
+
+<p>Initially, the <code class="language-plaintext highlighter-rouge">GPIO</code> objects are initialized as <code class="language-plaintext highlighter-rouge">OUTPUT</code> pins.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="n">GPIO</span> <span class="nf">blueLed1</span><span class="p">(</span><span class="n">P9_22</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">redLed</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">yellowLed</span><span class="p">(</span><span class="n">P8_14</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">greenLed</span><span class="p">(</span><span class="n">P8_16</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">whiteLed</span><span class="p">(</span><span class="n">P8_18</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">blueLed2</span><span class="p">(</span><span class="n">P8_26</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Next, each one of six LEDs are set to <code class="language-plaintext highlighter-rouge">HIGH</code>, waiting in this state for a certain time through the  <code class="language-plaintext highlighter-rouge">DelayMilliseconds()</code> function <span style="color: red;">before` turning ON the next one.</span></p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="n">blueLed1</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+<span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>After that, the program does the inverse process setting each one of the six LEDs to <code class="language-plaintext highlighter-rouge">LOW</code> and waiting with the <code class="language-plaintext highlighter-rouge">DelayMilliseconds()</code> function <span style="color: red;">before` turning OFF the previous one.</span></p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+<span class="n">blueLed1</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The complete code for the application are shown in the next listing together with its corresponding execution video.</p>
+
+<h3 id="listing_13">Listing_1.3</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+</pre></td><td class="rouge-code"><pre><span class="cm">/************************************************************************
+Listing_1.3.cpp
+@wgaonar
+24/03/2021
+https://github.com/wgaonar/BeagleCPP
+
+Turning ON / OFF  six LEDs in order
+
+Class: GPIO
+************************************************************************/</span>
+<span class="cp">#include &lt;iostream&gt;
+#include "../../Sources/GPIO.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="n">GPIO</span> <span class="n">blueLed1</span><span class="p">(</span><span class="n">P9_22</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">GPIO</span> <span class="n">redLed</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">GPIO</span> <span class="n">yellowLed</span><span class="p">(</span><span class="n">P8_14</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">GPIO</span> <span class="n">greenLed</span><span class="p">(</span><span class="n">P8_16</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">GPIO</span> <span class="n">whiteLed</span><span class="p">(</span><span class="n">P8_18</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">GPIO</span> <span class="n">blueLed2</span><span class="p">(</span><span class="n">P8_26</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+
+  <span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="n">blueLed1</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">redLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">yellowLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">greenLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">whiteLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">blueLed2</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">HIGH</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">blueLed2</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">whiteLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">greenLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">yellowLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">redLed</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">blueLed1</span><span class="p">.</span><span class="n">DigitalWrite</span><span class="p">(</span><span class="n">LOW</span><span class="p">);</span>
+    <span class="n">DelayMilliseconds</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Enter 'y', to finish the program: "</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program">Execution of the program:</h3>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post31/VideoCover.png">
+    <source src="../assets/images/Post31/Listing_1.3.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<p>Se you in the next post.</p>
+:ET

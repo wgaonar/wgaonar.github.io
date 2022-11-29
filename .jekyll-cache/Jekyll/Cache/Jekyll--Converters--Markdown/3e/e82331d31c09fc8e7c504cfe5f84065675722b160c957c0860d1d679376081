@@ -1,0 +1,171 @@
+I"�(<p>In this post, I start with the PWM technique applied to control the brightness of a LED. Remembering the PWM is a technique that lets us emulate an analog signal in a digital pin. This is done by changing the time that a signal is On in a fixed period of time. The ratio between the time ON and OFF is named duty cycle. The more duty cycle, the more is the “analog” average voltage measured on the digital pin. In<br />
+<a href="/Post21-BeagleBone_PWMClass/"> this post </a> You can find the complete code of the class.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone works at <font color="red">3.3V</font> and not 5V like microcontrollers as Arduino. It is so important to avoid damage to the board, especially when you are working with buttons or digital inputs in general.</p>
+
+<p>The components are:</p>
+<ul>
+  <li>5 Resistor of 1KΩ</li>
+  <li>1 LED</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post22/Circuit_bb.jpg" alt="Circuit.jpg" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to control the brightness of a LED through the PWM technique.
+  </figcaption>
+</figure>
+
+<h2 id="coding">Coding</h2>
+
+<p>First an <code class="language-plaintext highlighter-rouge">PWM</code> class object is declared, for example:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">PWM</span> <span class="nf">pwmBlueLedPin</span><span class="p">(</span><span class="n">P8_13</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>After, a variable is declared, initialized, and used to set the initial pwm value.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kt">int</span> <span class="n">pwmValue</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span>
+<span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="n">pwmValue</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Finally, this PWM value can be updated in this manner:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="n">pwmValue</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The complete code for this application is shown in the next listing together with its corresponding execution video.</p>
+
+<h3 id="listing_41">Listing_4.1</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;iostream&gt;
+#include "../../Sources/PWM.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Setting a PWM mode on a blue led"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">PWM</span> <span class="n">pwmBlueLedPin</span><span class="p">(</span><span class="n">P8_13</span><span class="p">);</span>
+
+  <span class="kt">int</span> <span class="n">pwmValue</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Set a pwm duty cycle of 50%' on a blue led and wait 1 second"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="n">pwmValue</span><span class="p">);</span> 
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"If you want to stop the program, enter 'y' for yes"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Or enter 'w' for increase brightness or 's' for decrease it"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">"Enter an option 'y', 'w', 's': "</span><span class="p">;</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">);</span>
+    <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+
+    <span class="k">switch</span> <span class="p">(</span><span class="n">userInput</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="k">case</span> <span class="sc">'w'</span><span class="p">:</span>
+      <span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="n">pwmValue</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="sc">'s'</span><span class="p">:</span>
+      <span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="n">pwmValue</span> <span class="o">-=</span> <span class="mi">10</span><span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="nl">default:</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span><span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program">Execution of the program:</h3>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post22/VideoCover.png">
+    <source src="../assets/images/Post22/Video.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <img src="../assets/images/Post22/Oscilloscope.bmp" alt="Oscilloscope.jpg" width="100%" />
+  <figcaption>
+    Figure 2: Screen capture from the oscilloscope with a DC of 50% and a PWM period of 500us approximately.
+  </figcaption>
+</figure>
+<p>Se you in the next post.</p>
+:ET

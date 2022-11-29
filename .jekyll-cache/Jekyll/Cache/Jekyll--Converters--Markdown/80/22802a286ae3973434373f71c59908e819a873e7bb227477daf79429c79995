@@ -1,0 +1,273 @@
+I"t?<p>In this post, I show how to control the brightness of a LED with a potentiometer. The LED is wired to a PWM pin and the Potentiometer to an ADC pin. Remembering that the BeagleBone has 7 analog inputs and ADC of 12 bits that let the user to represent an analog signal within a range of 4096 values. It is important to remember that the reference for analog voltage is <font color="red">1.8V</font>. If the user provides a greater voltage, the BeagleBone could be damaged.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. It consists of a Potentiometer with a power supplied using the analog ground pin <strong>0V</strong> located at the pin <strong>P9_34</strong> and to analog VDD pin at <font color="purple"><b>1.8V</b></font> located at the pin <font color="purple"><b>P9_32</b></font>. Finally, its output is connected to the <strong>P9_39</strong> pin. On the other hand, the LED is connected to PWM pin <strong>P8_13</strong> to see how its brightness can vary according to the potentiometer’s voltage value.</p>
+
+<p>The components are:</p>
+<ul>
+  <li>1 Potentiometer of 1MΩ</li>
+  <li>1 Resistor of 1KΩ</li>
+  <li>1 LED of 3mm</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post33/Circuit_bb.jpg" alt="Circuit.jpg" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to control the brightness of a LED with an analog input from a potentiometer.
+  </figcaption>
+</figure>
+
+<h2 id="coding">Coding</h2>
+
+<p>First, <code class="language-plaintext highlighter-rouge">ADC</code> and <code class="language-plaintext highlighter-rouge">PWM</code> class objects are declared as global variables:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="c1">// Global ADC pin declaration </span>
+<span class="n">ADC</span> <span class="nf">adcPin</span><span class="p">(</span><span class="n">P9_39</span><span class="p">);</span>
+<span class="c1">// Global PWM pin declaration</span>
+<span class="n">PWM</span> <span class="nf">pwmBlueLedPin</span><span class="p">(</span><span class="n">P8_13</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>An integer variable is declared and initialized to store the analog value on the pin. You can note the name contains the suffix <code class="language-plaintext highlighter-rouge">Out</code> because this variable is passed by reference to the corresponding method, after in the main program. On the other hand, boolean and integer variables are declared and initialized to stop and keep the execution of the PWM cycle on the pin and the value on this, respectively.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="c1">// Global variables</span>
+<span class="kt">bool</span> <span class="n">stopBrightLed</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">adcValueOut</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">pwmValue</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>A user function is defined to read the analog value (0-4095) on the potentiometer and to write the mapped value (0-100) on the PWM pin. This function is controlled by the boolean variable <code class="language-plaintext highlighter-rouge">stopBrightLed</code> which gives the signal to stop the execution.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">BrightLed</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">stopBrightLed</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">adcPin</span><span class="p">.</span><span class="n">ReadADC</span><span class="p">(</span><span class="n">adcValueOut</span><span class="p">);</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"ADC value on pin: "</span> <span class="o">&lt;&lt;</span> <span class="n">adcValueOut</span> <span class="o">&lt;&lt;</span> <span class="s">" / "</span><span class="p">;</span>
+    <span class="n">pwmValue</span> <span class="o">=</span> <span class="n">adcValueOut</span> <span class="o">/</span> <span class="mf">4095.0</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span> 
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"PWM value: "</span> <span class="o">&lt;&lt;</span> <span class="n">pwmValue</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="n">pwmValue</span><span class="p">);</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>In the main program a <code class="language-plaintext highlighter-rouge">while loop</code> can be used to wait for a user keypress to stop the continuous sampling method before finishing the program.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Do you want to stop the readings on the pin? Enter 'y' for yes:"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">==</span> <span class="sc">'y'</span><span class="p">)</span> <span class="n">stopBrightLed</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Before finishing the program, the PWM value on the pin is cleaned.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1">// Clean the pwm value on pin</span>
+<span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The complete code for this application is shown in the next listing together with its corresponding execution video.</p>
+
+<h3 id="listing_55">Listing_5.5</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+</pre></td><td class="rouge-code"><pre><span class="cm">/******************************************************************************
+Listing_5.5.cpp
+@wgaonar
+03/04/2021
+https://github.com/wgaonar/BeagleCPP
+
+Control de brightness of a LED with an analog value from a POT wired to AIN0 (P9_39) in background each 100 milliseconds while polling an key stroke by the user
+
+Class: ADC
+******************************************************************************/</span>
+<span class="cp">#include &lt;iostream&gt;
+#include "../../Sources/ADC.h"
+#include "../../Sources/PWM.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="c1">// Global ADC pin declaration </span>
+<span class="n">ADC</span> <span class="nf">adcPin</span><span class="p">(</span><span class="n">P9_39</span><span class="p">);</span>
+
+<span class="c1">// Global PWM pin declaration</span>
+<span class="n">PWM</span> <span class="nf">pwmBlueLedPin</span><span class="p">(</span><span class="n">P8_13</span><span class="p">);</span>
+
+<span class="c1">// Global variables</span>
+<span class="kt">bool</span> <span class="n">stopBrightLed</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">adcValueOut</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">pwmValue</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">BrightLed</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">stopBrightLed</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">adcPin</span><span class="p">.</span><span class="n">ReadADC</span><span class="p">(</span><span class="n">adcValueOut</span><span class="p">);</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"ADC value on pin: "</span> <span class="o">&lt;&lt;</span> <span class="n">adcValueOut</span> <span class="o">&lt;&lt;</span> <span class="s">" / "</span><span class="p">;</span>
+    <span class="n">pwmValue</span> <span class="o">=</span> <span class="n">adcValueOut</span> <span class="o">/</span> <span class="mf">4095.0</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span> 
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"PWM value: "</span> <span class="o">&lt;&lt;</span> <span class="n">pwmValue</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="n">pwmValue</span><span class="p">);</span>
+    <span class="n">Delayms</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="c1">// Call the function to read the pin</span>
+  <span class="n">adcPin</span><span class="p">.</span><span class="n">DoUserFunction</span><span class="p">(</span><span class="o">&amp;</span><span class="n">BrightLed</span><span class="p">);</span>
+
+  <span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">"Do you want to stop the readings on the pin? Enter 'y' for yes:"</span><span class="p">;</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">==</span> <span class="sc">'y'</span><span class="p">)</span> <span class="n">stopBrightLed</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Clean the pwm value on pin</span>
+  <span class="n">pwmBlueLedPin</span><span class="p">.</span><span class="n">SetDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span><span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program">Execution of the program:</h3>
+
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post33/VideoCover.png">
+    <source src="../assets/images/Post33/Listing_5.5.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<p>Besides, the internal <code class="language-plaintext highlighter-rouge">PWM</code> signal can be seen in the next oscilloscope recording:</p>
+
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post33/VideoOscilloscopeCover.png">
+    <source src="../assets/images/Post33/VideoOscilloscope.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: PWM Signal from the oscilloscope to bright the LED.
+  </figcaption>
+</figure>
+
+<p>Se you in the next post.</p>
+:ET

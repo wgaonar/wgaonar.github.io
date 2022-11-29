@@ -1,0 +1,130 @@
+I"C<p>En este post que va a ser muy cortito, muestro cómo conectar la <em>BeagleBone black</em> y la <em>Beagle Bone Green Wireless</em> a internet a través de Wifi.</p>
+
+<p>Lo primero que tiene que quedar claro es que las últimas versiones de Debian utilizan la utilidad <a href="https://wiki.archlinux.org/index.php/Connman#Wi-Fi">Connman</a> para el manejo de las conexiones wifi.</p>
+
+<h2>Habilitar el wifi</h2>
+
+<p>Para verificar que el wifi esté habilitado basta con ejecutar el siguiente comando en la terminal:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>connmanctl technologies
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>En la salida, que debe ser similar a la que se muestra enseguida, se debe verificar que la línea: <strong>Powered: True</strong> esté presente.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre>connmanctl services
+/net/connman/technology/bluetooth
+Name = Bluetooth
+Type = bluetooth
+Powered = True
+Connected = False
+Tethering = False
+/net/connman/technology/p2p
+Name = P2P
+Type = p2p
+Powered = False
+Connected = False
+Tethering = False
+/net/connman/technology/wifi
+Name = WiFi
+Type = wifi
+bold&gt;Powered = True
+Connected = True
+Tethering = False
+TetheringIdentifier = BeagleBone-0419
+TetheringPassphrase = BeagleBone
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>En caso contrario, ejecutar la siguiente instrucción:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>connmanctl enable wifi
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2>Buscar las redes wifi disponibles</h2>
+
+<p>Para escanear la red wifi a la que se desea conectar, basta con ejecutar el siguiente comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>connmanctl scan wifi
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Una vez terminado el proceso de escaneo, se debe pedir que muestre las redes wifi encontradas. Para ello, ejecutamos el siguiente comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>connmanctl services
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>El resultado debe ser una lista con todas las redes encontradas. A manera de ejemplo muestro la lista de redes encontradas por mi BeagleBone.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>AO HITRON-2C80		wifi_2cf7f1063f7e_484954524f4e2d32433830_managed_psk
+ARRIS-8982		wifi_2cf7f1063f7e_41525249532d38393832_managed_psk
+Calzada			wifi_2cf7f1063f7e_43616c7a616461_managed_psk
+ARRIS-A6F2		wifi_2cf7f1063f7e_41525249532d41364632_managed_psk
+LOKI-RED		wifi_2cf7f1063f7e_4c4f4b492d524544_managed_psk
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2>Conectarse a la red wifi deseada</h2>
+
+<p>El siguiente paso es conectarse a la red deseada, para ello se debe ejecutar la utilidad <code class="language-plaintext highlighter-rouge">Connman</code> en modo interactivo, es decir, en un modo en el que la terminal únicamente recibe comandos de dicha utilidad. Para ello, basta con ejcutar el comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>connmanctl
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Una vez, en el modo interactivo, la terminal cambia de aspecto y queda en espera de recibir las instrucciones correspondientes para conectarse a la red deseada, recuerda que puedes utilizar la tecla <code class="language-plaintext highlighter-rouge">TAB</code> para completar la línea: wifi_2cf7f106….</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>connmanctl&gt; agent on
+connmanctl&gt; connect wifi_2cf7f1063f7e_484954524f4e2d32433830_managed_psk
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>En seguida, se pedirá introducir la clave de la red a la que se desea conectar. Una vez hecho esto, salimos del modo interactivo a través de:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>connmanctl&gt; quit
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Para verificar que todo resultó de forma correcta, basta con esperar unos segundos a que se efectúe la conexión y ejecutar el comando <code class="language-plaintext highlighter-rouge">ifconfig</code> para verificar que en <code class="language-plaintext highlighter-rouge">wlan0</code> aparezca la dirección IP de conexión.</p>
+
+<p>En el caso de la <em>Beagle Bone Green Wireless</em> el led de color <strong>rojo</strong> se quedará encendido, indicando así que hay una conexión wifi activa.</p>
+
+<center>
+  <figure>
+    <img src="../assets/images/Post07/connmanctl001.jpg" alt="Led del wifi activo al conectar la BeagleBone Green Wireless a internet" />
+    <figcaption>
+      Figura 1: Led rojo encendido indicando una conexión wifi activa
+    </figcaption>
+  </figure>
+</center>
+
+<p>Es todo por ahora espero que les sea de utilidad.</p>
+
+:ET

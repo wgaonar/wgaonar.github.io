@@ -1,0 +1,137 @@
+I"�!<p>In this post, I will show you how to make a blinking on a pair of LEDs. I will be using the LED C++ Class described in the post <a href="/Post13-BeagleBone_LEDClass/"> Implementation of the LED Class for BeagleBone</a> to use methods for controlling LEDs attached to GPIO pins in the BeagleBone.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. Please keep in mind that the BeagleBone works at <font color="red">3.3V</font> and not 5V like microcontrollers as Arduino. It is so important to avoid damage to the board, especially when you are working with buttons or digital inputs in general.</p>
+
+<p>The components are:</p>
+<ul>
+  <li>1 Red Led of 3mm</li>
+  <li>1 Resistor of 1KΩ</li>
+  <li>1 Yellow Led of 3mm</li>
+  <li>1 Resistor of 1KΩ</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<figure style="text-align: center; width:70%; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post14/Circuit_bb.jpg" alt="Circuit_bb.jpg" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to make a blinking on a pair of LEDs in the BeagleBone Black.
+  </figcaption>
+</figure>
+
+<h2 id="coding">Coding</h2>
+
+<p>This occurs when the user enters the character <code class="language-plaintext highlighter-rouge">y</code>
+from the keyboard due that the main thread of the program can be used to wait for 
+this input without affecting the blinking.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Do you want to stop blinking? Enter 'y' for yes: "</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">);</span>
+  <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">==</span> <span class="sc">'y'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ledPinRed</span><span class="p">.</span><span class="n">stopBlink</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+    <span class="n">ledPinYellow</span><span class="p">.</span><span class="n">stopBlink</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="listing-21">Listing 2.1</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;iostream&gt;
+#include "GPIO.h"
+#include "LED.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">LED</span> <span class="n">ledPinRed</span><span class="p">(</span><span class="n">P8_12</span><span class="p">,</span><span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">LED</span> <span class="n">ledPinYellow</span><span class="p">(</span><span class="n">P8_14</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Start a blinking on a red led"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Red"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">ledPinRed</span><span class="p">.</span><span class="n">blink</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Start a blinking on a yellow led"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Yellow"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">ledPinYellow</span><span class="p">.</span><span class="n">blink</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span>
+  <span class="p">{</span>
+      <span class="n">message</span> <span class="o">=</span> <span class="s">"Do you want to stop blinking? Enter 'y' for yes: "</span><span class="p">;</span>
+      <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Violet"</span><span class="p">);</span>
+      <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">==</span> <span class="sc">'y'</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">ledPinRed</span><span class="p">.</span><span class="n">stopBlink</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+          <span class="n">ledPinYellow</span><span class="p">.</span><span class="n">stopBlink</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span><span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program">Execution of the program</h3>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post14/VideoCover.png">
+    <source src="../assets/images/Post14/Video.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<p>Se you in the next post.</p>
+:ET

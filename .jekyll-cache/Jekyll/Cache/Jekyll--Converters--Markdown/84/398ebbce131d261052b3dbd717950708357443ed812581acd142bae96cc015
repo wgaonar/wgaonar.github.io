@@ -1,0 +1,446 @@
+I"�e<p>In this post, I show how to control a pair of DC Motors forward and backward. I am using the BeagleBone and the <a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB6612FNG.html">TB6612FNG</a> driver from Toshiba. The remarkable aspect is the use of some class functions to drive the motors simultaneously in the same rotation direction.</p>
+
+<p>In the <a href="/Post37-BeagleBone_TB6612FNG_Drive/"> first entry</a> dedicated to this driver, you can read about how to drive only one motor with it.</p>
+
+<p>It is important to remember that the logic voltage for the BeagleBone is <font color="red">3.3V</font>. If the user provides a greater voltage, the BeagleBone could be damaged.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. It consists of a TB6612FNG driver, 2 low voltage DC Motors, 4 AA batteries, and the BeagleBone Black.</p>
+
+<figure style="text-align: center; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post40/Circuit.png" alt="circuit.png" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to drive a pair of DC motors with the TB6612FNG driver.
+  </figcaption>
+</figure>
+
+<p>The components are:</p>
+<ul>
+  <li>1 DC Motor driver TB6612FNG</li>
+  <li>2 DC Motor 3.0 - 6.0V</li>
+  <li>4 AA Batteries</li>
+  <li>1 Protoboard mini</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<p>The pins used for control the driver and the motors are:</p>
+<ul>
+  <li>GPIO <strong>P8_16</strong> to activate / deactivate de driver</li>
+  <li>The pins used for control the <strong>motor A</strong> are:
+    <ul>
+      <li>GPIO <strong>P8_12</strong> and <strong>P8_14</strong> to control the motor rotation direction</li>
+      <li>PWM <strong>P8_13</strong> to control the speed</li>
+    </ul>
+  </li>
+  <li>The pins used for control the <strong>motor B</strong> are:
+    <ul>
+      <li>GPIO <strong>P8_17</strong> and <strong>P8_18</strong> to control the motor rotation direction</li>
+      <li>PWM <strong>P8_19</strong> to control the speed</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="coding">Coding</h2>
+
+<p>First, <code class="language-plaintext highlighter-rouge">GPIO</code> and <code class="language-plaintext highlighter-rouge">TB6612FNG</code> objects are declared with global scope to initialize the digital pin to activate/deactivate the driver and the pins that will control the motors. These <code class="language-plaintext highlighter-rouge">GPIO</code> objects are used as the parameters to construct the <code class="language-plaintext highlighter-rouge">TB6612FNG</code> objects.</p>
+
+<p>Remember that the user can include a boolean initialization parameter <code class="language-plaintext highlighter-rouge">true/false</code> to invert by software the motor rotation direction instead of inverting the motor’s jumpers physically.</p>
+
+<p>As is shown next, I have used this parameter to invert the rotation direction of the <code class="language-plaintext highlighter-rouge">Motor B</code> setting the last parameter to <code class="language-plaintext highlighter-rouge">true</code>, instead of inverting the jumpers physically. This feature can be useful when you do not have access to the circuit or the motor directly.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="c1">// Declare the pin to activate / deactivate the TB6612FNG module</span>
+<span class="n">GPIO</span> <span class="nf">standByPin</span><span class="p">(</span><span class="n">P8_16</span><span class="p">);</span>
+
+<span class="c1">// Declaring the pins for motor 1 </span>
+<span class="n">GPIO</span> <span class="nf">AIN1</span> <span class="p">(</span><span class="n">P8_12</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">AIN2</span> <span class="p">(</span><span class="n">P8_14</span><span class="p">);</span>
+<span class="n">PWM</span> <span class="nf">PWMA</span> <span class="p">(</span><span class="n">P8_13</span><span class="p">);</span>
+
+<span class="c1">// Declaring the  pins for motor 2</span>
+<span class="n">GPIO</span> <span class="nf">BIN1</span> <span class="p">(</span><span class="n">P8_17</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">BIN2</span> <span class="p">(</span><span class="n">P8_18</span><span class="p">);</span>
+<span class="n">PWM</span> <span class="nf">PWMB</span> <span class="p">(</span><span class="n">P8_19</span><span class="p">);</span>
+
+<span class="c1">// Declare the object for motor 1</span>
+<span class="n">TB6612FNG</span> <span class="nf">MotorA</span> <span class="p">(</span><span class="n">AIN1</span><span class="p">,</span> <span class="n">AIN2</span><span class="p">,</span> <span class="n">PWMA</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+
+<span class="c1">// Declare the object for motor 2 </span>
+<span class="n">TB6612FNG</span> <span class="nf">MotorB</span> <span class="p">(</span><span class="n">BIN1</span><span class="p">,</span> <span class="n">BIN2</span><span class="p">,</span> <span class="n">PWMB</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The next line shows how to activate the TB6612FNG driver:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1">// Activate the module</span>
+<span class="n">ActivateTB6612FNG</span><span class="p">(</span><span class="n">standByPin</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>To control the speed of both motors, the user can change it using the keys “W” and “S” to increase or decrease it, respectively. The class method <code class="language-plaintext highlighter-rouge">Drive()</code> checks if the user has input a value for the speed beyond the limits of <code class="language-plaintext highlighter-rouge">100</code> and <code class="language-plaintext highlighter-rouge">-100</code> and keeps it between this range, but in this case, the user code can do that too. If the user presses the key “Y”, the program finishes.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="c1">// Update the motors speed</span>
+<span class="k">switch</span> <span class="p">(</span><span class="n">userInput</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="k">case</span> <span class="sc">'w'</span><span class="p">:</span>
+  <span class="n">motorSpeed</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">motorSpeed</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="sc">'s'</span><span class="p">:</span>
+  <span class="n">motorSpeed</span> <span class="o">-=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">motorSpeed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="nl">default:</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>To move the motors, the code uses the functions <code class="language-plaintext highlighter-rouge">Forward()</code> and <code class="language-plaintext highlighter-rouge">Backward()</code> defined in the same  <code class="language-plaintext highlighter-rouge">TB6612FNG</code> class. These functions <b>are not members</b> of any <code class="language-plaintext highlighter-rouge">TB6612FNG</code> object, on the contrary, they are independent and can be called directly from the main implementation code.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">Forward()</code> and <code class="language-plaintext highlighter-rouge">Backward()</code> take as argument 2 <code class="language-plaintext highlighter-rouge">TB6612FNG</code> objects passed by reference and the speed value that will be used to drive the motors.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="cm">/*
+  Function to drive FORWARD a robot with a couple of motors
+  @param TB6612FNG &amp;: The reference to the left motor of the robot
+  @param TB6612FNG &amp;: The reference to the right motor of the robot
+  @param int: The desired speed (0,100). It set up the correct value if
+              the user enters a negative value.    
+*/</span>
+<span class="kt">void</span> <span class="nf">Forward</span> <span class="p">(</span><span class="n">TB6612FNG</span> <span class="o">&amp;</span><span class="n">motorLeft</span><span class="p">,</span> <span class="n">TB6612FNG</span> <span class="o">&amp;</span><span class="n">motorRight</span><span class="p">,</span> <span class="kt">int</span> <span class="n">speed</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">speed</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">speed</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="n">motorLeft</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">);</span>
+  <span class="n">motorRight</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="cm">/*
+  Function to drive BACKWARD a robot with a couple of motors
+  @param TB6612FNG &amp;: The reference to the motor of the robot
+  @param TB6612FNG &amp;: The reference to the motor of the robot
+  @param int: The desired speed (-100,0). It set up the correct value if
+              the user enters a positive value. 
+*/</span>
+<span class="kt">void</span> <span class="nf">Backward</span> <span class="p">(</span><span class="n">TB6612FNG</span> <span class="o">&amp;</span><span class="n">motorLeft</span><span class="p">,</span> <span class="n">TB6612FNG</span> <span class="o">&amp;</span><span class="n">motorRight</span><span class="p">,</span> <span class="kt">int</span> <span class="n">speed</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">speed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">speed</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="n">motorLeft</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">);</span>
+  <span class="n">motorRight</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>In order to complement the behavior of the class,  the <code class="language-plaintext highlighter-rouge">Brake()</code> function is defined too. It brakes both motors which are <code class="language-plaintext highlighter-rouge">TB6612FNG</code> objects passed by reference.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="cm">/*
+  Function to BRAKE a robot with a couple of motors
+  @param TB6612FNG &amp;: The reference to the motor of the robot
+  @param TB6612FNG &amp;: The reference to the motor of the robot
+*/</span> 
+<span class="kt">void</span> <span class="nf">Brake</span> <span class="p">(</span><span class="n">TB6612FNG</span> <span class="o">&amp;</span><span class="n">motorLeft</span><span class="p">,</span> <span class="n">TB6612FNG</span> <span class="o">&amp;</span><span class="n">motorRight</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">motorLeft</span><span class="p">.</span><span class="n">Brake</span><span class="p">();</span>
+  <span class="n">motorRight</span><span class="p">.</span><span class="n">Brake</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>In the implementation code, the user can decide when calls one, other, or one-third option to brake both motors with the <code class="language-plaintext highlighter-rouge">Brake()</code> function.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c1">// Move the motors</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="n">Forward</span><span class="p">(</span><span class="n">MotorA</span><span class="p">,</span> <span class="n">MotorB</span><span class="p">,</span> <span class="n">motorSpeed</span><span class="p">);</span>
+<span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="n">Backward</span><span class="p">(</span><span class="n">MotorA</span><span class="p">,</span> <span class="n">MotorB</span><span class="p">,</span> <span class="n">motorSpeed</span><span class="p">);</span>
+<span class="k">else</span>
+  <span class="nf">Brake</span><span class="p">(</span><span class="n">MotorA</span><span class="p">,</span> <span class="n">MotorB</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Finally, the TB6612FNG has to be deactivated using the next line.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1">// Deactivate the module</span>
+<span class="n">DeactivateTB6612FNG</span><span class="p">(</span><span class="n">standByPin</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The complete code for this application uses a <span class="coding">while loop` to control both motors increasing and decreasing the speed until the user press the key “Y”. This code is shown in the next listing together with its corresponding execution output.</span></p>
+
+<h3 id="tb6612fng_14cpp">TB6612FNG_1.4.cpp</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+</pre></td><td class="rouge-code"><pre><span class="cm">/******************************************************************************
+TB6612FNG_1.4.cpp
+@wgaonar
+08/07/2021
+https://github.com/wgaonar/BeagleCPP
+
+- Move forward and backward 2 motors with the same speed
+
+Class: TB6612FNG
+******************************************************************************/</span>
+<span class="cp">#include &lt;iostream&gt;
+#include "../../../Sources/TB6612FNG.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="c1">// Declare the pin to activate / deactivate the TB6612FNG module</span>
+<span class="n">GPIO</span> <span class="nf">standByPin</span><span class="p">(</span><span class="n">P8_16</span><span class="p">);</span>
+
+<span class="c1">// Declaring the pins for motor 1 </span>
+<span class="n">GPIO</span> <span class="nf">AIN1</span> <span class="p">(</span><span class="n">P8_12</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">AIN2</span> <span class="p">(</span><span class="n">P8_14</span><span class="p">);</span>
+<span class="n">PWM</span> <span class="nf">PWMA</span> <span class="p">(</span><span class="n">P8_13</span><span class="p">);</span>
+
+<span class="c1">// Declaring the  pins for motor 2</span>
+<span class="n">GPIO</span> <span class="nf">BIN1</span> <span class="p">(</span><span class="n">P8_17</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">BIN2</span> <span class="p">(</span><span class="n">P8_18</span><span class="p">);</span>
+<span class="n">PWM</span> <span class="nf">PWMB</span> <span class="p">(</span><span class="n">P8_19</span><span class="p">);</span>
+
+<span class="c1">// Declare the object for motor 1</span>
+<span class="n">TB6612FNG</span> <span class="nf">MotorA</span> <span class="p">(</span><span class="n">AIN1</span><span class="p">,</span> <span class="n">AIN2</span><span class="p">,</span> <span class="n">PWMA</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+
+<span class="c1">// Declare the object for motor 2 </span>
+<span class="n">TB6612FNG</span> <span class="nf">MotorB</span> <span class="p">(</span><span class="n">BIN1</span><span class="p">,</span> <span class="n">BIN2</span><span class="p">,</span> <span class="n">PWMB</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="c1">// Activate the module</span>
+  <span class="n">ActivateTB6612FNG</span><span class="p">(</span><span class="n">standByPin</span><span class="p">);</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"If you want to stop the program, enter 'y' for yes"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Or enter 'w' for increase speed or 's' for decrease it"</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="kt">int</span> <span class="n">motorSpeed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="n">userInput</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">userInput</span> <span class="o">!=</span> <span class="sc">'y'</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">"Enter an option 'y', 'w', 's': "</span><span class="p">;</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Blue"</span><span class="p">);</span>
+    <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">userInput</span><span class="p">;</span>
+
+    <span class="c1">// Update the motors speed</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">userInput</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="k">case</span> <span class="sc">'w'</span><span class="p">:</span>
+      <span class="n">motorSpeed</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">motorSpeed</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="sc">'s'</span><span class="p">:</span>
+      <span class="n">motorSpeed</span> <span class="o">-=</span> <span class="mi">10</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">motorSpeed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span><span class="p">;</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="nl">default:</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Move the motors</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="n">Forward</span><span class="p">(</span><span class="n">MotorA</span><span class="p">,</span> <span class="n">MotorB</span><span class="p">,</span> <span class="n">motorSpeed</span><span class="p">);</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">motorSpeed</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="n">Backward</span><span class="p">(</span><span class="n">MotorA</span><span class="p">,</span> <span class="n">MotorB</span><span class="p">,</span> <span class="n">motorSpeed</span><span class="p">);</span>
+    <span class="k">else</span>
+      <span class="n">Brake</span><span class="p">(</span><span class="n">MotorA</span><span class="p">,</span> <span class="n">MotorB</span><span class="p">);</span>
+  <span class="p">}</span>  
+
+  <span class="c1">// Deactivate the module</span>
+  <span class="n">DeactivateTB6612FNG</span><span class="p">(</span><span class="n">standByPin</span><span class="p">);</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span><span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="execution-of-the-program">Execution of the program:</h3>
+<figure style="text-align: center; width:100%; 
+              margin-left: auto; 
+              margin-right: auto;">
+  <video width="100%" controls="" poster="../assets/images/Post40/VideoCover-TB6612FNG_1.4.png">
+    <source src="../assets/images/Post40/TB6612FNG_1.4.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    Video: Execution of the program.
+  </figcaption>
+</figure>
+
+<p>Se you in the next post.</p>
+:ET

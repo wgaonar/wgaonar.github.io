@@ -2,8 +2,8 @@
 layout: post
 title:  "Education must also train one for quick, resolute and effective thinking."
 author: john
-categories: [ Jekyll, tutorial ]
-image: assets/images/3.jpg
+categories: [ Jekyll ]
+image: assets/images/JekyllTutorials/4.jpg
 beforetoc: "Markdown editor is a very powerful thing. In this article I'm going to show you what you can actually do with it, some tricks and tips while editing your post."
 toc: true
 ---
@@ -36,7 +36,7 @@ There are two types of code elements which can be inserted in Markdown, the firs
 If you want to get really fancy, you can even add syntax highlighting using Rouge.
 
 
-![walking]({{ site.baseurl }}/assets/images/8.jpg)
+![walking]({{ site.baseurl }}/assets/images/JekyllTutorials/4-1.jpg)
 
 ## Reference lists
 
