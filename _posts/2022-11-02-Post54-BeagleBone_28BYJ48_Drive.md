@@ -17,15 +17,6 @@ In this post, I show how to drive the stepper motor 28BYJ-48 with the driver <a 
 The 28BYJ-48 is a stepper motor that moves of steps or "degree intervals". It has an internal gear set that let it to turn <font color="blue">2048</font> steps in each revolution in a mode that is called <font color="blue">Full Step</font> or <font color="orange">4096</font> steps in each revolution in a mode called <font color="orange">Half Step</font>. 
 
 These are theoretical values, and depends on the gear box used by the 28BYJ-48`s manufacturer. Sometimes, instead of 2048 steps, the real value is 2037 steps per revolution.
-
-<figure style="text-align: center; 
-              margin-left: auto; 
-              margin-right: auto;">
-    <img src="../assets/images/Post54/Circuit.png" alt="circuit.png" width="100%"/>
-  <figcaption>
-    Figure 1: Circuit to drive a 28BYJ48 stepper motor with the ULN2003 driver.
-  </figcaption>
-</figure>
   
 This module can drive a couple of DC motors in a range of <font color="red">5V to 35V</font>. On the other hand, this uses 3 pins in a 5V logic to control each motor, 2 pins of these are to set the direction of rotation, and the last one to control the speed through PWM. This class is part of a whole library that can be found  <a href="https://github.com/wgaonar/BeagleCPP">here</a>.
 
