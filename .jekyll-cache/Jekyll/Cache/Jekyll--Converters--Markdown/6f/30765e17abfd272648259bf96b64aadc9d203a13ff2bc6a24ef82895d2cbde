@@ -1,0 +1,2 @@
+I"š<p>In this post, I show how to drive the stepper motor 28BYJ-48 in full step mode activating 2 coils with the driver <a href="https://www.st.com/resource/en/datasheet/uln2003.pdf">ULN2003</a>. In <a href="/Post54-BeagleBone_28BYJ48_Drive1Coil/">this entry</a>, you can find more about this stepper motor, this driver and how to use it in  a <font color="blue">Full Step</font> activation mode with 1 coil.</p>
+:ET

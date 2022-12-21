@@ -1,0 +1,467 @@
+I"r�<p>In this post, I show how to drive the stepper motor 28BYJ-48 in full step mode activating 2 coils with the driver <a href="https://www.st.com/resource/en/datasheet/uln2003.pdf">ULN2003</a>. In <a href="/Post54-BeagleBone_28BYJ48_Drive1Coil/">this entry</a>, you can find more about this stepper motor, this driver and how to use it in  a <font color="blue">Full Step</font> activation mode with 1 coil.</p>
+
+<p>Remember that the 28BYJ-48 is a stepper motor that moves of steps or “degree intervals”. It has an internal gear set that let it to turn <font color="blue">2048</font> steps in each revolution in a mode that is called <font color="blue">Full Step</font> or <font color="orange">4096</font> steps in each revolution in a mode called <font color="orange">Half Step</font>.</p>
+
+<p>It is important to remember that the logic voltage for the BeagleBone is <font color="red">3.3V</font>. If the user provides a greater voltage, the BeagleBone could be damaged.</p>
+
+<h2 id="circuit-and-components">Circuit and components</h2>
+
+<p>The circuit can be seen in Figure 1. It consists of a L298N driver module , a low voltage DC Motor, batteries, and the BeagleBone.</p>
+
+<figure style="text-align: center; 
+              margin-left: auto; 
+              margin-right: auto;">
+    <img src="../assets/images/Post54/Circuit.png" alt="circuit.png" width="100%" />
+  <figcaption>
+    Figure 1: Circuit to drive a 28BYJ48 stepper motor with the ULN2003 driver.
+  </figcaption>
+</figure>
+
+<p>The components are:</p>
+<ul>
+  <li>1 28BYJ-48 stepper motor 5V</li>
+  <li>1 ULN2003 module driver</li>
+  <li>1 Protoboard mini</li>
+  <li>Jumpers male-male to make the connections</li>
+</ul>
+
+<p>The pins used for control the stepper motor are:</p>
+<ul>
+  <li>GPIO <strong>P8_12</strong>, <strong>P8_14</strong>, <strong>P8_16</strong> and <strong>P8_18</strong> to control the motor rotation speed and direction</li>
+</ul>
+
+<h2 id="coding">Coding</h2>
+
+<p>First, four <code class="language-plaintext highlighter-rouge">GPIO</code> objects are declared and named as <code class="language-plaintext highlighter-rouge">IN1, IN2, IN3 and IN4</code>. These pines will be used to declare and initialize a <code class="language-plaintext highlighter-rouge">StepperMotor</code> object after in the code.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="c1">// Declaring the pins for motor</span>
+<span class="n">GPIO</span> <span class="nf">IN1</span> <span class="p">(</span><span class="n">P8_12</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">IN2</span> <span class="p">(</span><span class="n">P8_14</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">IN3</span> <span class="p">(</span><span class="n">P8_16</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">IN4</span> <span class="p">(</span><span class="n">P8_18</span><span class="p">);</span>
+
+<span class="cm">/*
+  Declare the 28BYJ-48 stepper motor object with default parameters:
+  full step with the activation of 1 coil, 
+  default 2048 steps per revolution 
+  and a default maximum speed of 500 steps/second
+*/</span>
+<span class="n">StepperMotor</span> <span class="nf">myStepper</span> <span class="p">(</span><span class="n">IN1</span><span class="p">,</span> <span class="n">IN2</span><span class="p">,</span> <span class="n">IN3</span><span class="p">,</span> <span class="n">IN4</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">StepperMotor</code> object constructor <strong>definition</strong> is shown in the next listing. It takes seven input parameters with the last three of them with default values. The first four parameters are the <code class="language-plaintext highlighter-rouge">GPIO</code> pins to control the stepper motors. The last three have default values if the user does not set up the next:</p>
+<ul>
+  <li>The control mode for the stepper motor, i.e., if the stepper motor will be controlled with one of the next three modes:
+    <ul>
+      <li>Full step with one coil activation.</li>
+      <li>Full step with two coil activation.</li>
+      <li>Half step with two coil activation by nature.</li>
+      <li>Other way, by example using another custom driver.</li>
+    </ul>
+  </li>
+  <li>The steps per revolution of the motor, 2048 steps as default value.</li>
+  <li>The maximum rotation speed of the motor, 500 steps per revolution as a default value.</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c1">// Overload constructor</span>
+<span class="n">StepperMotor</span><span class="p">(</span> 
+              <span class="n">GPIO</span><span class="p">,</span> <span class="n">GPIO</span><span class="p">,</span> <span class="n">GPIO</span><span class="p">,</span> <span class="n">GPIO</span><span class="p">,</span> 
+              <span class="n">STEPPER_MODE</span> <span class="n">controlMode</span> <span class="o">=</span> <span class="n">fullStep1Coil</span><span class="p">,</span> 
+              <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">stepsPerRevolution</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">,</span> 
+              <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">maxSpeed</span> <span class="o">=</span> <span class="mi">500</span>
+            <span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">StepperMotor</code> object constructor <strong>declaration</strong> is shown in the next listing. It requirers at least, the four <code class="language-plaintext highlighter-rouge">GPIO</code> pins to control the stepper motor an initialize them as <code class="language-plaintext highlighter-rouge">OUTPUT</code> pins with the private method <code class="language-plaintext highlighter-rouge">InitMotorPins()</code>. Then, the correct number of activation sequence steps is set up in the variable <code class="language-plaintext highlighter-rouge">stepsPerMode</code> according to the control mode that the user wants, 4 steps for Full Step mode with 1 or 2 coils activation and 8 steps for Half Step mode.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+</pre></td><td class="rouge-code"><pre><span class="c1">// Overload Constructor</span>
+<span class="n">StepperMotor</span><span class="o">::</span><span class="n">StepperMotor</span> <span class="p">(</span><span class="n">GPIO</span> <span class="n">newMotorPin1</span><span class="p">,</span> 
+                            <span class="n">GPIO</span> <span class="n">newMotorPin2</span><span class="p">,</span>
+                            <span class="n">GPIO</span> <span class="n">newMotorPin3</span><span class="p">,</span>
+                            <span class="n">GPIO</span> <span class="n">newMotorPin4</span><span class="p">,</span>
+                            <span class="n">STEPPER_MODE</span> <span class="n">newControlMode</span><span class="p">,</span>
+                            <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">newStepsPerRevolution</span><span class="p">,</span>
+                            <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">newMaxSpeed</span><span class="p">)</span> <span class="o">:</span>
+                            <span class="n">motorPin1</span> <span class="p">(</span><span class="n">newMotorPin1</span><span class="p">),</span>
+                            <span class="n">motorPin2</span> <span class="p">(</span><span class="n">newMotorPin2</span><span class="p">),</span>
+                            <span class="n">motorPin3</span> <span class="p">(</span><span class="n">newMotorPin3</span><span class="p">),</span>
+                            <span class="n">motorPin4</span> <span class="p">(</span><span class="n">newMotorPin4</span><span class="p">),</span>
+                            <span class="n">controlMode</span> <span class="p">(</span><span class="n">newControlMode</span><span class="p">),</span>
+                            <span class="n">stepsPerRevolution</span> <span class="p">(</span><span class="n">newStepsPerRevolution</span><span class="p">),</span>
+                            <span class="n">maxSpeed</span> <span class="p">(</span><span class="n">newMaxSpeed</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">InitMotorPins</span><span class="p">();</span>
+  <span class="n">stepsCounter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">currentStep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">modeString</span><span class="p">;</span> 
+  <span class="k">switch</span> <span class="p">(</span><span class="n">controlMode</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">case</span> <span class="n">fullStep1Coil</span><span class="p">:</span>
+      <span class="n">modeString</span> <span class="o">=</span> <span class="s">"Full step with 1 Coil"</span><span class="p">;</span>
+      <span class="n">stepsPerMode</span> <span class="o">=</span> <span class="n">fullStep1CoilVector</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> 
+      <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">halfStep</span><span class="p">:</span>
+      <span class="n">modeString</span> <span class="o">=</span> <span class="s">"Half step"</span><span class="p">;</span>
+      <span class="n">stepsPerMode</span> <span class="o">=</span> <span class="n">halfStepVector</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> 
+      <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">fullStep2Coils</span><span class="p">:</span>
+      <span class="n">modeString</span> <span class="o">=</span> <span class="s">"Full step with 2 coils"</span><span class="p">;</span> 
+      <span class="n">stepsPerMode</span> <span class="o">=</span> <span class="n">fullStep2CoilsVector</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> 
+      <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">driver</span><span class="p">:</span>
+      <span class="n">modeString</span> <span class="o">=</span> <span class="s">"Driver mode was chosen"</span><span class="p">;</span> 
+      <span class="k">break</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">message</span><span class="p">;</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"</span><span class="se">\n</span><span class="s">StepperMotor object with the next parameters / pins was created:</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span> 
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">MotorPin1: "</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">motorPin1</span><span class="p">.</span><span class="n">GetPinHeaderId</span><span class="p">()</span> <span class="o">+</span> 
+            <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span> 
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">MotorPin2: "</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">motorPin2</span><span class="p">.</span><span class="n">GetPinHeaderId</span><span class="p">()</span> <span class="o">+</span> 
+            <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span> 
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">MotorPin3: "</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">motorPin3</span><span class="p">.</span><span class="n">GetPinHeaderId</span><span class="p">()</span> <span class="o">+</span> 
+            <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">MotorPin4: "</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">motorPin4</span><span class="p">.</span><span class="n">GetPinHeaderId</span><span class="p">()</span> <span class="o">+</span> 
+            <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">Control Mode: "</span><span class="p">)</span> <span class="o">+</span> <span class="n">modeString</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">Max speed: "</span><span class="p">)</span> <span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">maxSpeed</span><span class="p">)</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Light Gray"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+  Private method to initialize the Pins
+*/</span>
+<span class="kt">void</span> <span class="n">StepperMotor</span><span class="o">::</span><span class="n">InitMotorPins</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// Set the right modes for the pins</span>
+  <span class="n">motorPin1</span><span class="p">.</span><span class="n">SetMode</span><span class="p">(</span><span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">motorPin2</span><span class="p">.</span><span class="n">SetMode</span><span class="p">(</span><span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">motorPin3</span><span class="p">.</span><span class="n">SetMode</span><span class="p">(</span><span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">motorPin4</span><span class="p">.</span><span class="n">SetMode</span><span class="p">(</span><span class="n">OUTPUT</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>This <code class="language-plaintext highlighter-rouge">DCMotor</code> object is used to initialize the <code class="language-plaintext highlighter-rouge">L298N</code> object. This inheritance structure has the goal to encapsulate the corresponding methods for any generic DC motor avoiding repeat code in the <code class="language-plaintext highlighter-rouge">L298N</code> object and focusing on the methods to <strong>drive / brake</strong> the DC motor, and not only one, but the two motors at the same time and in a different direction if it desired.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1">// Declare the L298N Module</span>
+<span class="n">L298N</span> <span class="nf">myL298NModule</span> <span class="p">(</span><span class="n">MotorLeft</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">L298N</code> object constructor is shown in the next listing:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="c1">// Overload constructor from DCMotor object for ONLY the MotorA</span>
+<span class="n">L298N</span><span class="o">::</span><span class="n">L298N</span> <span class="p">(</span><span class="n">DCMotor</span><span class="o">&amp;</span> <span class="n">newMotorA</span><span class="p">)</span> <span class="o">:</span>
+              <span class="n">MotorA</span> <span class="p">(</span><span class="n">newMotorA</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">// Set the flags about which motors are used </span>
+  <span class="n">motorAisUsed</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+  <span class="n">motorBisUsed</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">message</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">swapStringMotorA</span> <span class="p">{</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">MotorA</span><span class="p">.</span><span class="n">swapSpinFlag</span> <span class="o">?</span> <span class="s">"True"</span> <span class="o">:</span> <span class="s">"False"</span><span class="p">};</span>
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"</span><span class="se">\n</span><span class="s">TB6612FNG driver module with the next components / pins was created and activated:</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">MotorA:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="o">+</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t\t</span><span class="s">AIN1: "</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">MotorA</span><span class="p">.</span><span class="n">input1Pin</span><span class="p">.</span><span class="n">GetPinHeaderId</span><span class="p">()</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span> 
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t\t</span><span class="s">AIN2: "</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">MotorA</span><span class="p">.</span><span class="n">input2Pin</span><span class="p">.</span><span class="n">GetPinHeaderId</span><span class="p">()</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span> 
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t\t</span><span class="s">PWMA: "</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">MotorA</span><span class="p">.</span><span class="n">pwmPin</span><span class="p">.</span><span class="n">GetPinHeaderId</span><span class="p">()</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"</span><span class="se">\t\t</span><span class="s">Swap Spin: "</span><span class="p">)</span> <span class="o">+</span> <span class="n">swapStringMotorA</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span>
+            <span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">;</span> 
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">"Light Red"</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>To make turn the DC motor, the method is <code class="language-plaintext highlighter-rouge">L298N::DCMotor::Drive</code> can be used. This receives two parameters:</p>
+<ul>
+  <li>Speed in percentage, i.e. integer values between <font color="red">100 and -100</font></li>
+  <li>Time of the spin duration in milliseconds</li>
+</ul>
+
+<p>A positive speed value sets the motor to turn in the CW direction, while, a negative speed value sets the motor to turn in the CCW direction.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">myL298NModule</span><span class="p">.</span><span class="n">MotorA</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="n">duration</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>A <strong>positive</strong> speed value sets the motor to turn in the <strong>CW</strong> direction, while, a <strong>negative</strong> speed value sets the motor to turn in the <strong>CCW</strong> direction.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="c1">// Turn the motor in CW direction</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">speed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">speed</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="n">speed</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="n">myL298NModule</span><span class="p">.</span><span class="n">MotorA</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="mi">1000</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">speed</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span> <span class="n">speed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">speed</span> <span class="o">-=</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="n">myL298NModule</span><span class="p">.</span><span class="n">MotorA</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="mi">1000</span><span class="p">);</span>
+
+<span class="c1">// Turn the motor in CCW direction</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">speed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">speed</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">100</span><span class="p">;</span> <span class="n">speed</span> <span class="o">-=</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="n">myL298NModule</span><span class="p">.</span><span class="n">MotorA</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="mi">1000</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">speed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span><span class="p">;</span> <span class="n">speed</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">speed</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="n">myL298NModule</span><span class="p">.</span><span class="n">MotorA</span><span class="p">.</span><span class="n">Drive</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="mi">1000</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The complete code for this application is shown in the next listing together with its corresponding execution output.</p>
+
+<h3 id="28byj-48-uln2003_11cpp">28BYJ-48-ULN2003_1.1.cpp</h3>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+</pre></td><td class="rouge-code"><pre><span class="cm">/******************************************************************************
+28BYJ48-ULN2003_1.2.cpp
+@wgaonar
+08/04/2022
+https://github.com/wgaonar/BeagleCPP
+
+- Move the stepperMotor by steps in fullStep with 2 Coils mode
+
+Class: STEPPERMOTOR
+******************************************************************************/</span>
+
+<span class="cp">#include &lt;iostream&gt;
+#include "../../../Sources/STEPPERMOTOR.h"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="c1">// Declaring the pins for motor</span>
+<span class="n">GPIO</span> <span class="nf">IN1</span> <span class="p">(</span><span class="n">P8_12</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">IN2</span> <span class="p">(</span><span class="n">P8_14</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">IN3</span> <span class="p">(</span><span class="n">P8_16</span><span class="p">);</span>
+<span class="n">GPIO</span> <span class="nf">IN4</span> <span class="p">(</span><span class="n">P8_18</span><span class="p">);</span>
+
+<span class="cm">/*
+  Declare the stepper motor mode 
+  (fullStep1Coil / fullStep2Coils / halfStep)
+*/</span>
+<span class="n">STEPPER_MODE</span> <span class="n">controlMode</span> <span class="p">{</span><span class="n">fullStep2Coils</span><span class="p">};</span>
+
+<span class="c1">// Declare the number of steps per revolution</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">stepsPerRevolution</span> <span class="p">{</span><span class="mi">2048</span><span class="p">};</span>
+
+<span class="c1">// Declare the maxSpeed steps/second</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">maxSpeed</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+
+<span class="cm">/*
+  Declare the 28BYJ-48 stepper motor object with:
+  full step with 2 coils at the same time, 
+  2048 steps per revolution 
+  and a maximum speed of 500 steps/second
+*/</span>
+<span class="n">StepperMotor</span> <span class="nf">myStepper</span> <span class="p">(</span><span class="n">IN1</span><span class="p">,</span> <span class="n">IN2</span><span class="p">,</span> <span class="n">IN3</span><span class="p">,</span> <span class="n">IN4</span><span class="p">,</span> 
+                        <span class="n">controlMode</span><span class="p">,</span> <span class="n">stepsPerRevolution</span><span class="p">,</span> 
+                        <span class="n">maxSpeed</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">string</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program starting here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span> <span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="cm">/* 
+    Turn the stepper motor 1/4-turn in CW direction in fullstep 
+    mode with 2 coils at the same time at 500 steps/second
+  */</span>
+  <span class="n">myStepper</span><span class="p">.</span><span class="n">TurnBySteps</span><span class="p">(</span><span class="n">CW</span><span class="p">,</span> <span class="mi">512</span><span class="p">);</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Steps executed by the motor: "</span> <span class="o">&lt;&lt;</span> <span class="n">myStepper</span><span class="p">.</span><span class="n">GetStepsCounter</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Actual position of the motor axis: "</span> <span class="o">&lt;&lt;</span> <span class="n">myStepper</span><span class="p">.</span><span class="n">GetCurrentStep</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+
+  <span class="cm">/* 
+    Turn the stepper motor 1/4-turn in CCW direction in fullstep 
+    mode with 2 coils at the same time at 500 steps/second
+  */</span>
+  <span class="n">myStepper</span><span class="p">.</span><span class="n">TurnBySteps</span><span class="p">(</span><span class="n">CCW</span><span class="p">,</span> <span class="mi">512</span><span class="p">);</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Steps executed by the motor: "</span> <span class="o">&lt;&lt;</span> <span class="n">myStepper</span><span class="p">.</span><span class="n">GetStepsCounter</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Actual position of the motor axis: "</span> <span class="o">&lt;&lt;</span> <span class="n">myStepper</span><span class="p">.</span><span class="n">GetCurrentStep</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="n">message</span> <span class="o">=</span> <span class="s">"Main program finishes here..."</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">RainbowText</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="s">"Blue"</span><span class="p">,</span> <span class="s">"White"</span><span class="p">,</span><span class="s">"Bold"</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Se you in the next post.</p>
+:ET
