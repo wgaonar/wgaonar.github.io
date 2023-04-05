@@ -47,6 +47,13 @@ Este robot en su versión *Brivoi Compactus* está basado en el proyecto:
   figure {
     text-align: justify;
   }
+
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>
 
 
