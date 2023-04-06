@@ -1987,9 +1987,7 @@ Partes requeridas:
 
 ### Prueba de funcionamiento
 <p>  
-  La primera prueba después de cargar el firmware en el Escornabot, consiste en hacer que 
-  el robot ejecute una secuencia de movimientos. Para ello, se puede llevar a cabo el 
-  siguiente procedimiento:
+  La primera prueba después de cargar el firmware en el Escornabot, consiste en hacer que el robot ejecute una secuencia de movimientos. Para ello, se puede llevar a cabo el siguiente procedimiento:
   <ol>
     <li>Energizar el Escornabot con el interruptor de alimentación en la tarjeta de control</li>
     <li>Oprimir varias veces algunos de los botones de colores.</li>
