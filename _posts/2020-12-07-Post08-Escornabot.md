@@ -1942,8 +1942,7 @@ Partes requeridas:
   programarlo con el firmware del Escornabot para esta versión del Escornabot. Se puede 
   descargar aquí: <a href="https://github.com/wgaonar/Escornabot-Arduino.git"> 
     firmware Escornabot Brivoi Compactus</a> el cual se encuentra configurado y 
-    y calibrado para que funcione correctamente. Una imagen de la apaciencia del firmware
-    abirto en la IDE de Arduino se muestra en la Figura 26:
+    y calibrado para que funcione correctamente. Una imagen de la apaciencia del firmware abirto en la IDE de Arduino se muestra en la Figura 26:
 </p>
 
 <figure style="text-align: center; width:70%; 
