@@ -1929,7 +1929,7 @@ Partes requeridas:
       <source src="../assets/images/Post08/Ensamble/paso11_video.mp4" type="video/mp4">
     </video>
   <figcaption>
-    Paso 11: Video de 360º para mostrar el ensamble del cuerpo del robot.
+    Paso 11: Video de 360&deg; para mostrar el ensamble del cuerpo del robot.
   </figcaption>
 </figure>
 
