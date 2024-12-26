@@ -2,8 +2,8 @@
 name: "Wilmer Gaona"
 title: "wgaonar"
 description: "A website about my work with digital technologies"
-logo: 'assets/images/logo.png'
-favicon: 'assets/images/logo.png'
+logo: 'assets/images/LogoWilmiMakes.png'
+favicon: 'assets/images/LogoWilmiMakes.png'
 baseurl: ''
 google_analytics: 'UA-46278016-1'
 disqus: 'demowebsite'
