@@ -756,7 +756,7 @@ simplificado y las ecuaciones del funcionamiento del circuito divisor de voltaje
 
 ## Ensamble de la tarjeta de control
 La tarjeta de control utilizada es la
-<a href="https://github.com/xdesig/escornabot-electronics/tree/master/Electronics/EscornaCPU/1.x/1.20">EscornaCPU V1.2 diseñada por XDeSIG</a>
+<a href="https://github.com/escornabot/electronics/tree/master/EscornaCPU/1.x/1.20">EscornaCPU V1.2</a>
 que se puede ver en la Figura 11:
 
 <figure style="text-align: center; width:80%; 
@@ -1172,9 +1172,7 @@ tarjeta tal como se muestra en la Figura 13.</p>
   </div>
 </div>
 
-### 
-  Soldadura de los conectores para alimentación y de los 
-  motores paso a paso
+### Soldadura de los conectores para alimentación y de los motores paso a paso
 
 <p>
   Los conectores para alimentación y para la conexión de los motores
@@ -1225,8 +1223,7 @@ tarjeta tal como se muestra en la Figura 13.</p>
   </div>
 </div>
 
-### 
-  Soldadura del interruptor de encendido
+### Soldadura del interruptor de encendido
 
 <p>
   La tarjeta de control tiene dos juegos de 5 agueros
@@ -1269,8 +1266,7 @@ tarjeta tal como se muestra en la Figura 13.</p>
   </div>
 </div>
 
-### 
-  Soldadura del fusible rearmable
+### Soldadura del fusible rearmable
 
 <p>
   El fusible rearmable XF050 protege la tarjeta de control de una
@@ -1311,8 +1307,7 @@ tarjeta tal como se muestra en la Figura 13.</p>
   </div>
 </div>
 
-### 
-  Colocación del driver UNL2803 
+### Colocación del driver UNL2803 
 
 <p>
   El driver UNL2803 junto a la tarjeta de control mostrados en la Figura 23a,
@@ -1765,9 +1760,7 @@ Partes requeridas:
   </div>
 </div>
 
-### 
-  Paso 8: Conexión de los motores y colocación de la tarjeta de control
-  en el cuerpo del robot
+### Paso 8: Conexión de los motores y colocación de la tarjeta de control en el cuerpo del robot
 
 
 <div class="row">
@@ -1873,8 +1866,7 @@ Partes requeridas:
   </div>
 </div>
 
-### 
-  Paso 10: Conexión de las baterías y la botonera
+### Paso 10: Conexión de las baterías y la botonera
 
 
 Partes requeridas:
