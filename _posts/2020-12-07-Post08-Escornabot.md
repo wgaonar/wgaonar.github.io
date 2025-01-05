@@ -1957,21 +1957,21 @@ Partes requeridas:
 
 <div class="row">
   <div class="column">
-    <figure">
+    <figure>
       <img src="../assets/images/Post08/CPU/cpu_programada_a.jpg"
-        alt="cpu_programada_a.jpg" style="width:100%">
+        alt="paso10a" style="width:100%">
       <figcaption>
-        Figura 27a: Conexión de la tarjeta de programación.       
+        Figura 27a: Conexión de la tarjeta de programación.        
       </figcaption>
     </figure>
   </div>
   <div class="column">
-    <figure style="text-align: justify;">
+    <figure>
       <video width="100%" controls poster="../assets/images/Post08/CPU/cpu_programada_a.jpg">
         <source src="../assets/images/Post08/CPU/cpu_programacion.mp4" type="video/mp4">
       </video>
       <figcaption>
-        Video 27b: Programación del firmware del Escornabot.
+         Video 27b: Programación del firmware del Escornabot.
       </figcaption>
     </figure>
   </div>
