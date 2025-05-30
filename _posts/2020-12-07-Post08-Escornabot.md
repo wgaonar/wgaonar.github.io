@@ -6,7 +6,7 @@ categories: [Robots]
 tags: [StepperMotors]
 image: assets/images/Post08/EscornabotPortadaRoja.jpeg
 description: "How to make from 0 to 100% finished an educational  mobile robot of open source hardware"
-featured: true
+featured: false
 hidden: false
 rating: 5
 beforetoc: "En esta página encontrarás toda la información para construir el robot educativo Escornabot en su versión Brivoi Compactus"
