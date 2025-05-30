@@ -41,7 +41,9 @@ In this post, I show the set of block codes for programming an interactive game 
   }
 
   figure {
-    text-align: justify;
+    text-align: center; 
+    margin-left: auto; 
+    margin-right: auto;"
   }
 
   .text table, 
@@ -71,9 +73,7 @@ The game features two characters: a frog and water. One player controls the frog
 
 ## Program for Micro:bit 1: Frog character.
 The first part of the code shows the setup for both characters. It uses basic components from the micro:bit game module. It's important to note that each micro:bit should have the same characters to achieve real-time synchronization.
-<figure style="text-align: center; 
-              margin-left: auto; 
-              margin-right: auto;">
+<figure>
     <img src="../assets/images/Post58/Rana-1.jpg" alt="Rana-1.jpg" width="50%"/>
   <figcaption>
     Figure 1: Code blocks for Frog's Setup.
@@ -81,9 +81,7 @@ The first part of the code shows the setup for both characters. It uses basic co
 </figure>
 
 The second part of the code shows the blocks for moving the frog. The micro:bit's accelerometer is used to measure the tilt along the roll and pitch axes, which then changes the frog character's coordinates on the X and Y axes, respectively. The frog can move up and down, and side to side, as the player tilts the micro:bit in different directions. Once the frog's position is determined, its X and Y coordinates are transmitted via radio to Player #2's micro:bit, who controls the water character. This entire process happens every 200 milliseconds.
-<figure style="text-align: center; 
-              margin-left: auto; 
-              margin-right: auto;">
+<figure>
     <img src="../assets/images/Post58/Rana-2.jpg" alt="Rana-2.jpg" width="50%"/>
   <figcaption>
     Figure 2: Code blocks for Frog's movement.
@@ -91,9 +89,7 @@ The second part of the code shows the blocks for moving the frog. The micro:bit'
 </figure>
 
 The final part of the code shows how the coordinates of the other character used. When a data from Player #2 who controls the water, is received. via radio, the water’s position on Player #1's micro:bit  is updated.
-<figure style="text-align: center; 
-              margin-left: auto; 
-              margin-right: auto;">
+<figure>
     <img src="../assets/images/Post58/Rana-3.jpg" alt="Rana-3.jpg" width="40%"/>
   <figcaption>
     Figure 3: Code blocks for Water's sicronization.
@@ -102,21 +98,19 @@ The final part of the code shows how the coordinates of the other character used
 
 ## Program for Micro:bit 2: Water character.
 The first part of the code shows the setup for Player #2's micro:bit, which is identical to the setup code for Player #1's micro:bit. Similarly, it's important to note that each micro:bit must contain the same characters to achieve real-time synchronization.
-￼<figure style="text-align: center; 
-              margin-left: auto; 
-              margin-right: auto;">
+
+<figure>
     <img src="../assets/images/Post58/Agua-1.jpg" alt="Agua-1.jpg" width="50%"/>
   <figcaption>
     Figure 4: Code blocks for Water's Setup.
   </figcaption>
-</figure>￼
+</figure>
 
 In the second set of code blocks, there's a sequence to check if the frog character is touching the water character, that is, if Player #1 has managed to reach the water character controlled by Player #2. Right after this check, the code blocks for moving the water are shown. Just like with the frog character, the micro:bit's accelerometer is used to measure the roll along the pitch axes, which updates the water character's coordinates on the X and Y axes, respectively.
 
 The water character can move up and down, and left and right, as the player tilts the micro:bit in different directions. Once the water’s position is determined, its X and Y coordinates are sent via radio to Player #1's micro:bit, who controls the frog character. This entire process happens every 200 milliseconds.
-￼<figure style="text-align: center; 
-              margin-left: auto; 
-              margin-right: auto;">
+
+<figure>
     <img src="../assets/images/Post58/Agua-2.jpg" alt="Agua-2.jpg" width="50%"/>
   <figcaption>
     Figure 5: Code blocks for Water's movement.
@@ -124,7 +118,7 @@ The water character can move up and down, and left and right, as the player tilt
 </figure>
 ￼
 The final part shows how the frog's position data is received from Player #1. Every time new data packets are detected via radio, the frog's position is updated on Player #2's micro:bit, who controls the water character. This ensures that both players' characters stay synchronized in real time.
-￼<figure style="text-align: center; 
+<figure style="text-align: center; 
               margin-left: auto; 
               margin-right: auto;">
     <img src="../assets/images/Post58/Agua-3.jpg" alt="Agua-3.jpg" width="40%"/>
